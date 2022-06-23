@@ -1,13 +1,14 @@
 import { extendTheme } from '@chakra-ui/react';
-import { mode } from '@chakra-ui/theme-tools';
+import { mode, StyleFunctionProps } from '@chakra-ui/theme-tools';
+import { Dict } from '@chakra-ui/utils';
 
-// const styles = {
-//   global: (props) => ({
-//     body: {
-//       bg: mode('#f0e7db', '#202023')(props),
-//     },
-//   }),
-// };
+const styles = {
+  global: (props: StyleFunctionProps | Dict<any>) => ({
+    body: {
+      bg: mode('#f0e7db', '#202023')(props),
+    },
+  }),
+};
 
 const components = {
   Heading: {
@@ -23,25 +24,15 @@ const components = {
       },
     },
   },
-  //   Link: {
-  //     baseStyle: (props) => ({
-  //       color: mode('#3d7aed', '#ff63c3')(props),
-  //       textUnderlineOffset: 3,
-  //     }),
-  //   },
 };
 
 const fonts = {
   heading: "'M PLUS Rounded 1c'",
 };
 
-// const colors = {
-//   grassTeal: '#88ccca',
-// };
-
 const config = {
   initialColorMode: 'dark',
-  useSystemColorMode: true,
+  useSystemColorMode: false,
 };
 
 const theme = extendTheme({ config, components, fonts });
