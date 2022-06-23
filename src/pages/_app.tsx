@@ -5,6 +5,8 @@ import { ChakraProvider } from '@chakra-ui/react';
 import theme from '../theme/theme';
 
 const MyApp: AppType = ({ Component, pageProps }) => {
+  console.log(process?.browser, process.env, process.env?.VERCEL_URL);
+
   return (
     <ChakraProvider theme={theme}>
       <Component {...pageProps} />
@@ -29,5 +31,5 @@ export default withTRPC<AppRouter>({
       url,
     };
   },
-  ssr: false,
+  ssr: true,
 })(MyApp);
