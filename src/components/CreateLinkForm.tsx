@@ -66,9 +66,10 @@ const CreateLinkForm: NextPage = () => {
     );
   }
 
-  const urlValidator = /^[-a-zA-Z0-9]+$/;
+  const slugValidator = /^[-a-zA-Z0-9]+$/;
+  const urlValidator =
+    /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/;
   //  /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/;
-
   //  /^[-a-zA-Z0-9]+$/;
 
   return (
@@ -91,12 +92,7 @@ const CreateLinkForm: NextPage = () => {
               value={form.slug}
               onChange={(e) => {
                 const slug = e.target.value;
-                // if (slug === '') {
-                //   setError(true);
-                //   console.log('empty');
-                // } else
-                if (!urlValidator.test(slug)) {
-                  console.log('regex');
+                if (!slugValidator.test(slug)) {
                   setError(true);
                 } else {
                   setError(false);
@@ -128,6 +124,8 @@ const CreateLinkForm: NextPage = () => {
             </InputRightElement>
           </InputGroup>
         </Box>
+      </FormControl>
+      <FormControl>
         <Box mt={1}>
           <InputGroup>
             <Input
@@ -136,14 +134,17 @@ const CreateLinkForm: NextPage = () => {
               size="lg"
               type="url"
               onChange={(e) => {
-                const slug = e.target.value;
-                if (!urlValidator.test(slug)) {
-                  console.log('regex');
-                  setError(true);
-                } else {
-                  setError(false);
-                }
-                setForm({ ...form, url: e.target.value });
+                const url = e.target.value;
+                // if (!urlValidator.test(url)) {
+                //   setError(true);
+                // } else {
+                //   setError(false);
+                // }
+                setForm({
+                  ...form,
+                  url,
+                });
+                debounce(slugCheck.refetch, 200);
               }}
               placeholder="Paste a long url"
               required
