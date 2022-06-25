@@ -11,6 +11,7 @@ import {
   Container,
   Flex,
   FormControl,
+  FormErrorMessage,
   Heading,
   Input,
   InputGroup,
@@ -27,6 +28,7 @@ type Form = {
 const CreateLinkForm: NextPage = () => {
   const [form, setForm] = useState<Form>({ slug: '', url: '' });
   const url = window.location.origin;
+  const [error, setError] = useState<boolean>(false);
 
   const slugCheck = trpc.useQuery(['slugCheck', { slug: form.slug }], {
     refetchOnReconnect: false, // replacement for enable: false which isn't respected.
@@ -38,7 +40,7 @@ const CreateLinkForm: NextPage = () => {
   if (createSlug.status === 'success') {
     return (
       <Container mt={50} centerContent>
-        <Flex className="flex justify-center items-center">
+        <Flex>
           <Heading as="h1">{`${url}/${form.slug}`}</Heading>
           <Button
             ml={4}
@@ -64,32 +66,46 @@ const CreateLinkForm: NextPage = () => {
     );
   }
 
+  const urlValidator = /^[-a-zA-Z0-9]+$/;
+  //  /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/;
+
+  //  /^[-a-zA-Z0-9]+$/;
+
   return (
     <Container mt={50} centerContent>
-      <FormControl
-        onSubmit={(e) => {
-          e.preventDefault();
-          createSlug.mutate({ ...form });
-        }}
-      >
-        {slugCheck.data?.used && <Text>Slug already in use.</Text>}
+      <FormControl isInvalid={error}>
+        <FormErrorMessage m={1}>
+          Only alphanumeric characters and hypens are allowed. No spaces.
+        </FormErrorMessage>
+        {slugCheck.data?.used && <Text>Short url already in use.</Text>}
         <Box>
           <InputGroup>
             <InputLeftAddon children={`${url}/`} />
             <Input
               minLength={1}
-              pattern={'^[-a-zA-Z0-9]+$'}
+              // pattern={'^[-a-zA-Z0-9]+$'}
               title="Only alphanumeric characters and hypens are allowed. No spaces."
               required
               type="text"
-              placeholder="short link"
+              placeholder="short url"
               value={form.slug}
               onChange={(e) => {
+                const slug = e.target.value;
+                // if (slug === '') {
+                //   setError(true);
+                //   console.log('empty');
+                // } else
+                if (!urlValidator.test(slug)) {
+                  console.log('regex');
+                  setError(true);
+                } else {
+                  setError(false);
+                }
                 setForm({
                   ...form,
-                  slug: e.target.value,
+                  slug,
                 });
-                debounce(slugCheck.refetch, 100);
+                debounce(slugCheck.refetch, 200);
               }}
             />
             <InputRightElement width="4.5rem">
@@ -115,10 +131,20 @@ const CreateLinkForm: NextPage = () => {
         <Box mt={1}>
           <InputGroup>
             <Input
+              value={form.url}
               width="sm"
               size="lg"
               type="url"
-              onChange={(e) => setForm({ ...form, url: e.target.value })}
+              onChange={(e) => {
+                const slug = e.target.value;
+                if (!urlValidator.test(slug)) {
+                  console.log('regex');
+                  setError(true);
+                } else {
+                  setError(false);
+                }
+                setForm({ ...form, url: e.target.value });
+              }}
               placeholder="Paste a long url"
               required
             />
@@ -128,7 +154,13 @@ const CreateLinkForm: NextPage = () => {
                 colorScheme="teal"
                 size="lg"
                 onClick={() => {
-                  createSlug.mutate({ ...form });
+                  if (form.slug === '' && form.url === '') {
+                    setError(true);
+                    return;
+                  }
+                  if (!error) {
+                    createSlug.mutate({ ...form });
+                  }
                 }}
               >
                 Shorten
