@@ -18,8 +18,8 @@ const Header = () => {
         <meta property="og:site_name" content="Reqq Link Shortener" />
         <meta name="og:title" content="Reqq Link Shortener" />
         <meta property="og:type" content="website" />
-        {/* <meta name="twitter:image" content="https://www.utoker.com/card.png" /> */}
-        <meta property="og:image" content="https://www.utoker.com/card.png" />
+        <meta name="twitter:image" content="https://www.reqq.cc/card.png" />
+        <meta property="og:image" content="https://www.reqq.cc/card.png" />
         <title>Reqq Link Shortener</title>
       </Head>
       <Heading as="h1">Reqq</Heading>
