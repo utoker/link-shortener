@@ -28,7 +28,8 @@ type Form = {
 const CreateLinkForm: NextPage = () => {
   const [form, setForm] = useState<Form>({ slug: '', url: '' });
   const url = window.location.origin;
-  const [error, setError] = useState<boolean>(false);
+  const [urlError, setUrlError] = useState<boolean>(false);
+  const [slugError, setSlugError] = useState<boolean>(false);
 
   const slugCheck = trpc.useQuery(['slugCheck', { slug: form.slug }], {
     refetchOnReconnect: false, // replacement for enable: false which isn't respected.
@@ -69,12 +70,13 @@ const CreateLinkForm: NextPage = () => {
   const slugValidator = /^[-a-zA-Z0-9]+$/;
   const urlValidator =
     /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/;
+
   //  /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/;
   //  /^[-a-zA-Z0-9]+$/;
 
   return (
     <Container mt={50} centerContent>
-      <FormControl isInvalid={error}>
+      <FormControl isInvalid={slugError}>
         <FormErrorMessage m={1}>
           Only alphanumeric characters and hypens are allowed. No spaces.
         </FormErrorMessage>
@@ -93,9 +95,9 @@ const CreateLinkForm: NextPage = () => {
               onChange={(e) => {
                 const slug = e.target.value;
                 if (!slugValidator.test(slug)) {
-                  setError(true);
+                  setSlugError(true);
                 } else {
-                  setError(false);
+                  setSlugError(false);
                 }
                 setForm({
                   ...form,
@@ -125,7 +127,10 @@ const CreateLinkForm: NextPage = () => {
           </InputGroup>
         </Box>
       </FormControl>
-      <FormControl>
+      <FormControl isInvalid={urlError}>
+        <FormErrorMessage m={1}>
+          Enter a valid URL with http or https
+        </FormErrorMessage>
         <Box mt={1}>
           <InputGroup>
             <Input
@@ -135,11 +140,11 @@ const CreateLinkForm: NextPage = () => {
               type="url"
               onChange={(e) => {
                 const url = e.target.value;
-                // if (!urlValidator.test(url)) {
-                //   setError(true);
-                // } else {
-                //   setError(false);
-                // }
+                if (!urlValidator.test(url)) {
+                  setUrlError(true);
+                } else {
+                  setUrlError(false);
+                }
                 setForm({
                   ...form,
                   url,
@@ -151,15 +156,20 @@ const CreateLinkForm: NextPage = () => {
             />
             <InputRightElement width="7rem">
               <Button
+                disabled={urlError || slugError}
                 mt={2}
                 colorScheme="teal"
                 size="lg"
                 onClick={() => {
-                  if (form.slug === '' && form.url === '') {
-                    setError(true);
+                  if (form.slug === '') {
+                    setSlugError(true);
                     return;
                   }
-                  if (!error) {
+                  if (form.url === '') {
+                    setUrlError(true);
+                    return;
+                  }
+                  if (!slugError && !urlError) {
                     createSlug.mutate({ ...form });
                   }
                 }}
