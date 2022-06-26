@@ -61,7 +61,7 @@ const CreateLinkForm: NextPage = () => {
             setForm({ slug: '', url: '' });
           }}
         >
-          Reset
+          Home
         </Button>
       </Container>
     );
