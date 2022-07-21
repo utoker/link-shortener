@@ -1,34 +1,80 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div id="top"></div>
 
-## Getting Started
+[![LinkedIn][linkedin-shield]](https://www.linkedin.com/in/utoker/)
 
-First, run the development server:
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/utoker/link-shortener">
+    <img src="src/public/card.png" alt="Logo">
+  </a>
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+<h3 align="center">Reqq Link Shortener</h3>
+    <br />
+    <a href="https://github.com/utoker/link-shortener/tree/main/src"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://www.reqq.cc/">View Website</a>
+</div>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## About The Project
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+The reqq.cc is an easy-to-use link shortening service with an option to use custom URLs.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+I did this project as a free alternative to paid services like bit.ly or tinyurl.com.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+<br />
+<ul>
+    <li>Leveraged MySQL compatible PlanetScale database via Prisma to effectively manage data.</li>
+    <li>Developed and integrated a type-safe API by implementing tRPC in a TypeScript environment.</li>
+    <li>Integrated Next Redirect to enable the redirection of incoming requests.</li>
+    <li>Performed research to gather project requirements and identify needs.</li>
+</ul>
+<p>
+Data query from PlanetScale with Prisma.
+<p/>
+<div> 
+<img src="src/public/prisma-studio.png" alt="diagram" width='520' heigh='362' > 
+<!-- <img src="src/images/screenshot2.png" alt="diagram2" width='262' heigh='262'> -->
 
-## Learn More
+<div/>
 
-To learn more about Next.js, take a look at the following resources:
+<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com)-->
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<!-- GETTING STARTED -->
 
-## Deploy on Vercel
+## Usage
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Simple use the text input bar to enter the URL you want to shorten.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### Built With
+
+- [React.js](https://reactjs.org/)
+- [Next.js](http://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Prisma](https://www.prisma.io/)
+- [tRPC](https://tRPC.io/)
+- [PlanetScale](https://www.planetscale.com/)
+- [nanoid](https://www.npmjs.com/package/nanoid)
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Contact
+
+Umut Toker - utoker@gmail.com
+
+LinkedIn: [https://www.linkedin.com/in/utoker/](https://www.linkedin.com/in/utoker/)
+
+Project Link: [https://github.com/utoker/link-shortener](https://github.com/utoker/link-shortener)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/linkedin_username
+[product-screenshot]: src/public/card.png
