@@ -1,9 +1,9 @@
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import Header from '../components/Header';
-import Navbar from '../components/Navbar';
+import Header from '../components/header';
+import Navbar from '../components/navbar';
 
-const CreateLinkForm = dynamic(() => import('../components/CreateLinkForm'), {
+const CreateLinkForm = dynamic(() => import('../components/create-link-form'), {
   ssr: false,
 });
 

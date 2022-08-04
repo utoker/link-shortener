@@ -3,14 +3,17 @@ import { AppRouter } from './api/trpc/[trpc]';
 import { AppType } from 'next/dist/shared/lib/utils';
 import { ChakraProvider } from '@chakra-ui/react';
 import theme from '../theme/theme';
+import { SessionProvider } from 'next-auth/react';
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   console.log(process?.browser, process.env, process.env?.VERCEL_URL);
 
   return (
-    <ChakraProvider theme={theme}>
-      <Component {...pageProps} />
-    </ChakraProvider>
+    <SessionProvider>
+      <ChakraProvider theme={theme}>
+        <Component {...pageProps} />
+      </ChakraProvider>
+    </SessionProvider>
   );
 };
 
@@ -26,7 +29,6 @@ export default withTRPC<AppRouter>({
     // const url = process.env.VERCEL_URL
     //   ? `https://${process.env.VERCEL_URL}/api/trpc`
     //   : 'http://localhost:3000/api/trpc';
-
     // const url = 'https://www.reqq.cc/api/trpc';
 
     return {

@@ -6,6 +6,7 @@ import {
   useColorMode,
 } from '@chakra-ui/react';
 import { BsSun, BsMoonStarsFill } from 'react-icons/bs';
+import LoginBtn from './login-btn';
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -13,6 +14,7 @@ const Navbar = () => {
     <Container mt={4}>
       <Flex>
         <Spacer />
+        <LoginBtn />
         <Button
           aria-label="Toggle Color Mode"
           onClick={toggleColorMode}
