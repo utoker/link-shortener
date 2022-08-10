@@ -22,6 +22,7 @@ interface FormProps {
   urlError: any;
   setUrlError: any;
   saveShortLink: any;
+  slugInUse: boolean;
 }
 const Form: FC<FormProps> = ({
   slugError,
@@ -32,17 +33,19 @@ const Form: FC<FormProps> = ({
   urlError,
   setUrlError,
   saveShortLink,
+  slugInUse,
 }) => {
   const slugValidator = /^[-a-zA-Z0-9]+$/;
   const urlValidator =
     /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/;
+
   return (
     <Container mt={50} centerContent>
       <FormControl isInvalid={slugError}>
         <FormErrorMessage m={1}>
           Only alphanumeric characters and hypens are allowed. No spaces.
         </FormErrorMessage>
-        {slugError && <Text>Short url already in use.</Text>}
+        {slugInUse && <Text>Short url already in use.</Text>}
         <Box>
           <InputGroup>
             <InputLeftAddon>{`${url}/`}</InputLeftAddon>

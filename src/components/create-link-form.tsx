@@ -10,14 +10,18 @@ type Form = {
   url: string;
 };
 
-const CreateLinkForm: NextPage = () => {
+interface CreateLinkFormProps {
+  slugs: string[];
+}
+
+const CreateLinkForm: NextPage<CreateLinkFormProps> = ({ slugs }) => {
   const [form, setForm] = useState<Form>({ slug: '', url: '' });
   const url = window.location.origin;
   const [urlError, setUrlError] = useState<boolean>(false);
   const [slugError, setSlugError] = useState<boolean>(false);
+  const [slugInUse, setslugInUse] = useState<boolean>(false);
   const [complete, setComplete] = useState<boolean>(false);
   const { data: session } = useSession();
-
   if (complete) {
     return (
       <Complete
@@ -30,6 +34,12 @@ const CreateLinkForm: NextPage = () => {
   }
 
   async function saveShortLink(form: Form) {
+    //check if slug is already in use
+    if (slugs.includes(form.slug)) {
+      setslugInUse(true);
+      return;
+    }
+
     const response = await fetch('/api/shortlinks', {
       method: 'POST',
       body: JSON.stringify(form),
@@ -53,6 +63,7 @@ const CreateLinkForm: NextPage = () => {
       urlError={urlError}
       setUrlError={setUrlError}
       saveShortLink={saveShortLink}
+      slugInUse={slugInUse}
     />
   );
 };

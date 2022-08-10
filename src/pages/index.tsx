@@ -16,14 +16,15 @@ const CreateLinkForm = dynamic(() => import('../components/create-link-form'), {
 
 interface HomeProps {
   shortlinks: Shortlinks[];
+  slugs: string[];
 }
 
-const Home: NextPage<HomeProps> = ({ shortlinks }) => {
+const Home: NextPage<HomeProps> = ({ shortlinks, slugs }) => {
   return (
     <div>
       <Navbar />
       <Header />
-      <CreateLinkForm />
+      <CreateLinkForm slugs={slugs} />
       <ShortlinksList shortlinks={shortlinks} />
     </div>
   );
@@ -37,6 +38,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     authOptions
   );
 
+  // get slugs from db
+  const shortlinks = await prisma.shortlinks.findMany();
+  const slugs = shortlinks.map((s) => s.slug);
+
   if (session?.user?.email || typeof session === 'string') {
     const email: any = session?.user?.email;
     const user = await prisma.user.findUnique({
@@ -49,11 +54,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     });
     const shortlinks = JSON.parse(JSON.stringify(response));
     return {
-      props: { shortlinks },
+      props: { shortlinks, slugs },
     };
   }
   return {
-    props: {},
+    props: { slugs },
   };
 };
 
