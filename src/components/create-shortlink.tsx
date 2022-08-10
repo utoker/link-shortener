@@ -1,6 +1,5 @@
 import type { NextPage } from 'next';
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
 import Complete from './complete';
 import ShortlinkForm from './shortlink-form';
 
@@ -20,7 +19,6 @@ const CreateShortLink: NextPage<CreateShortLinkProps> = ({ slugs }) => {
   const [slugError, setSlugError] = useState<boolean>(false);
   const [slugInUse, setslugInUse] = useState<boolean>(false);
   const [complete, setComplete] = useState<boolean>(false);
-  const { data: session } = useSession();
   if (complete) {
     return (
       <Complete
