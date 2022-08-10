@@ -29,7 +29,7 @@ const ShortlinksList: FC<ShortlinksListProps> = ({ shortlinks }) => {
       <Center>
         <TableContainer mt={5} width="50%">
           <Table variant="simple">
-            {/* <TableCaption>Imperial to metric conversion factors</TableCaption> */}
+            {/* <TableCaption>caption</TableCaption> */}
             <Thead>
               <Tr>
                 <Th>Short link</Th>
@@ -39,9 +39,12 @@ const ShortlinksList: FC<ShortlinksListProps> = ({ shortlinks }) => {
             <Tbody>
               {shortlinks.map((shortlink) => (
                 <Tr key={shortlink.slug}>
-                  <Td>{`${url}${shortlink.slug}`}</Td>
-                  <Td>{shortlink.url}</Td>
-                  <Td>{}</Td>
+                  <Td>
+                    <Text>{`${url}${shortlink.slug}`}</Text>
+                  </Td>
+                  <Td>
+                    <Text>{shortlink.url}</Text>
+                  </Td>
                 </Tr>
               ))}
             </Tbody>
@@ -50,7 +53,7 @@ const ShortlinksList: FC<ShortlinksListProps> = ({ shortlinks }) => {
       </Center>
     );
   } else {
-    return;
+    return null;
   }
 };
 

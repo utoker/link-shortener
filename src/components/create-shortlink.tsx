@@ -1,20 +1,19 @@
 import type { NextPage } from 'next';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { prisma } from '../db/client';
 import Complete from './complete';
-import Form from './form';
+import ShortlinkForm from './shortlink-form';
 
-type Form = {
+export type Form = {
   slug: string;
   url: string;
 };
 
-interface CreateLinkFormProps {
+interface CreateShortLinkProps {
   slugs: string[];
 }
 
-const CreateLinkForm: NextPage<CreateLinkFormProps> = ({ slugs }) => {
+const CreateShortLink: NextPage<CreateShortLinkProps> = ({ slugs }) => {
   const [form, setForm] = useState<Form>({ slug: '', url: '' });
   const url = window.location.origin;
   const [urlError, setUrlError] = useState<boolean>(false);
@@ -54,7 +53,7 @@ const CreateLinkForm: NextPage<CreateLinkFormProps> = ({ slugs }) => {
   }
 
   return (
-    <Form
+    <ShortlinkForm
       slugError={slugError}
       url={url}
       form={form}
@@ -68,4 +67,4 @@ const CreateLinkForm: NextPage<CreateLinkFormProps> = ({ slugs }) => {
   );
 };
 
-export default CreateLinkForm;
+export default CreateShortLink;

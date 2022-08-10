@@ -9,8 +9,8 @@ export default function LoginBtn() {
         <Image
           borderRadius="base"
           boxSize="40px"
-          src={session.user!.image || 'https://via.placeholder.com/150'}
-          fallbackSrc="https://via.placeholder.com/150"
+          src={session.user!.image || 'https://via.placeholder.com/50'}
+          fallbackSrc="https://via.placeholder.com/50"
           alt={session.user!.name || 'Profile Image'}
         />
         <Button mx={3} onClick={() => signOut()}>

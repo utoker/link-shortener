@@ -9,7 +9,7 @@ import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]';
 import { Shortlinks } from '@prisma/client';
 
-const CreateLinkForm = dynamic(() => import('../components/create-link-form'), {
+const CreateLinkForm = dynamic(() => import('../components/create-shortlink'), {
   ssr: false,
 });
 
@@ -51,7 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         userId: user?.id,
       },
     });
-    const shortlinks = JSON.parse(JSON.stringify(response));
+    const shortlinks: Shortlinks[] = JSON.parse(JSON.stringify(response));
     return {
       props: { shortlinks, slugs },
     };

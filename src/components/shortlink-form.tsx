@@ -12,19 +12,20 @@ import {
 } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
 import { FC } from 'react';
+import { Form } from './create-shortlink';
 
-interface FormProps {
-  slugError: any;
+interface ShortlinkFormProps {
+  slugError: boolean;
   url: string;
-  form: any;
+  form: Form;
   setSlugError: any;
   setForm: any;
-  urlError: any;
+  urlError: boolean;
   setUrlError: any;
-  saveShortLink: any;
+  saveShortLink: Function;
   slugInUse: boolean;
 }
-const Form: FC<FormProps> = ({
+const ShortlinkForm: FC<ShortlinkFormProps> = ({
   slugError,
   url,
   form,
@@ -118,7 +119,7 @@ const Form: FC<FormProps> = ({
             />
             <InputRightElement width="7rem">
               <Button
-                disabled={urlError || slugError}
+                disabled={urlError || slugError || slugInUse}
                 mt={2}
                 colorScheme="teal"
                 size="lg"
@@ -145,4 +146,4 @@ const Form: FC<FormProps> = ({
     </Container>
   );
 };
-export default Form;
+export default ShortlinkForm;

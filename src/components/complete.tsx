@@ -1,9 +1,10 @@
 import { Button, Container, Flex, Heading, Text } from '@chakra-ui/react';
 import copy from 'copy-to-clipboard';
 import React, { FC } from 'react';
+import { Form } from './create-shortlink';
 
 interface CompleteProps {
-  form: any;
+  form: Form;
   setForm: any;
   setComplete: any;
   url: string;
