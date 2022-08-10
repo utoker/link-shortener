@@ -1,9 +1,8 @@
 /* eslint-disable react/no-children-prop */
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import debounce from 'lodash/debounce';
-import { trpc } from '../utils/trpc';
 import copy from 'copy-to-clipboard';
 import {
   Box,
@@ -19,6 +18,8 @@ import {
   InputRightElement,
   Text,
 } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
+import { prisma } from '../db/client';
 
 type Form = {
   slug: string;
@@ -30,15 +31,10 @@ const CreateLinkForm: NextPage = () => {
   const url = window.location.origin;
   const [urlError, setUrlError] = useState<boolean>(false);
   const [slugError, setSlugError] = useState<boolean>(false);
+  const [complete, setComplete] = useState<boolean>(false);
+  const { data: session } = useSession();
 
-  const slugCheck = trpc.useQuery(['slugCheck', { slug: form.slug }], {
-    refetchOnReconnect: false, // replacement for enable: false which isn't respected.
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-  const createSlug = trpc.useMutation(['createSlug']);
-
-  if (createSlug.status === 'success') {
+  if (complete) {
     return (
       <Container mt={50} centerContent>
         <Flex>
@@ -57,8 +53,8 @@ const CreateLinkForm: NextPage = () => {
           mt={4}
           size="lg"
           onClick={() => {
-            createSlug.reset();
             setForm({ slug: '', url: '' });
+            setComplete(false);
           }}
         >
           Home
@@ -67,12 +63,23 @@ const CreateLinkForm: NextPage = () => {
     );
   }
 
+  async function saveShortLink(form: Form) {
+    const response = await fetch('/api/shortlinks', {
+      method: 'POST',
+      body: JSON.stringify(form),
+    });
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+    if (response.status === 200) {
+      setComplete(true);
+    }
+    return await response.json();
+  }
+
   const slugValidator = /^[-a-zA-Z0-9]+$/;
   const urlValidator =
     /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/;
-
-  //  /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/;
-  //  /^[-a-zA-Z0-9]+$/;
 
   return (
     <Container mt={50} centerContent>
@@ -80,7 +87,7 @@ const CreateLinkForm: NextPage = () => {
         <FormErrorMessage m={1}>
           Only alphanumeric characters and hypens are allowed. No spaces.
         </FormErrorMessage>
-        {slugCheck.data?.used && <Text>Short url already in use.</Text>}
+        {slugError && <Text>Short url already in use.</Text>}
         <Box>
           <InputGroup>
             <InputLeftAddon children={`${url}/`} />
@@ -103,7 +110,6 @@ const CreateLinkForm: NextPage = () => {
                   ...form,
                   slug,
                 });
-                debounce(slugCheck.refetch, 200);
               }}
             />
             <InputRightElement width="4.5rem">
@@ -118,7 +124,6 @@ const CreateLinkForm: NextPage = () => {
                     ...form,
                     slug,
                   });
-                  slugCheck.refetch();
                 }}
               >
                 Random
@@ -149,7 +154,6 @@ const CreateLinkForm: NextPage = () => {
                   ...form,
                   url,
                 });
-                debounce(slugCheck.refetch, 200);
               }}
               placeholder="Paste a long url"
               required
@@ -170,7 +174,7 @@ const CreateLinkForm: NextPage = () => {
                     return;
                   }
                   if (!slugError && !urlError) {
-                    createSlug.mutate({ ...form });
+                    saveShortLink(form);
                   }
                 }}
               >
