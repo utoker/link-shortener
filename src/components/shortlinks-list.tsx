@@ -4,6 +4,7 @@ import {
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
@@ -49,7 +50,7 @@ const ShortlinksList: FC<ShortlinksListProps> = ({ shortlinks }) => {
       </Center>
     );
   } else {
-    return <Center>Login button</Center>;
+    return;
   }
 };
 

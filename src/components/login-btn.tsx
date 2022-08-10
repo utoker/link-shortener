@@ -1,4 +1,4 @@
-import { Button } from '@chakra-ui/react';
+import { Button, Image } from '@chakra-ui/react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 
 export default function LoginBtn() {
@@ -6,15 +6,22 @@ export default function LoginBtn() {
   if (session) {
     return (
       <>
-        Signed in as {session.user!.email} <br />
-        <Button onClick={() => signOut()}>Sign out</Button>
+        <Image
+          borderRadius="base"
+          boxSize="40px"
+          src={session.user!.image || 'https://via.placeholder.com/150'}
+          fallbackSrc="https://via.placeholder.com/150"
+          alt={session.user!.name || 'Profile Image'}
+        />
+        <Button mx={3} onClick={() => signOut()}>
+          Sign out
+        </Button>
       </>
     );
   }
   return (
-    <>
-      Not signed in <br />
-      <button onClick={() => signIn()}>Sign in</button>
-    </>
+    <Button mx={3} onClick={() => signIn()}>
+      Sign in
+    </Button>
   );
 }

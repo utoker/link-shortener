@@ -5,7 +5,6 @@ import Navbar from '../components/navbar';
 import ShortlinksList from '../components/shortlinks-list';
 import { GetServerSideProps } from 'next';
 import { prisma } from '../db/client';
-
 import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]';
 import { Shortlinks } from '@prisma/client';
