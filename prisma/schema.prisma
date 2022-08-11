@@ -65,8 +65,7 @@ model Shortlinks {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
 
-  url String @db.VarChar(2000)
-
+  url  String @db.VarChar(2000)
   slug String @unique
 
   User   User?   @relation(fields: [userId], references: [id])
