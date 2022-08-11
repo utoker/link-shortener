@@ -74,10 +74,10 @@ const ShortlinkForm: FC<ShortlinkFormProps> = ({
                 if (slugValidator.test(slug)) {
                   setSlugError(false);
                 }
-                if (slugs.includes(form.slug)) {
+                if (slugs.includes(slug)) {
                   setslugInUse(true);
                 }
-                if (!slugs.includes(form.slug)) {
+                if (!slugs.includes(slug)) {
                   setslugInUse(false);
                 }
               }}
