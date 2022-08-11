@@ -78,7 +78,7 @@ const ShortlinkForm: FC<ShortlinkFormProps> = ({
                 mr={2}
                 size="sm"
                 onClick={() => {
-                  const slug = nanoid(6);
+                  const slug = nanoid(5);
                   setForm({
                     ...form,
                     slug,

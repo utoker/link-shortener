@@ -17,14 +17,10 @@ interface ShortlinksListProps {
   shortlinks: Shortlinks[];
 }
 const ShortlinksList: FC<ShortlinksListProps> = ({ shortlinks }) => {
-  function getBaseUrl() {
-    if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
-    return `http://localhost:${process.env.PORT ?? 3000}/`; // dev SSR should use localhost
-  }
-  const url = getBaseUrl();
+  const url = 'reqq.cc';
   const { status } = useSession();
 
-  if (status === 'authenticated') {
+  if (status === 'authenticated' && shortlinks.length !== 0) {
     return (
       <Center>
         <TableContainer mt={5} width="50%">
