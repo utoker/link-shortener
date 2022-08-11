@@ -33,7 +33,6 @@ const CreateShortLink: NextPage<CreateShortLinkProps> = ({ slugs }) => {
   async function saveShortLink(form: Form) {
     //check if slug is already in use
     if (slugs.includes(form.slug)) {
-      setslugInUse(true);
       return;
     }
 
@@ -61,6 +60,8 @@ const CreateShortLink: NextPage<CreateShortLinkProps> = ({ slugs }) => {
       setUrlError={setUrlError}
       saveShortLink={saveShortLink}
       slugInUse={slugInUse}
+      setslugInUse={setslugInUse}
+      slugs={slugs}
     />
   );
 };

@@ -24,6 +24,8 @@ interface ShortlinkFormProps {
   setUrlError: any;
   saveShortLink: Function;
   slugInUse: boolean;
+  setslugInUse: any;
+  slugs: string[];
 }
 const ShortlinkForm: FC<ShortlinkFormProps> = ({
   slugError,
@@ -35,6 +37,8 @@ const ShortlinkForm: FC<ShortlinkFormProps> = ({
   setUrlError,
   saveShortLink,
   slugInUse,
+  setslugInUse,
+  slugs,
 }) => {
   const slugValidator = /^[-a-zA-Z0-9]+$/;
   const urlValidator =
@@ -64,6 +68,11 @@ const ShortlinkForm: FC<ShortlinkFormProps> = ({
                   setSlugError(true);
                 } else {
                   setSlugError(false);
+                }
+                if (slugs.includes(form.slug)) {
+                  setslugInUse(true);
+                } else {
+                  setslugInUse(false);
                 }
                 setForm({
                   ...form,
