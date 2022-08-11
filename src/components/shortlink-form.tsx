@@ -18,13 +18,13 @@ interface ShortlinkFormProps {
   slugError: boolean;
   url: string;
   form: Form;
-  setSlugError: any;
-  setForm: any;
+  setSlugError: Function;
+  setForm: Function;
   urlError: boolean;
-  setUrlError: any;
+  setUrlError: Function;
   saveShortLink: Function;
   slugInUse: boolean;
-  setslugInUse: any;
+  setslugInUse: Function;
   slugs: string[];
 }
 const ShortlinkForm: FC<ShortlinkFormProps> = ({
@@ -64,6 +64,10 @@ const ShortlinkForm: FC<ShortlinkFormProps> = ({
               value={form.slug}
               onChange={(e) => {
                 const slug = e.target.value;
+                setForm({
+                  ...form,
+                  slug,
+                });
                 if (!slugValidator.test(slug)) {
                   setSlugError(true);
                 }
@@ -76,10 +80,6 @@ const ShortlinkForm: FC<ShortlinkFormProps> = ({
                 if (!slugs.includes(form.slug)) {
                   setslugInUse(false);
                 }
-                setForm({
-                  ...form,
-                  slug,
-                });
               }}
             />
             <InputRightElement width="4.5rem">
