@@ -66,12 +66,14 @@ const ShortlinkForm: FC<ShortlinkFormProps> = ({
                 const slug = e.target.value;
                 if (!slugValidator.test(slug)) {
                   setSlugError(true);
-                } else {
+                }
+                if (slugValidator.test(slug)) {
                   setSlugError(false);
                 }
                 if (slugs.includes(form.slug)) {
                   setslugInUse(true);
-                } else {
+                }
+                if (!slugs.includes(form.slug)) {
                   setslugInUse(false);
                 }
                 setForm({
