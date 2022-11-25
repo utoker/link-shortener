@@ -25,14 +25,12 @@ I did this project as a free alternative to paid services like bit.ly or tinyurl
 
 <br />
 <ul>
-    <li>Leveraged MySQL compatible PlanetScale database via Prisma to effectively manage data.</li>
-    <li>Developed and integrated a type-safe API by implementing tRPC in a TypeScript environment.</li>
+    <li>Implemented MySQL-compatible PlanetScale database via Prisma to manage data effectively.</li>
     <li>Integrated Next Redirect to enable the redirection of incoming requests.</li>
-    <li>Performed research to gather project requirements and identify needs.</li>
 </ul>
-<p>
-Data query from PlanetScale with Prisma.
-<p/>
+<!-- <p>
+Implemented MySQL-compatible PlanetScale database via Prisma to manage data effectively.
+<p/> -->
 <div> 
 <img src="src/public/prisma-studio.png" alt="diagram" width='520' heigh='362' > 
 <!-- <img src="src/images/screenshot2.png" alt="diagram2" width='262' heigh='262'> -->
@@ -47,7 +45,7 @@ Data query from PlanetScale with Prisma.
 
 ## Usage
 
-Simple use the text input bar to enter the URL you want to shorten.
+Use the text input bar to enter the URL you want to shorten.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -57,7 +55,6 @@ Simple use the text input bar to enter the URL you want to shorten.
 - [Next.js](http://nextjs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Prisma](https://www.prisma.io/)
-- [tRPC](https://tRPC.io/)
 - [PlanetScale](https://www.planetscale.com/)
 - [nanoid](https://www.npmjs.com/package/nanoid)
 <p align="right">(<a href="#top">back to top</a>)</p>
