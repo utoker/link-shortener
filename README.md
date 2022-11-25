@@ -6,7 +6,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/utoker/link-shortener">
-    <img src="src/public/card.png" alt="Logo">
+    <img src="src/public/reqq.gif" alt="Logo">
   </a>
 
 <h3 align="center">Reqq Link Shortener</h3>
