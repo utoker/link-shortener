@@ -5,8 +5,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/utoker/link-shortener">
-    <img src="src/public/reqq.gif" alt="Logo">
+  <a href="https://www.reqq.cc/">
+    <img src="src/public/reqq.gif" alt="Gif">
   </a>
 
 <h3 align="center">Reqq Link Shortener</h3>
@@ -43,11 +43,11 @@ Implemented MySQL-compatible PlanetScale database via Prisma to manage data effe
 
 <!-- GETTING STARTED -->
 
-## Usage
+<!-- ## Usage
 
 Use the text input bar to enter the URL you want to shorten.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p> -->
 
 ### Built With
 
