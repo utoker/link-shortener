@@ -1,7 +1,7 @@
 'use server';
 
-import { createServerClientSupabase } from 'lib/supabase/server';
-import { CreateShortlinkState, Shortlink } from 'lib/types';
+import { createServerClientSupabase } from '@lib/supabase/server';
+import { CreateShortlinkState, Shortlink } from '@lib/types';
 import { revalidatePath } from 'next/cache';
 
 async function getCurrentUser() {

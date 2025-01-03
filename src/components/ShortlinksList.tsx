@@ -1,6 +1,6 @@
 'use client';
 
-import { useUserContext } from 'app/context/UserContext';
+import { useUserContext } from '@app/context/UserContext';
 import Link from 'next/link';
 import { DeleteButton } from './DeleteButton';
 

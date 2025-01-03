@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUserContext } from 'app/context/UserContext';
-import { CreateLinkFormSchema } from 'lib/validation/CreateLinkFormSchema';
+import { useUserContext } from '@app/context/UserContext';
+import { CreateLinkFormSchema } from '@lib/validation/CreateLinkFormSchema';
 
 export default function SlugInput({
   resetForm,

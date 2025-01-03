@@ -1,6 +1,6 @@
 'use client';
 
-import { useUserContext } from 'app/context/UserContext';
+import { useUserContext } from '@app/context/UserContext';
 import React, { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 

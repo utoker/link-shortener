@@ -2,8 +2,8 @@
 
 import { startTransition, useActionState, useState, useEffect } from 'react';
 import { Button } from './ui/button';
-import { resetPasswordAction } from 'app/actions/authActions';
-import { forgotPasswordSchema } from 'lib/validation/forgotPasswordSchema';
+import { resetPasswordAction } from '@app/actions/authActions';
+import { forgotPasswordSchema } from '@lib/validation/forgotPasswordSchema';
 
 export default function ForgotPasswordForm() {
   const [state, sendRecoveryEmail, isPending] = useActionState(

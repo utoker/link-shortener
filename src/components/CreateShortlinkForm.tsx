@@ -2,10 +2,10 @@
 
 import { startTransition, useActionState, useEffect, useState } from 'react';
 import { Button } from './ui/button';
-import { createShortlinkAction } from 'app/actions/dataActions';
+import { createShortlinkAction } from '@app/actions/dataActions';
 import SlugInput from './SlugInput';
 import UrlInput from './UrlInput';
-import { useUserContext } from 'app/context/UserContext';
+import { useUserContext } from '@app/context/UserContext';
 
 export default function CreateShortlinkForm() {
   const { refetchShortlinks } = useUserContext();

@@ -2,7 +2,7 @@
 
 import { Button } from './ui/button';
 import { useActionState, startTransition, useState, useEffect } from 'react';
-import { updatePasswordAction } from 'app/actions/authActions';
+import { updatePasswordAction } from '@app/actions/authActions';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 

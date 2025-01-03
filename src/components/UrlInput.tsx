@@ -1,6 +1,6 @@
 'use client';
 
-import { CreateLinkFormSchema } from 'lib/validation/CreateLinkFormSchema';
+import { CreateLinkFormSchema } from '@lib/validation/CreateLinkFormSchema';
 import { useState, useEffect } from 'react';
 
 export default function UrlInput({

@@ -19,7 +19,7 @@
       "@app/*": ["src/app/*"],
       "@components/*": ["src/components/*"],
       "@context/*": ["/src/app/context/*"],
-      "@lib/*": ["src/app/lib/*"],
+      "@lib/*": ["src/lib/*"],
       "@ui/*": ["src/components/ui/*"],
       "@styles/*": ["src/styles/*"]
     },
