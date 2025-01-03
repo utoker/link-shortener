@@ -2,8 +2,8 @@
 // Layout component for the entire app
 'use client';
 
+import Navbar from 'components/Navbar';
 import '../styles/globals.css';
-import Navbar from '../components/Navbar';
 import { UserProvider } from './context/UserContext';
 
 export default function RootLayout({

@@ -1,18 +1,29 @@
 import { createServerClientSupabase } from 'lib/supabase/server';
 import { redirect } from 'next/navigation';
 
-interface Props {
-  params: { slug: string };
+interface PageProps {
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<any>;
 }
 
-export default async function SlugPage({ params }: Props) {
-  const { slug } = await params; // Destructure params asynchronously
-  if (slug.startsWith('protected')) {
+export default async function SlugPage({ params }: PageProps) {
+  const resolvedParams = await params; // Await the promise for params
+  const { slug } = resolvedParams; // Destructure slug after resolving params
+
+  if (!slug) {
+    console.error('Slug is undefined.');
+    redirect('/404');
     return null;
   }
-  if (slug === '404') return null; // Prevent redirection loop for 404
 
-  // Supabase client
+  if (typeof slug === 'string' && slug.startsWith('protected')) {
+    return null;
+  }
+  if (slug === '404') {
+    return null; // Prevent redirection loop for 404
+  }
+
+  // Initialize Supabase client
   const supabase = await createServerClientSupabase();
 
   // Fetch the shortlink
@@ -23,7 +34,7 @@ export default async function SlugPage({ params }: Props) {
     .single();
 
   if (error || !shortlink) {
-    // Redirect to 404 if slug is not found
+    console.error(`Error fetching shortlink for slug: ${slug}`, error);
     redirect('/404');
     return null;
   }
@@ -34,7 +45,8 @@ export default async function SlugPage({ params }: Props) {
   const shortlinkUrl = new URL(shortlink.url);
   if (shortlinkUrl.origin === origin) {
     console.error(`Redirection loop detected for slug: ${slug}`);
-    return redirect('/404'); // Redirect to 404 for redirection loops
+    redirect('/404');
+    return null;
   }
 
   // Increment click count
