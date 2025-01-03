@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-gray-300; /* Replace `border-border` with a static color */
+  }
+  body {
+    @apply bg-white text-gray-900; /* Replace `bg-background` and `text-foreground` with static values */
+  }
+}
+
+@layer base {
+  /* Define static values for commonly used colors */
+  .bg-primary {
+    background-color: #319795; /* Primary color */
+  }
+  .text-primary {
+    color: #319795;
+  }
+  .bg-secondary {
+    background-color: #81e6d9; /* Secondary color */
+  }
+  .text-secondary {
+    color: #285e61;
+  }
+  .bg-muted {
+    background-color: #edf2f7; /* Muted background color */
+  }
+  .text-muted {
+    color: #718096; /* Muted text color */
+  }
+  .bg-error {
+    background-color: #e53e3e; /* Error color */
+  }
+  .text-error {
+    color: #e53e3e;
+  }
+}
