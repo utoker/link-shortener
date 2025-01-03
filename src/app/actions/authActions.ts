@@ -4,7 +4,7 @@
 import { createServerClientSupabase } from '../../lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { AuthResult, Provider } from '@lib/types';
+import { AuthResult, Provider } from '../../lib/types';
 
 // Sign in with Github/Google
 export async function signinWith(provider: Provider) {

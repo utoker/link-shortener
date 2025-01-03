@@ -1,6 +1,6 @@
 'use client';
 
-import { deleteShortlink } from '@app/actions/dataActions';
+import { deleteShortlink } from '../app/actions/dataActions';
 import { Button } from './ui/button';
 import { useActionState } from 'react';
 

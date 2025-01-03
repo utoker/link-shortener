@@ -1,8 +1,8 @@
 'use client';
 
-import { useUserContext } from '@app/context/UserContext';
 import Link from 'next/link';
 import { DeleteButton } from './DeleteButton';
+import { useUserContext } from '../app/context/UserContext';
 
 export default function ShortlinksList() {
   const { user, shortlinks, refetchShortlinks } = useUserContext();

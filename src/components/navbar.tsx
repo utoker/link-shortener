@@ -1,8 +1,8 @@
 'use client';
 
-import { useUserContext } from '@app/context/UserContext';
 import SignoutButton from './SignoutButton';
 import AuthModalManager from './AuthModalManager';
+import { useUserContext } from '../app/context/UserContext';
 
 const Navbar = () => {
   const { user, loading } = useUserContext();

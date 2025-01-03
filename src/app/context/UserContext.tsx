@@ -3,8 +3,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { getUserAction } from '../actions/authActions';
-import { getAllSlugs, getUserShortlinks } from '@app/actions/dataActions';
-import { Shortlink } from '@lib/types';
+import { Shortlink } from '../../lib/types';
+import { getAllSlugs, getUserShortlinks } from '../actions/dataActions';
 
 interface UserContextType {
   user: User | null;

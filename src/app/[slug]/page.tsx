@@ -1,5 +1,5 @@
-import { createServerClientSupabase } from 'lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { createServerClientSupabase } from '../../lib/supabase/server';
 
 interface PageProps {
   params: Promise<{ slug: string }>;

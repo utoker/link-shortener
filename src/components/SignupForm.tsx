@@ -1,10 +1,10 @@
 'use client';
 
+import { signupWithPasswordAction } from '../app/actions/authActions';
+import { useUserContext } from '../app/context/UserContext';
+import { signupSchema } from '../lib/validation/signupScheme';
 import { Button } from './ui/button';
 import { startTransition, useActionState, useEffect, useState } from 'react';
-import { signupWithPasswordAction } from '@app/actions/authActions';
-import { useUserContext } from '@app/context/UserContext';
-import { signupSchema } from '@lib/validation/signupScheme';
 
 interface SignupFormProps {
   onSuccess: () => void; // Callback for successful sign-up

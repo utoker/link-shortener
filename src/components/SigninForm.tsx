@@ -1,7 +1,9 @@
-import { signinWith, signinWithPasswordAction } from '@app/actions/authActions';
-import { useUserContext } from '@app/context/UserContext';
-import { signinSchema } from '@lib/validation/signinScheme';
 import { startTransition, useActionState, useEffect, useState } from 'react';
+import { useUserContext } from '../app/context/UserContext';
+import {
+  signinWith,
+  signinWithPasswordAction,
+} from '../app/actions/authActions';
 
 interface SigninFormProps {
   onSuccess: () => void;

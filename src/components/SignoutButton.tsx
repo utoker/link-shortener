@@ -1,7 +1,7 @@
-import { signOutAction } from '@app/actions/authActions';
-import { useUserContext } from '@app/context/UserContext';
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, startTransition } from 'react';
+import { useUserContext } from '../app/context/UserContext';
+import { signOutAction } from '../app/actions/authActions';
 
 const SignoutButton = () => {
   const router = useRouter();

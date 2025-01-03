@@ -1,8 +1,8 @@
 'use client';
 
-import { useUserContext } from '@app/context/UserContext';
 import React, { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
+import { useUserContext } from '../app/context/UserContext';
 
 interface ConfettiEffectProps {
   duration?: number; // Duration for the confetti effect in milliseconds
