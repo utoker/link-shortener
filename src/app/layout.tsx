@@ -2,7 +2,7 @@
 // Layout component for the entire app
 'use client';
 
-import Navbar from 'components/Navbar';
+import Navbar from '../components/Navbar';
 import '../styles/globals.css';
 import { UserProvider } from './context/UserContext';
 

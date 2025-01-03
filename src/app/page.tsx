@@ -4,7 +4,7 @@
 import ConfettiEffect from 'components/ConfettiEffect';
 import CreateShortlinkForm from '../components/CreateShortlinkForm';
 import ShortlinksList from '../components/ShortlinksList';
-import Header from 'components/Header';
+import Header from '../components/Header';
 
 export default async function Home() {
   return (
