@@ -39,7 +39,7 @@ const xlColStarts = [
 
 export default function FeaturesSection() {
   return (
-    <section className="mx-auto max-w-7xl px-4 pt-16">
+    <section className="mx-auto max-w-7xl px-4 py-16">
       <ul className="grid grid-cols-3 gap-x-12 gap-y-12 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-9 xl:gap-x-0 xl:gap-y-12">
         {features.map(({ title, src }: Feature, idx) => (
           <li
