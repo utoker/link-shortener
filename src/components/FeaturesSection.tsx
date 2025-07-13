@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 // Public SVGs → /public/Images/Features
 const features = [
-  { title: 'Ad‑Free', src: '/Images/Features/Ad-free.svg' },
+  { title: 'Ad‑Free', src: '/Images/Features/ad-free.svg' },
   { title: 'Secure & Reliable', src: '/Images/Features/secure.svg' },
   { title: 'No Signup', src: '/Images/Features/no-signup.svg' },
   { title: 'Open Source', src: '/Images/Features/open-source.svg' },
