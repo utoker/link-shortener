@@ -1,71 +1,33 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import SignupModal from './SignupModal';
-import SigninModal from './SigninModal';
-import ForgotPasswordModal from './ForgotPasswordModal';
+import { useState } from 'react';
+import SignInModal from './SignInModal';
+import SignUpModal from './SignUpModal';
 
 export default function AuthModalManager() {
-  const [currentModal, setCurrentModal] = useState<
-    'signup' | 'signin' | 'forgotPassword' | null
-  >(null);
-
-  const lastFocusedElement = useRef<HTMLElement | null>(null);
-
-  const handleModalOpen = (
-    modalType: 'signup' | 'signin' | 'forgotPassword',
-  ) => {
-    lastFocusedElement.current = document.activeElement as HTMLElement;
-    setCurrentModal(modalType);
-  };
-
-  const handleModalClose = () => {
-    setCurrentModal(null);
-    if (lastFocusedElement.current) {
-      lastFocusedElement.current.focus();
-    }
-  };
+  const [currentModal, setCurrentModal] = useState<'signup' | 'signin' | null>(
+    null,
+  );
 
   return (
-    <>
-      <button
-        onClick={() => handleModalOpen('signup')}
-        className="rounded bg-primary px-4 py-2 text-white"
-      >
-        Sign Up
-      </button>
+    <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
+      {/* Signup */}
+      <SignUpModal
+        isOpen={currentModal === 'signup'}
+        onOpen={() => setCurrentModal('signup')}
+        onClose={() => setCurrentModal(null)}
+        onSignInRedirect={() => setCurrentModal('signin')}
+      />
 
-      <button
-        onClick={() => handleModalOpen('signin')}
-        className="ml-4 rounded bg-secondary px-4 py-2 text-white"
-      >
-        Sign In
-      </button>
-
-      {currentModal === 'signup' && (
-        <SignupModal
-          isOpen={currentModal === 'signup'}
-          onClose={handleModalClose}
-          onSigninRedirect={() => setCurrentModal('signin')}
-        />
-      )}
-
-      {currentModal === 'signin' && (
-        <SigninModal
-          isOpen={currentModal === 'signin'}
-          onClose={handleModalClose}
-          onSignupRedirect={() => setCurrentModal('signup')}
-          onForgotPassword={() => setCurrentModal('forgotPassword')}
-        />
-      )}
-
-      {currentModal === 'forgotPassword' && (
-        <ForgotPasswordModal
-          isOpen={currentModal === 'forgotPassword'}
-          onClose={handleModalClose}
-          onSigninRedirect={() => setCurrentModal('signin')}
-        />
-      )}
-    </>
+      {/* Signin */}
+      <SignInModal
+        isOpen={currentModal === 'signin'}
+        onOpen={() => {
+          setCurrentModal('signin');
+        }}
+        onClose={() => setCurrentModal(null)}
+        onSignupRedirect={() => setCurrentModal('signup')}
+      />
+    </div>
   );
 }

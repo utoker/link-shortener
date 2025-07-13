@@ -1,77 +1,108 @@
-<div id="top"></div>
+# Reqq .cc — Next 15 + Supabase link‑shortener
 
 [![LinkedIn][linkedin-shield]](https://www.linkedin.com/in/utoker/)
 
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://www.reqq.cc/">
-    <img src="src/public/reqq.gif" alt="Gif">
-  </a>
+---
 
-<h3 align="center">Reqq Link Shortener</h3>
-    <br />
-    <a href="https://github.com/utoker/link-shortener/tree/main/src"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://www.reqq.cc/">View Website</a>
-</div>
+## ✨ About
 
-## About The Project
+> **Reqq .cc** is a privacy‑minded, open‑source URL shortener built with the ~~latest~~ bleeding‑edge Next JS 15 **Server Actions**, **Edge Middleware**, and **Supabase Postgres**.
+>
+> I rebuilt the original Prisma + PlanetScale version from scratch to learn the new App Router paradigm (React 19 & `useActionState`) and to dog‑food Supabase’s all‑in‑one stack in production.
 
-The reqq.cc is an easy-to-use link shortening service with an option to use custom URLs.
+### Why another refactor?
 
-I did this project as a free alternative to paid services like bit.ly or tinyurl.com.
+| v1 (2023)                        | **v2 / current** (2025)              |
+| -------------------------------- | ------------------------------------ |
+| Next 13 Pages Router             | **Next 15 App Router** + React 19    |
+| Prisma ORM + PlanetScale (MySQL) | **Supabase Postgres** + RLS          |
+| API routes                       | **Server Actions** + Edge Middleware |
+| Tailwind v3                      | **Tailwind v4** (CSS‑at‑config)      |
+| No auth                          | **Supabase Auth**                    |
 
-<br />
-<ul>
-    <li>Implemented MySQL-compatible PlanetScale database via Prisma to manage data effectively.</li>
-    <li>Integrated Next Redirect to enable the redirection of incoming requests.</li>
-</ul>
-<!-- <p>
-Implemented MySQL-compatible PlanetScale database via Prisma to manage data effectively.
-<p/> -->
-<div> 
-<img src="src/public/prisma-studio.png" alt="diagram" width='520' heigh='362' > 
-<!-- <img src="src/images/screenshot2.png" alt="diagram2" width='262' heigh='262'> -->
+---
 
-<div/>
+## 🚀 Features
 
-<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com)-->
+- 🔗 **Anonymous or authenticated short‑links** – logged‑in users own their links; anonymous links still work.
+- 📈 **Atomic click counter** via Postgres `increment_click` function (no race conditions).
+- 🌍 **Ultra‑low latency redirects** – Edge middleware resolves slugs in \~20–40 ms.
+- 🛂 **Row‑level security** – every request goes through Supabase RLS policies; the client only gets its own data.
+- ⚡ **Live revalidate** – new links appear instantly without client‑side cache busting.
+- 🧩 **Composable architecture** – backend actions live in `src/lib/actions/**`, UI components in `src/components/**`.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+---
 
-<!-- GETTING STARTED -->
+## 🏗️ Tech stack
 
-<!-- ## Usage
+| Layer      | Library / service                            |
+| ---------- | -------------------------------------------- |
+| Front‑end  | **React 19**, **Next JS 15**, **TypeScript** |
+| Styling    | **Tailwind CSS v4**                          |
+| Components | **Radix UI** primitives                      |
+| Data       | **Supabase Postgres** (`links` table)        |
+| Auth       | **Supabase Auth** (JWT)                      |
+| Validation | **Zod** schemas                              |
+| State mgmt | **useActionState** (no client stores)        |
 
-Use the text input bar to enter the URL you want to shorten.
+---
 
-<p align="right">(<a href="#top">back to top</a>)</p> -->
+## 🛠️ Local development
 
-### Built With
+```bash
+# 1. clone & install
+pnpm install
 
-- [React.js](https://reactjs.org/)
-- [Next.js](http://nextjs.org/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Prisma](https://www.prisma.io/)
-- [PlanetScale](https://www.planetscale.com/)
-- [nanoid](https://www.npmjs.com/package/nanoid)
-<p align="right">(<a href="#top">back to top</a>)</p>
+# 2. copy env example and fill in your Supabase creds
+cp .env.example .env.local
 
-## Contact
+# 3. run dev server
+pnpm dev
+```
 
-Umut Toker - utoker@gmail.com
+### Environment variables
 
-LinkedIn: [https://www.linkedin.com/in/utoker/](https://www.linkedin.com/in/utoker/)
+| Variable                        | Example                   | Description                       |
+| ------------------------------- | ------------------------- | --------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | `https://xyz.supabase.co` | Your Supabase URL                 |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOi...`           | Public anon key                   |
+| `SUPABASE_SERVICE_ROLE_KEY`     | _(server only)_           | Used in privileged Server Actions |
 
-Project Link: [https://github.com/utoker/link-shortener](https://github.com/utoker/link-shortener)
+---
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+## 📂 Project structure (abridged)
 
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+```text
+src/
+  app/
+    (routes & server actions)
+  lib/
+    actions/          # server‑action files (createLink.ts, deleteLink.ts …)
+    supabase/         # tiny wrappers for client / server helpers
+  components/         # Radix‑based UI
+  styles/
+    globals.css
+  middleware.ts       # Edge runtime slug resolver
+```
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repo
+2. Create your feature branch: `git checkout -b feat/amazing-thing`
+3. Commit your changes: `git commit -m "feat: amazing thing"`
+4. Push to the branch: `git push origin feat/amazing-thing`
+5. Open a pull request 🚀
+
+---
+
+## 📧 Contact
+
+Umut Toker – [utoker@gmail.com](mailto:utoker@gmail.com) – [LinkedIn](https://www.linkedin.com/in/utoker/)
+
+[Back to top](#top)
+
+<!-- MARKDOWN LINKS -->
 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: src/public/card.png

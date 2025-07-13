@@ -1,68 +1,45 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { CreateLinkFormSchema } from '../lib/validation/CreateLinkFormSchema';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import CreateLinkIcon from '@icons/create-link-icon.svg';
+
+interface UrlInputProps {
+  urlInput: string;
+  setUrlInput: (value: string) => void;
+  urlError: string;
+  disabled?: boolean;
+}
 
 export default function UrlInput({
-  resetForm,
-  onValidationChange,
-}: {
-  resetForm: boolean;
-  onValidationChange: (isValid: boolean) => void;
-}) {
-  const [urlInput, setUrlInput] = useState('');
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (resetForm) {
-      setUrlInput('');
-      setError('');
-    }
-  }, [resetForm]);
-
-  useEffect(() => {
-    const validateUrl = () => {
-      if (!urlInput.trim()) return;
-
-      // Validate the raw URL
-      const validation = CreateLinkFormSchema.shape.url.safeParse(
-        urlInput.trim(),
-      );
-      if (!validation.success) {
-        setError(validation.error.errors.map((e) => e.message).join(' '));
-        onValidationChange(false);
-      } else {
-        setError('');
-        onValidationChange(true);
-      }
-    };
-
-    validateUrl();
-  }, [urlInput, onValidationChange]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUrlInput(e.target.value);
-  };
-
+  urlInput,
+  setUrlInput,
+  urlError,
+  disabled = false,
+}: UrlInputProps) {
   return (
-    <div>
-      <label
-        htmlFor="url"
-        className="block text-sm font-medium text-foreground"
-      >
-        URL
-      </label>
-      <input
-        id="url"
+    <div className="relative w-[350px] pt-12 sm:mt-20 sm:h-24 sm:w-3xl">
+      <Input
         name="url"
         type="text"
+        placeholder="Enter Long Link Here"
         value={urlInput}
-        onChange={handleInputChange}
-        className="w-full rounded border border-border bg-input p-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-        placeholder="Enter a valid URL starting with http:// or https://"
+        onChange={(e) => setUrlInput(e.target.value)}
+        className="font-baloo-thambi border-darkblue bg-input flex h-10 w-[330px] rounded-2xl border-[6px] placeholder-gray-400 [box-shadow:0_10px_6px_rgba(0,0,0,0.5)] focus-visible:ring-0 sm:h-20 sm:w-3xl sm:py-5 sm:text-3xl"
+        autoFocus
         required
+        autoComplete="off"
+        disabled={disabled}
       />
-      {error && <p className="text-sm text-error">{error}</p>}
+
+      <Button
+        type="submit"
+        disabled={disabled}
+        title="Create Short Link"
+        className="border-darkblue bg-yellow hover:bg-yellow absolute left-[310px] z-10 w-10 -translate-y-10 cursor-pointer rounded-full border-4 [box-shadow:0_10px_6px_rgba(0,0,0,0.5)] transition-transform hover:scale-110 hover:brightness-110 disabled:opacity-100 sm:left-[700px] sm:h-24 sm:w-24 sm:-translate-y-22"
+      >
+        <CreateLinkIcon className="h-6 w-6 shrink-0 sm:h-16 sm:w-16" />
+      </Button>
     </div>
   );
 }

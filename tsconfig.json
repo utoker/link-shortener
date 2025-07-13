@@ -1,5 +1,14 @@
+// tsconfig.json  (root level)
 {
   "compilerOptions": {
+    "baseUrl": ".", // <-- project root
+
+    "paths": {
+      "@/*": ["src/*"],
+      "@icons/*": ["src/icons/*"]
+    },
+
+    /* everything else you already have */
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -14,11 +23,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "plugins": [{ "name": "next" }]
   },
   "include": [
     "src/**/*.ts",

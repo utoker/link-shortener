@@ -1,108 +1,69 @@
 'use client';
 
-import { startTransition, useActionState, useState, useEffect } from 'react';
-import { Button } from './ui/button';
-import { resetPasswordAction } from '../app/actions/authActions';
-import { forgotPasswordSchema } from '../lib/validation/forgotPasswordSchema';
+import { useEffect, useRef, useActionState } from 'react';
+import { toast } from 'sonner';
 
-export default function ForgotPasswordForm() {
-  const [state, sendRecoveryEmail, isPending] = useActionState(
+import { resetPasswordAction } from '@/app/actions/auth';
+import type { ResetPwResult } from '@/app/actions/auth/resetPassword';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+
+export default function ForgotPasswordForm({
+  onSuccess,
+}: {
+  onSuccess?: () => void;
+}) {
+  const formRef = useRef<HTMLFormElement>(null);
+
+  /* React-19 native form handling */
+  const initial: ResetPwResult = { success: false };
+  const [state, formAction, pending] = useActionState(
     resetPasswordAction,
-    {
-      success: undefined,
-      errors: undefined,
-      generalError: undefined,
-    },
+    initial,
   );
 
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [hasSentRecovery, setHasSentRecovery] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
-    const data = {
-      email: formData.get('email') as string,
-    };
-
-    // Validate using Zod
-    const validation = forgotPasswordSchema.safeParse(data);
-
-    if (!validation.success) {
-      const errors = validation.error.errors.reduce(
-        (acc, curr) => {
-          acc[curr.path[0]] = curr.message;
-          return acc;
-        },
-        {} as Record<string, string>,
-      );
-      setFormErrors(errors);
-      return;
-    }
-
-    // Clear errors
-    setFormErrors({});
-
-    // Dispatch the async action using startTransition
-    startTransition(() => {
-      sendRecoveryEmail(formData);
-    });
-  };
-
-  // Lockout user after successful email
+  /* Side-effects */
   useEffect(() => {
     if (state.success) {
-      setHasSentRecovery(true);
+      toast.success('Password-reset email sent!');
+      formRef.current?.reset();
+      onSuccess?.();
     }
-  }, [state.success]);
+    if (state.formError) toast.error(state.formError);
+  }, [state, onSuccess]);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-foreground"
-        >
+    <form
+      ref={formRef}
+      action={formAction}
+      className="mx-auto flex w-full max-w-sm flex-col gap-4"
+    >
+      <div className="font-baloo-thambi flex flex-col gap-1">
+        <label htmlFor="email" className="ml-3 block text-2xl text-black">
           Email
         </label>
-        <input
-          name="email"
+        <Input
+          id="email"
           type="email"
-          className="mt-1 block w-full rounded border border-border bg-input p-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="Enter your email"
+          name="email"
+          placeholder="example@mail.com"
+          disabled={pending}
           required
-          disabled={hasSentRecovery} // Disable input after success
+          className="focus:ring-blue focus:ring-offset-yellow rounded-full text-center text-2xl text-black placeholder:text-2xl placeholder:text-stone-500 focus:ring-2 focus:ring-offset-2"
+          aria-invalid={!!state.fieldErrors?.email}
         />
-        {formErrors.email && (
-          <p className="text-sm text-error">{formErrors.email}</p>
-        )}
-        {state.errors?.email && (
-          <p className="text-sm text-error">{state.errors.email[0]}</p>
-        )}
-        {state.generalError && (
-          <p className="text-sm text-error">{state.generalError}</p>
+        {state.fieldErrors?.email && (
+          <p className="text-sm text-red-600">{state.fieldErrors.email[0]}</p>
         )}
       </div>
+
       <Button
         type="submit"
-        disabled={isPending || hasSentRecovery} // Disable button after success
-        className={`w-full rounded bg-button-primary px-4 py-2 text-white shadow hover:bg-button-primary/90 focus:outline-none focus:ring focus:ring-primary ${
-          hasSentRecovery ? 'cursor-not-allowed opacity-50' : ''
-        }`}
+        disabled={pending}
+        className="bg-blue font-fredoka-one hover:bg-darkblue disabled:bg-blue/50 rounded-full text-3xl transition-colors disabled:cursor-not-allowed disabled:text-white"
       >
-        {isPending
-          ? 'Sending...'
-          : hasSentRecovery
-            ? 'Email Sent'
-            : 'Send Recovery Email'}
+        {pending ? 'Sending…' : 'Reset Password'}
       </Button>
-      {state.success && (
-        <p className="text-success mt-2 text-sm">
-          Password recovery email sent. Please check your inbox.
-        </p>
-      )}
     </form>
   );
 }

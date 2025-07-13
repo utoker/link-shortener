@@ -1,40 +1,101 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
+/* Tailwind v4 theme variables */
+@theme {
+  /* Colors */
+  --color-white: #f4f1f0;
+  --color-black: #000000;
+  --color-yellow: #fbc114;
+  --color-blue: #17a2b8;
+  --color-darkblue: #13535d;
+  --color-background: #13535d;
+  --color-foreground: #2d3748;
+  --color-primary: #319795;
+  --color-secondary: #81e6d9;
+  --color-border: #e2e8f0;
+  --color-input: #e5e5e5;
+  --color-error: #e53e3e;
+  --color-muted: #f7fafc;
+  --color-accent: #3182ce;
+  --color-card: #ffffff;
+  --color-button-primary: #4caf50;
+  --color-button-secondary: #03a9f4;
+  --color-popover: #ffffff;
+  --color-destructive: #e53e3e;
+  --color-ring: #3182ce;
+
+  /* Chart colors */
+  --color-chart-1: #1a365d;
+  --color-chart-2: #2a4365;
+  --color-chart-3: #2c5282;
+  --color-chart-4: #2b6cb0;
+  --color-chart-5: #3182ce;
+
+  /* Fonts (clearly named) */
+  --font-fredoka-one: var(--FredokaOne);
+  --font-baloo-thambi: var(--font-baloo);
+  --font-poppins: var(--poppins), sans-serif;
+}
+
+/* Base styles */
 @layer base {
   * {
-    @apply border-gray-300; /* Replace `border-border` with a static color */
+    border-color: var(--color-border);
   }
+
   body {
-    @apply bg-white text-gray-900; /* Replace `bg-background` and `text-foreground` with static values */
+    background-color: var(--color-background);
+    color: var(--color-foreground);
   }
 }
 
-@layer base {
-  /* Define static values for commonly used colors */
+/* Utility class equivalents */
+@layer components {
   .bg-primary {
-    background-color: #319795; /* Primary color */
+    background-color: var(--color-primary);
   }
   .text-primary {
-    color: #319795;
+    color: var(--color-primary);
   }
   .bg-secondary {
-    background-color: #81e6d9; /* Secondary color */
+    background-color: var(--color-secondary);
   }
   .text-secondary {
-    color: #285e61;
+    color: var(--color-secondary);
   }
   .bg-muted {
-    background-color: #edf2f7; /* Muted background color */
+    background-color: var(--color-muted);
   }
   .text-muted {
-    color: #718096; /* Muted text color */
+    color: var(--color-muted);
   }
   .bg-error {
-    background-color: #e53e3e; /* Error color */
+    background-color: var(--color-error);
   }
   .text-error {
-    color: #e53e3e;
+    color: var(--color-error);
+  }
+  .bg-input {
+    background-color: var(--color-input);
+  }
+  .border-darkblue {
+    border-color: var(--color-darkblue);
+  }
+  .bg-yellow {
+    background-color: var(--color-yellow);
+  }
+  .text-yellow {
+    color: var(--color-yellow);
+  }
+
+  /* Font utility classes (clearly mapped) */
+  .font-fredoka-one {
+    font-family: var(--font-fredoka-one);
+  }
+  .font-baloo-thambi {
+    font-family: var(--font-baloo-thambi);
+  }
+  .font-poppins {
+    font-family: var(--font-poppins);
   }
 }

@@ -1,10 +1,31 @@
-// /app/layout.tsx
-// Layout component for the entire app
-'use client';
-
-import Navbar from '../components/Navbar';
 import '../styles/globals.css';
+import { Toaster } from 'sonner';
+import Navbar from '../components/Navbar';
 import { UserProvider } from './context/UserContext';
+import localFont from 'next/font/local';
+import { Metadata } from 'next';
+import { Poppins } from 'next/font/google';
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '800'], // pick the weights you actually use
+  variable: '--font-poppins', // CSS var name Tailwind will reference
+});
+const FredokaOne = localFont({
+  src: '../../public/fonts/FredokaOne-Regular.ttf',
+  variable: '--font-fredoka-one',
+});
+
+const BalooThambi = localFont({
+  src: '../../public/fonts/BalooThambi-Regular.ttf',
+  variable: '--font-baloo-thambi',
+});
+
+// Optional: Add metadata for <head>
+export const metadata: Metadata = {
+  title: 'Reqq.cc',
+  description: 'Shorten your links with ease.',
+};
 
 export default function RootLayout({
   children,
@@ -12,14 +33,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="bg-background text-foreground">
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${FredokaOne.variable} ${BalooThambi.variable} ${poppins.variable} bg-background text-foreground min-h-screen antialiased`}
+      >
         <UserProvider>
           <Navbar />
-          <main className="container mx-auto">{children}</main>
-          <footer className="bg-primary p-4 text-foreground">
-            <p>© {new Date().getFullYear()} reqq.cc</p>
-          </footer>
+          <main className="flex w-full">{children}</main>
+          <Toaster />
         </UserProvider>
       </body>
     </html>

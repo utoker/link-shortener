@@ -1,32 +1,31 @@
 'use client';
 
-import SignoutButton from './SignoutButton';
 import AuthModalManager from './AuthModalManager';
 import { useUserContext } from '../app/context/UserContext';
+import SignOutButton from './SignOutButton';
+import LoadingSpinner from './LoadingSpinner';
 
 const Navbar = () => {
   const { user, loading } = useUserContext();
 
   return (
-    <div className="container mx-auto flex items-center justify-between bg-background p-4 text-foreground">
-      <div className="text-xl font-bold">Reqq.cc</div>
+    <nav className="mx-auto flex w-full items-start justify-between px-4 py-2">
+      <img
+        src="/Images/logo.svg"
+        alt="logo"
+        className="h-20 w-20 sm:h-40 sm:w-40"
+      />
+
       <div className="flex items-center space-x-4">
         {loading ? (
-          <div className="flex h-10 items-center">
-            <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          </div>
+          <LoadingSpinner />
         ) : user ? (
-          <>
-            <span className="text-sm font-medium text-foreground">
-              Hi {user.user_metadata?.name || 'there'}!
-            </span>
-            <SignoutButton />
-          </>
+          <SignOutButton />
         ) : (
           <AuthModalManager />
         )}
       </div>
-    </div>
+    </nav>
   );
 };
 

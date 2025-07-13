@@ -1,141 +1,119 @@
 'use client';
 
-import { Button } from './ui/button';
-import { useActionState, startTransition, useState, useEffect } from 'react';
-import { z } from 'zod';
+import { useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { updatePasswordAction } from '../app/actions/authActions';
+import { toast } from 'sonner';
+import Link from 'next/link';
 
-// Define Zod schema
-const updatePasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .min(6, { message: 'Password must be at least 6 characters long' }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords must match',
-    path: ['confirmPassword'], // Show error under confirm password
-  });
+import { updatePasswordAction } from '@/app/actions/auth';
+import type { UpdatePwResult } from '@/app/actions/auth/updatePassword';
+import { type UpdatePasswordFormValues } from '@/lib/schemas/updatePasswordSchema';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { Card, CardContent } from './ui/card';
 
 export default function UpdatePasswordForm() {
-  const [state, updatePassword, pending] = useActionState(
-    updatePasswordAction,
-    {
-      success: undefined,
-      errors: undefined,
-      generalError: undefined,
-    },
-  );
-
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+  /* ------------------------------------------------------------- *
+   * useActionState  –  native React 19 form handling
+   * ------------------------------------------------------------- */
+  const initial: UpdatePwResult = { success: false };
+  const [state, formAction, pending] = useActionState(
+    updatePasswordAction,
+    initial,
+  );
 
-    const data = {
-      password: formData.get('password') as string,
-      confirmPassword: formData.get('confirmPassword') as string,
-    };
-
-    // Validate form data using Zod
-    const validation = updatePasswordSchema.safeParse(data);
-
-    if (!validation.success) {
-      const errors = validation.error.errors.reduce(
-        (acc, curr) => {
-          acc[curr.path[0]] = curr.message;
-          return acc;
-        },
-        {} as Record<string, string>,
-      );
-      setFormErrors(errors);
-      return;
-    }
-
-    // Clear errors and submit form
-    setFormErrors({});
-    startTransition(() => {
-      updatePassword(formData);
-    });
-  };
-
+  /* side-effects */
   useEffect(() => {
     if (state.success) {
-      console.log('Password updated successfully!');
-      router.push('/'); // Redirect to homepage after successful update
+      toast.success('Password updated successfully!');
+      router.push('/');
     }
-  }, [state.success, router]);
+    if (state.formError) {
+      toast.error(state.formError);
+    }
+  }, [state, router]);
 
+  /* helper to show a field error */
+  const err = (key: keyof UpdatePasswordFormValues) =>
+    state.fieldErrors?.[key]?.[0];
+
+  /* ------------------------------------------------------------- *
+   * Mark-up  –  ALL original classes retained
+   * ------------------------------------------------------------- */
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-foreground"
-        >
-          New Password
-        </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          className="w-full rounded border border-border bg-input p-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="Enter a new password"
-          required
-        />
-        {formErrors.password && (
-          <p className="text-sm text-error">{formErrors.password}</p>
-        )}
-      </div>
+    <div className="mx-auto pt-8 sm:pt-16">
+      <Card className="bg-yellow font-baloo-thambi max-w-xs rounded-[72px] shadow-xl sm:max-w-md">
+        <CardContent>
+          <form action={formAction} className="space-y-6 py-6 sm:py-12">
+            {/* Password */}
+            <div>
+              <label
+                htmlFor="password"
+                className="ml-6 block text-xl text-black sm:text-3xl"
+              >
+                New Password
+              </label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter your new password"
+                disabled={pending}
+                className="h-14 w-full rounded-3xl border-2 border-black bg-gray-200 px-6 py-3 text-black placeholder:text-2xl"
+                aria-invalid={!!err('password')}
+              />
+              {err('password') && (
+                <p className="mt-1 ml-6 text-sm text-red-600">
+                  {err('password')}
+                </p>
+              )}
+            </div>
 
-      <div>
-        <label
-          htmlFor="confirm-password"
-          className="block text-sm font-medium text-foreground"
-        >
-          Confirm Password
-        </label>
-        <input
-          id="confirm-password"
-          name="confirmPassword"
-          type="password"
-          className="w-full rounded border border-border bg-input p-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="Re-enter your new password"
-          required
-        />
-        {formErrors.confirmPassword && (
-          <p className="text-sm text-error">{formErrors.confirmPassword}</p>
-        )}
-      </div>
+            {/* Confirm Password */}
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="ml-6 block text-xl text-black sm:text-3xl"
+              >
+                Confirm Password
+              </label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="Re-enter your new password"
+                disabled={pending}
+                className="h-14 w-full rounded-3xl border-2 border-black bg-gray-200 px-6 py-3 text-black placeholder:text-2xl"
+                aria-invalid={!!err('confirmPassword')}
+              />
+              {err('confirmPassword') && (
+                <p className="mt-1 ml-6 text-sm text-red-600">
+                  {err('confirmPassword')}
+                </p>
+              )}
+            </div>
 
-      <Button
-        type="submit"
-        disabled={pending}
-        className={`w-full rounded bg-primary px-4 py-2 text-white shadow focus:outline-none focus:ring focus:ring-primary ${
-          pending ? 'cursor-not-allowed opacity-50' : ''
-        }`}
-      >
-        {pending ? 'Updating Password...' : 'Update Password'}
-      </Button>
+            <Button
+              type="submit"
+              disabled={pending}
+              className="bg-blue hover:hover:bg-darkblue mx-auto flex justify-center rounded-full border-2 border-black px-4 py-6 text-2xl text-white sm:w-80 sm:text-4xl"
+            >
+              {pending ? 'Updating…' : 'Update Password'}
+            </Button>
+          </form>
 
-      {state.generalError && (
-        <p className="mt-2 text-sm text-error">{state.generalError}</p>
-      )}
-
-      <div className="mt-4 text-center">
-        <button
-          type="button"
-          onClick={() => router.push('/')}
-          className="text-sm text-primary underline hover:text-primary/90"
-        >
-          Back to Homepage
-        </button>
-      </div>
-    </form>
+          <div className="mt-4 text-center text-2xl">
+            <Link
+              href="/"
+              className="hover:hover:bg-darkblue text-black underline decoration-black"
+            >
+              Back to Homepage
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
