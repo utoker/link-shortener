@@ -18,7 +18,7 @@ export default function LinksList() {
   /* ------------------------------------------------------------------ */
   if (!user || !links) {
     return (
-      <div className="text-yellow font-fredoka-one container mx-auto pt-4 text-center text-2xl">
+      <div className="text-yellow font-fredoka-one container mx-auto pt-8 text-center text-2xl">
         <p>Paste your link and press the</p>
         <div className="bg-yellow mx-auto my-2 h-8 w-8 rounded-full sm:my-4 sm:h-14 sm:w-14">
           <CreateLinkIcon className="mx-auto h-8 w-8 p-1 sm:h-14 sm:w-14 sm:p-2" />
@@ -32,7 +32,7 @@ export default function LinksList() {
   }
   if (links.length === 0) {
     return (
-      <div className="sm:y-16 text-yellow font-fredoka-one container mx-auto px-4 text-center text-2xl">
+      <div className="text-yellow font-fredoka-one container mx-auto px-4 text-center text-2xl sm:py-16">
         <p>Paste your link and press</p>
         <div className="bg-yellow mx-auto h-8 w-8 rounded-full sm:h-14 sm:w-14">
           <CreateLinkIcon className="mx-auto h-8 w-8 p-1 sm:h-14 sm:w-14 sm:p-2" />

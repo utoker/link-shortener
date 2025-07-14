@@ -143,14 +143,14 @@ export default function Hero() {
           />
 
           {/* helper text */}
-          <p
-            aria-live="polite"
-            className="font-baloo-thambi text-yellow h-6 pt-2 text-lg"
-          >
-            {helper}
-          </p>
+          <div className="font-fredoka-one pt-8 text-lg text-white sm:pt-0 sm:text-2xl">
+            <p
+              aria-live="polite"
+              className="font-baloo-thambi text-yellow h-6 pt-2 text-lg"
+            >
+              {helper}
+            </p>
 
-          <div className="font-fredoka-one text-yellow pt-4 text-2xl">
             {state.fieldErrors?.url && (
               <p className="text-red-500">{state.fieldErrors.url[0]}</p>
             )}
@@ -162,7 +162,7 @@ export default function Hero() {
                   href={`/${state.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-yellow text-black underline transition-colors"
+                  className="hover:text-yellow text-blue underline transition-colors"
                 >
                   reqq.cc/{state.slug}
                 </a>
