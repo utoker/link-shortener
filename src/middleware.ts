@@ -44,5 +44,7 @@ export async function middleware(req: NextRequest) {
   const cookie = draftRes.headers.get('set-cookie');
   if (cookie) res.headers.set('set-cookie', cookie);
 
+  res.headers.set('x-middleware', 'hit');
+
   return res;
 }
