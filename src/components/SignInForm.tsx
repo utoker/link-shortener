@@ -102,7 +102,7 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
       </div>
 
       {/* OAuth buttons (disabled placeholder) */}
-      <Button
+      {/* <Button
         type="button"
         onClick={() => handleOAuth('github')}
         disabled={true}
@@ -118,7 +118,7 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
         className="font-fredoka-one mx-auto mt-2 flex items-center gap-2 rounded-full border-2 border-black bg-white px-6 py-2 text-xl text-black [box-shadow:0_6px_4px_rgba(0,0,0,0.25)] hover:bg-white/20 hover:text-white/80"
       >
         <FcGoogle className="h-5 w-5" /> Sign in with Google
-      </Button>
+      </Button> */}
 
       {/* Submit */}
       <Button

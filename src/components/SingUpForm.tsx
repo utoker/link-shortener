@@ -147,7 +147,7 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
       </div>
 
       {/* OAuth buttons (disabled placeholders) */}
-      <Button
+      {/* <Button
         type="button"
         onClick={() => handleOAuth('github')}
         disabled={true}
@@ -165,7 +165,7 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
       >
         <FcGoogle className="h-5 w-5 shrink-0" aria-hidden />
         Sign Up with Google
-      </Button>
+      </Button> */}
 
       {/* Submit */}
       <Button
