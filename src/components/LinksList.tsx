@@ -86,7 +86,7 @@ export default function LinksList() {
         >
           <div className="truncate">
             <a
-              href={`/${link.slug}`}
+              href={`https://reqq.cc/${link.slug}`}
               target="_blank"
               rel="noopener noreferrer"
               className="underline underline-offset-2"

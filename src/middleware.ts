@@ -25,5 +25,5 @@ export async function middleware(req: NextRequest) {
   // atomic, awaited click-counter so the update isn't lost
   await supabase.rpc('increment_click', { p_slug: slug });
 
-  return NextResponse.redirect(link.url, 307);
+  return NextResponse.redirect(link.url, 302);
 }
