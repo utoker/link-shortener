@@ -28,10 +28,9 @@ export async function middleware(req: NextRequest) {
     console.error('slug lookup failed:', linkErr);
     return draftRes; // 500 in prod, 200 shell in dev
   }
-  if (!link)
-    return draftRes; // fall through → 404 page
+  if (!link) return draftRes; // fall through → 404 page
 
-    // 3️⃣  Fire-and-forget click counter (doesn’t block the redirect)
+  // 3️⃣  Fire-and-forget click counter (doesn’t block the redirect)
   (async () => {
     const { error } = await supabase.rpc('increment_click', { p_slug: slug });
 
@@ -40,7 +39,6 @@ export async function middleware(req: NextRequest) {
 
   // 4️⃣  Lean 302 redirect (0-byte body)
   const res = NextResponse.redirect(link.url, { status: 302 });
-  res.headers.set('content-length', '0'); // suppress dev-server HTML
 
   // 5️⃣  Propagate any Set-Cookie from Supabase (refresh token, etc.)
   const cookie = draftRes.headers.get('set-cookie');
