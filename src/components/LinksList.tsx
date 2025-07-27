@@ -3,6 +3,8 @@
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 import CreateLinkIcon from '@icons/create-link-icon.svg';
+import CopyIcon from '@icons/copy-icon.svg';
+import DeleteIcon from '@icons/delete-icon.svg';
 
 import { useUserContext } from '@/app/context/UserContext';
 import type { Link } from '@/lib/types/database';
@@ -11,7 +13,7 @@ import type { DeleteLinkResult } from '@/app/actions/data/deleteLink';
 
 export default function LinksList() {
   const [_isPending, startAction] = useTransition();
-  const { user, links, refetchLinks } = useUserContext(); // ✅ camel-case fix
+  const { user, links, refetchLinks } = useUserContext();
 
   /* ------------------------------------------------------------------ */
   /* Guards                                                             */
@@ -104,18 +106,18 @@ export default function LinksList() {
                 navigator.clipboard.writeText(`https://reqq.cc/${link.slug}`);
                 toast.success('Copied shortlink to clipboard!');
               }}
-              className="bg-yellow rounded-full border-2 border-black px-1 text-sm text-black shadow-md transition-transform hover:scale-110 hover:cursor-pointer active:scale-90 sm:px-4 sm:py-1.5"
+              className="bg-yellow rounded-full border-1 border-black px-1 text-sm text-black shadow-md transition-transform hover:scale-110 hover:cursor-pointer active:scale-90 sm:px-4 sm:py-1.5"
               title="Copy shortlink"
             >
-              📋
+              <CopyIcon className="mx-auto h-4 w-4 sm:h-8 sm:w-8" />
             </button>
 
             <button
               onClick={() => handleDelete(link.id)}
-              className="bg-yellow rounded-full border-2 border-black px-1 text-sm text-black shadow-md transition-transform hover:scale-110 hover:cursor-pointer active:scale-90 sm:px-4 sm:py-1.5"
+              className="bg-yellow rounded-full border-1 border-black px-1 text-sm text-black shadow-md transition-transform hover:scale-110 hover:cursor-pointer active:scale-90 sm:px-4 sm:py-1.5"
               title="Delete shortlink"
             >
-              🗑️
+              <DeleteIcon className="mx-auto h-4 w-4 sm:h-8 sm:w-8" />
             </button>
           </div>
         </div>
