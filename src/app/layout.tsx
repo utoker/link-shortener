@@ -5,6 +5,7 @@ import { UserProvider } from './context/UserContext';
 import localFont from 'next/font/local';
 import { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
+import Footer from '@/components/Footer';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -35,11 +36,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${FredokaOne.variable} ${BalooThambi.variable} ${poppins.variable} bg-background text-foreground min-h-screen antialiased`}
+        className={`${FredokaOne.variable} ${BalooThambi.variable} ${poppins.variable} bg-background min-h-screen text-white antialiased`}
       >
         <UserProvider>
           <Navbar />
           <main className="flex w-full">{children}</main>
+          <Footer />
           <Toaster />
         </UserProvider>
       </body>

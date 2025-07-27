@@ -4,19 +4,30 @@ import AuthModalManager from './AuthModalManager';
 import { useUserContext } from '../app/context/UserContext';
 import SignOutButton from './SignOutButton';
 import LoadingSpinner from './LoadingSpinner';
+import DonateButton from './DonateButton';
+import Link from 'next/link';
 
 const Navbar = () => {
   const { user, loading } = useUserContext();
 
   return (
     <nav className="mx-auto flex w-full items-start justify-between px-4 py-2">
-      <img
-        src="/Images/logo.svg"
-        alt="logo"
-        className="h-20 w-20 sm:h-40 sm:w-40"
-      />
+      <Link
+        href="/"
+        aria-label="Go to homepage"
+        className="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+      >
+        <img
+          src="/Images/logo.svg"
+          alt="reqq.cc logo"
+          className="h-20 w-20 cursor-pointer sm:h-40 sm:w-40"
+        />
+      </Link>
 
       <div className="flex items-center space-x-4">
+        {/* Donate is always visible */}
+        <DonateButton className="px-2 py-1" />
+
         {loading ? (
           <LoadingSpinner />
         ) : user ? (
