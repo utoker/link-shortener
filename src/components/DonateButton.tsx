@@ -14,7 +14,7 @@ export default function DonateButton({ className = '' }: Props) {
       className={[
         'inline-flex items-center gap-2 rounded-full border',
         // size scales up on bigger screens
-        'h-12 w-28 cursor-pointer rounded-full border-2 border-black sm:h-24 sm:w-56 sm:border-4',
+        'h-12 w-32 cursor-pointer rounded-full border-2 border-black sm:h-24 sm:w-56 sm:border-4',
         // style
         'f bg-transparent shadow-sm transition-colors hover:bg-white/10',
         className,
@@ -25,9 +25,7 @@ export default function DonateButton({ className = '' }: Props) {
           ❤️
         </span>
         {/* show text on small-and-up (xs is not a default breakpoint) */}
-        <span className="font-fredoka-one hidden text-lg sm:inline sm:text-4xl">
-          Donate
-        </span>
+        <span className="font-fredoka-one text-lg sm:text-4xl">Donate</span>
       </div>
     </Link>
   );

@@ -9,7 +9,7 @@ export default function Footer() {
         {/* Top row */}
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           {/* Brand blurb */}
-          <div className="max-w-xl text-sm text-white/70">
+          <div className="max-w-2xl text-sm text-white/70">
             <p>
               <strong className="text-white">reqq.cc</strong> — a fast, free URL
               shortener. Donations help cover hosting, domain, and monitoring.
