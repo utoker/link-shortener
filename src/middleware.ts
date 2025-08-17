@@ -12,7 +12,14 @@ export const config = {
 
 export async function middleware(req: NextRequest) {
   const slug = req.nextUrl.pathname.slice(1); // "/yxzh5x" → "yxzh5x"
+
+  // If no slug is present, we assume it's the home page
   if (!slug) return NextResponse.next(); // home page → normal routing
+
+   // Skip redirect for /protected and /auth routes
+  if (slug === 'protected' || slug === 'auth' || slug.startsWith('protected/') || slug.startsWith('auth/')) {
+    return NextResponse.next();
+  }
 
   // 1️⃣  Supabase client that can read *and* set cookies
   const { supabase, res: draftRes } = createSupabaseMiddlewareClient(req);
@@ -28,7 +35,7 @@ export async function middleware(req: NextRequest) {
     console.error('slug lookup failed:', linkErr);
     return draftRes; // 500 in prod, 200 shell in dev
   }
-  if (!link) return draftRes; // fall through → 404 page
+  if (!link) return NextResponse.rewrite(new URL('/404', req.url));
 
   // 3️⃣  Fire-and-forget click counter (doesn’t block the redirect)
   (async () => {

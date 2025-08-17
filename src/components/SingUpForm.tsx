@@ -5,10 +5,8 @@ import { toast } from 'sonner';
 import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 
-import {
-  signUpWithPasswordAction,
-  signInWithOAuthAction,
-} from '@/app/actions/auth';
+import { signUpWithPasswordAction } from '@/app/actions/auth';
+import { createBrowserClientSupabase } from '@/lib/supabase/client';
 import type { SignUpResult } from '@/app/actions/auth/signUpWithPassword';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
@@ -42,14 +40,30 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
     if (state.formError) toast.error(state.formError);
   }, [state, refetchUser, triggerConfetti, onSuccess]);
 
-  /* OAuth helper (still disabled) */
+  /* OAuth helper */
   function handleOAuth(provider: Provider) {
     startTransition(async () => {
-      const fd = new FormData();
-      fd.append('provider', provider);
-      const result = await signInWithOAuthAction({ success: false }, fd);
-      if (!result.success && result.formError) {
-        toast.error(result.formError);
+      try {
+        const supabase = createBrowserClientSupabase();
+        const origin = window.location.origin;
+        
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider,
+          options: { redirectTo: `${origin}/auth/callback` },
+        });
+
+        if (error) {
+          toast.error(error.message);
+          return;
+        }
+
+        // The redirect will happen automatically via data.url
+        if (data.url) {
+          window.location.href = data.url;
+        }
+      } catch (err) {
+        console.error('OAuth error:', err);
+        toast.error('Failed to initiate OAuth sign up');
       }
     });
   }
@@ -147,10 +161,9 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
       </div>
 
       {/* OAuth buttons (disabled placeholders) */}
-      {/* <Button
+      <Button
         type="button"
         onClick={() => handleOAuth('github')}
-        disabled={true}
         className="font-fredoka-one mx-auto mt-4 rounded-full border-2 border-black bg-white text-xl leading-none text-black [box-shadow:0_6px_4px_rgba(0,0,0,0.25)] hover:cursor-pointer hover:bg-white/20 hover:text-white/80"
       >
         <FaGithub className="h-5 w-5 shrink-0" aria-hidden />
@@ -160,12 +173,11 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
       <Button
         type="button"
         onClick={() => handleOAuth('google')}
-        disabled={true}
         className="font-fredoka-one mx-auto mt-4 rounded-full border-2 border-black bg-white text-xl leading-none text-black [box-shadow:0_6px_4px_rgba(0,0,0,0.25)] hover:cursor-pointer hover:bg-white/20 hover:text-white/80"
       >
         <FcGoogle className="h-5 w-5 shrink-0" aria-hidden />
         Sign Up with Google
-      </Button> */}
+      </Button>
 
       {/* Submit */}
       <Button

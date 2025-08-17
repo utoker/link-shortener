@@ -9,10 +9,10 @@ export default function NotFound() {
 
       <div className="mb-6">
         <Image
-          src="/images/sad-browser.svg"
+          src="Images/sad-browser.svg"
           alt="Sad Browser"
-          width={480}
-          height={480}
+          width={400}
+          height={400}
           priority
           className="h-auto w-80 md:w-96"
         />
@@ -27,7 +27,7 @@ export default function NotFound() {
 
       <Link
         href="/"
-        className="text-blue font-fredoka-one mt-6 inline-block rounded-full border-4 border-black bg-white px-6 py-2 text-4xl transition hover:bg-white/80"
+        className="text-blue font-fredoka-one my-6 inline-block rounded-full border-4 border-black bg-white px-6 py-2 text-4xl transition hover:bg-white/80"
       >
         Go Home
       </Link>

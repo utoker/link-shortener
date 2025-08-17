@@ -5,10 +5,8 @@ import { toast } from 'sonner';
 import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 
-import {
-  signInWithPasswordAction,
-  signInWithOAuthAction,
-} from '@/app/actions/auth';
+import { signInWithPasswordAction } from '@/app/actions/auth';
+import { createBrowserClientSupabase } from '@/lib/supabase/client';
 import type { SignInResult } from '@/app/actions/auth/signInWithPassword';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
@@ -43,11 +41,27 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
   /* ------------- unchanged UI (all original classes & sizes) ---------- */
   function handleOAuth(provider: Provider) {
     startTransition(async () => {
-      const fd = new FormData();
-      fd.append('provider', provider);
-      const result = await signInWithOAuthAction({ success: false }, fd);
-      if (!result.success && result.formError) {
-        toast.error(result.formError);
+      try {
+        const supabase = createBrowserClientSupabase();
+        const origin = window.location.origin;
+        
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider,
+          options: { redirectTo: `${origin}/auth/callback` },
+        });
+
+        if (error) {
+          toast.error(error.message);
+          return;
+        }
+
+        // The redirect will happen automatically via data.url
+        if (data.url) {
+          window.location.href = data.url;
+        }
+      } catch (err) {
+        console.error('OAuth error:', err);
+        toast.error('Failed to initiate OAuth sign in');
       }
     });
   }
@@ -102,10 +116,9 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
       </div>
 
       {/* OAuth buttons (disabled placeholder) */}
-      {/* <Button
+      <Button
         type="button"
         onClick={() => handleOAuth('github')}
-        disabled={true}
         className="font-fredoka-one mx-auto mt-4 flex items-center gap-2 rounded-full border-2 border-black bg-white px-6 py-2 text-xl text-black [box-shadow:0_6px_4px_rgba(0,0,0,0.25)] hover:bg-white/20 hover:text-white/80"
       >
         <FaGithub className="h-5 w-5" /> Sign in with GitHub
@@ -114,11 +127,10 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
       <Button
         type="button"
         onClick={() => handleOAuth('google')}
-        disabled={true}
         className="font-fredoka-one mx-auto mt-2 flex items-center gap-2 rounded-full border-2 border-black bg-white px-6 py-2 text-xl text-black [box-shadow:0_6px_4px_rgba(0,0,0,0.25)] hover:bg-white/20 hover:text-white/80"
       >
         <FcGoogle className="h-5 w-5" /> Sign in with Google
-      </Button> */}
+      </Button>
 
       {/* Submit */}
       <Button
