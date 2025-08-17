@@ -25,7 +25,7 @@ const Navbar = () => {
       </Link>
 
       <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
-        <DonateButton className="mx-auto px-2 py-1" />
+        <DonateButton className="px-2 py-1" />
         {/* Donate is always visible */}
 
         {loading ? (

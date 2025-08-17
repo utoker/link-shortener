@@ -121,7 +121,7 @@ export default function Hero() {
   })();
 
   return (
-    <div className="flex items-center justify-center py-16">
+    <div className="flex items-center justify-center ">
       <form action={formAction}>
         <div className="border-blue relative flex h-48 w-xs flex-col items-center border-10 sm:h-96 sm:w-2xl sm:border-22">
           <div className="absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-12 sm:-translate-y-1">
@@ -162,7 +162,7 @@ export default function Hero() {
                   href={`/${state.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-yellow text-blue underline transition-colors"
+                  className="hover:text-blue text-yellow underline transition-colors"
                 >
                   reqq.cc/{state.slug}
                 </a>

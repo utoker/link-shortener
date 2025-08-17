@@ -53,7 +53,7 @@ export default function FeaturesSection() {
               height={256}
               className="xs:w-24 block h-auto w-20 select-none sm:w-28 md:w-32 xl:w-[128px]"
             />
-            <span className="font-fredoka-one text-sm text-white">{title}</span>
+            <span className="font-fredoka-one text-center text-sm text-white">{title}</span>
           </li>
         ))}
       </ul>
