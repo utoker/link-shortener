@@ -16,7 +16,7 @@ export default function DonateButton({ className = '' }: Props) {
       className={[
         'inline-flex items-center gap-2 rounded-full border',
        
-        'h-12 w-32 cursor-pointer rounded-full border-2 border-black sm:h-20 sm:w-56 sm:border-4',
+        'h-12 w-32 cursor-pointer bg-white rounded-full border-2 border-black sm:h-20 sm:w-56 sm:border-4',
         
         'f bg-transparent shadow-sm transition-colors hover:bg-white/10',
         className,
@@ -27,7 +27,7 @@ export default function DonateButton({ className = '' }: Props) {
         <Image src={DonateIcon} alt="Donate Icon" className="sm:ml-4 h-9 w-8 shrink-0 sm:h-full sm:w-auto" />
 
         {/* show text on small-and-up (xs is not a default breakpoint) */}
-        <span className="font-fredoka-one text-xl sm:text-3xl">Donate</span>
+        <span className="font-fredoka-one text-black text-xl sm:text-3xl">Donate</span>
       </div>
     </Link>
   );

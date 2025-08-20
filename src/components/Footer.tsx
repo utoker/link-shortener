@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import DonateIcon from '@/icons/donate-icon.png';
+import Image from 'next/image';
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -25,7 +27,8 @@ export default function Footer() {
               className="inline-flex items-center gap-2 rounded-full border border-white/30 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/10"
               aria-label="Donate to help keep reqq.cc free"
             >
-              <span aria-hidden>❤️</span> Donate
+              <Image src={DonateIcon} alt="Donate Icon" className="w-6 h-6" />
+               Donate
             </Link>
           </div>
         </div>
