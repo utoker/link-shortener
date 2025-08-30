@@ -3,6 +3,7 @@
 // ────────────────────────────────────────────────────────────────
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseMiddlewareClient } from './lib/supabase/middleware';
+import { redirectRateLimit, getClientIP } from './lib/rateLimit';
 
 // Run for any path that looks like /slug (skip assets & Next internals)
 export const config = {
@@ -19,6 +20,17 @@ export async function middleware(req: NextRequest) {
    // Skip redirect for /protected and /auth routes
   if (slug === 'protected' || slug === 'auth' || slug.startsWith('protected/') || slug.startsWith('auth/')) {
     return NextResponse.next();
+  }
+
+  // Rate limiting for redirects
+  const ip = getClientIP(req);
+  const { success, remaining, reset } = await redirectRateLimit.limit(ip);
+  
+  if (!success) {
+    const response = new NextResponse('Too many requests', { status: 429 });
+    response.headers.set('Retry-After', Math.round((reset - Date.now()) / 1000).toString());
+    response.headers.set('X-RateLimit-Remaining', remaining.toString());
+    return response;
   }
 
   // 1️⃣  Supabase client that can read *and* set cookies

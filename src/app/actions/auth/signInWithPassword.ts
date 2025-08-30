@@ -6,6 +6,8 @@
 import { signInSchema } from '@/lib/schemas/singInSchema';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { ActionResult } from '@/lib/types/actions';
+import { authRateLimit } from '@/lib/rateLimit';
+import { headers } from 'next/headers';
 
 // -----------------------------------------------------------------------------
 // Result types
@@ -24,6 +26,19 @@ export async function signInWithPasswordAction(
   _prev: SignInResult,
   formData: FormData,
 ): Promise<SignInResult> {
+  // ---------- rate limiting -------------------------------------------------
+  const headersList = await headers();
+  const forwarded = headersList.get('x-forwarded-for');
+  const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1';
+  
+  const { success } = await authRateLimit.limit(ip);
+  if (!success) {
+    return {
+      success: false,
+      formError: 'Too many sign-in attempts. Please wait a minute before trying again.',
+    };
+  }
+
   // Convert FormData → plain object for Zod validation
   const data = {
     email: formData.get('email') as string | undefined,

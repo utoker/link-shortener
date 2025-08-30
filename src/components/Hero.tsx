@@ -52,8 +52,13 @@ export default function Hero() {
           toast.error(res.fieldErrors.url[0]); // url-specific error
         }
 
-        // generic fallback (e.g. DB issue without fieldErrors)
-        if (!res.fieldErrors) {
+        // form-level errors (rate limiting, server errors, etc.)
+        if (res.formError) {
+          toast.error(res.formError);
+        }
+
+        // generic fallback (e.g. DB issue without fieldErrors or formError)
+        if (!res.fieldErrors && !res.formError) {
           toast.error('Something went wrong');
         }
       }

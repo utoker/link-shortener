@@ -4,6 +4,8 @@ import { customAlphabet } from 'nanoid';
 import { CreateLinkFormSchema } from '@/lib/schemas/CreateLinkFormSchema';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { ActionResult } from '@/lib/types/actions';
+import { linkCreationRateLimit } from '@/lib/rateLimit';
+import { headers } from 'next/headers';
 
 // -----------------------------------------------------------------------------
 // Result type
@@ -32,6 +34,19 @@ export async function createLink(
   _prev: CreateLinkResult,
   formData: FormData,
 ): Promise<CreateLinkResult> {
+  // ---------- rate limiting -------------------------------------------------
+  const headersList = await headers();
+  const forwarded = headersList.get('x-forwarded-for');
+  const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1';
+  
+  const { success } = await linkCreationRateLimit.limit(ip);
+  if (!success) {
+    return {
+      success: false,
+      formError: 'Too many link creation attempts. Please wait a minute before trying again.',
+    };
+  }
+
   // ---------- basic sanitising ----------------------------------------------
   let rawUrl = formData.get('url')?.toString().trim() ?? '';
   const rawSlug = formData.get('slug')?.toString() || undefined;
