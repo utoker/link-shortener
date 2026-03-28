@@ -3,7 +3,7 @@
 import { PopoverArrow } from '@radix-ui/react-popover';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import SignUpButton from './SignUpButton';
-import SignUpForm from './SingUpForm';
+import SignUpForm from './SignUpForm';
 
 interface SignUpModalProps {
   isOpen: boolean;
@@ -32,12 +32,13 @@ export default function SignUpModal({
       <PopoverContent>
         <SignUpForm onSuccess={onClose} />
         <div className="mt-2 text-center">
-          <span
+          <button
+            type="button"
             onClick={onSignInRedirect}
-            className="font-baloo-thambi hover:text-yellow/90 text-sm text-black underline hover:cursor-pointer"
+            className="font-baloo-thambi hover:text-yellow/90 cursor-pointer text-sm text-black underline"
           >
             Already have an account? Sign in
-          </span>
+          </button>
         </div>
         <PopoverArrow />
       </PopoverContent>

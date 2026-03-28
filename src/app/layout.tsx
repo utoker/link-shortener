@@ -26,6 +26,18 @@ const BalooThambi = localFont({
 export const metadata: Metadata = {
   title: 'Reqq.cc',
   description: 'Shorten your links with ease.',
+  openGraph: {
+    title: 'Reqq.cc',
+    description: 'Shorten your links with ease. Free, fast, and private.',
+    url: 'https://reqq.cc',
+    siteName: 'Reqq.cc',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Reqq.cc',
+    description: 'Shorten your links with ease. Free, fast, and private.',
+  },
 };
 
 export default function RootLayout({

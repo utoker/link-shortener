@@ -4,7 +4,7 @@ import Image from 'next/image';
 const features = [
   { title: 'Ad‑Free', src: '/Images/Features/ad-free.svg' },
   { title: 'Secure & Reliable', src: '/Images/Features/secure.svg' },
-  { title: 'No Signup', src: '/Images/Features/no-signup.svg' },
+  { title: 'No Signup', subtitle: 'to shorten links', src: '/Images/Features/no-signup.svg' },
   { title: 'Open Source', src: '/Images/Features/open-source.svg' },
   {
     title: 'Completely Private',
@@ -14,7 +14,7 @@ const features = [
   { title: 'Easy to Use', src: '/Images/Features/easy.svg' },
   { title: '100% Free', src: '/Images/Features/free.svg' },
   {
-    title: 'Design For Everyone',
+    title: 'Mobile Friendly',
     src: '/Images/Features/for-everyone.svg',
   },
 ] as const;
@@ -41,21 +41,26 @@ export default function FeaturesSection() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:py-16">
       <ul className="grid grid-cols-3 gap-x-12 gap-y-12 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-9 xl:gap-x-0 xl:gap-y-12">
-        {features.map(({ title, src }: Feature, idx) => (
+        {features.map((f, idx) => (
           <li
-            key={title}
+            key={f.title}
             className={`flex flex-col items-center justify-center ${xlColStarts[idx]}`}
           >
             <Image
-              src={src}
+              src={f.src}
               alt=""
               width={256}
               height={256}
               className="xs:w-24 block h-auto w-20 select-none sm:w-28 md:w-32 xl:w-[128px]"
             />
             <span className="font-fredoka-one text-center text-sm text-white">
-              {title}
+              {f.title}
             </span>
+            {'subtitle' in f && f.subtitle && (
+              <span className="font-baloo-thambi text-center text-xs text-white/70">
+                {f.subtitle}
+              </span>
+            )}
           </li>
         ))}
       </ul>

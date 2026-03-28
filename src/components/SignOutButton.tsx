@@ -40,10 +40,10 @@ export default function SignOutButton({ ...props }: SignOutButtonProps) {
       {...props}
       onClick={handleClick}
       disabled={pending}
-      className="h-12 w-38 cursor-pointer rounded-full border-2 border-black bg-white hover:bg-white/80 sm:h-20 sm:w-64 sm:border-4"
+      className="h-10 w-32 cursor-pointer rounded-full border border-black bg-white hover:bg-white/80 sm:h-14 sm:w-48 sm:border-2"
     >
-      <SignOutIcon className="h-8 w-8 shrink-0 sm:h-full sm:w-auto" />
-      <div className="font-fredoka-one text-xl text-black sm:text-4xl">
+      <SignOutIcon className="h-6 w-6 shrink-0 sm:h-8 sm:w-8" />
+      <div className="font-fredoka-one text-[14px] text-black sm:text-2xl">
         <span>Sign Out</span>
       </div>
     </Button>

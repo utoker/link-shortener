@@ -5,12 +5,10 @@ import Link from 'next/link';
 export default function NotFound() {
   return (
     <div className="bg-darkBlue mx-auto flex flex-col items-center justify-center text-white">
-      {/* <h1 className="font-baloo-thambi mb-4 text-9xl">404</h1> */}
-
       <div className="mb-6">
         <Image
           src="Images/sad-browser.svg"
-          alt="Sad Browser"
+          alt="Illustration of a sad browser indicating the page was not found"
           width={400}
           height={400}
           priority
@@ -19,7 +17,7 @@ export default function NotFound() {
       </div>
 
       <div className="font-fredoka-one text-center">
-        <h2 className="mb-2 text-8xl">Oops!</h2>
+        <h1 className="mb-2 text-8xl">Oops!</h1>
         <p className="max-w-6xl text-5xl">
           We can’t find the page you’re looking for.
         </p>

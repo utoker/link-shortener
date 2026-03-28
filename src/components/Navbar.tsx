@@ -4,7 +4,6 @@ import AuthModalManager from './AuthModalManager';
 import { useUserContext } from '../app/context/UserContext';
 import SignOutButton from './SignOutButton';
 import LoadingSpinner from './LoadingSpinner';
-import DonateButton from './DonateButton';
 import Link from 'next/link';
 
 const Navbar = () => {
@@ -25,9 +24,6 @@ const Navbar = () => {
       </Link>
 
       <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
-        <DonateButton className="px-2 py-1" />
-        {/* Donate is always visible */}
-
         {loading ? (
           <LoadingSpinner />
         ) : user ? (

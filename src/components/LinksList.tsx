@@ -25,7 +25,7 @@ export default function LinksList() {
         <div className="bg-yellow mx-auto my-2 h-8 w-8 rounded-full sm:my-4 sm:h-14 sm:w-14">
           <CreateLinkIcon className="mx-auto h-8 w-8 p-1 sm:h-14 sm:w-14 sm:p-2" />
         </div>
-        <p>button to make it shorten!</p>
+        <p>button to shorten it!</p>
         <p className="text-yellow font-fredoka-one pt-4 text-2xl">
           Log in to see your links.
         </p>
@@ -39,7 +39,7 @@ export default function LinksList() {
         <div className="bg-yellow mx-auto h-8 w-8 rounded-full sm:h-14 sm:w-14">
           <CreateLinkIcon className="mx-auto h-8 w-8 p-1 sm:h-14 sm:w-14 sm:p-2" />
         </div>
-        <p>to make it shorten!</p>
+        <p>to shorten it!</p>
       </div>
     );
   }
@@ -107,7 +107,7 @@ export default function LinksList() {
                 toast.success('Copied shortlink to clipboard!');
               }}
               className="bg-yellow rounded-full border-1 border-black px-1 text-sm text-black shadow-md transition-transform hover:scale-110 hover:cursor-pointer active:scale-90 sm:px-4 sm:py-1.5"
-              title="Copy shortlink"
+              aria-label="Copy shortlink"
             >
               <CopyIcon className="mx-auto h-4 w-4 sm:h-8 sm:w-8" />
             </button>
@@ -115,7 +115,7 @@ export default function LinksList() {
             <button
               onClick={() => handleDelete(link.id)}
               className="bg-yellow rounded-full border-1 border-black px-1 text-sm text-black shadow-md transition-transform hover:scale-110 hover:cursor-pointer active:scale-90 sm:px-4 sm:py-1.5"
-              title="Delete shortlink"
+              aria-label="Delete shortlink"
             >
               <DeleteIcon className="mx-auto h-4 w-4 sm:h-8 sm:w-8" />
             </button>

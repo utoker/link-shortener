@@ -84,12 +84,13 @@ export default function ForgotPasswordModal({
               }}
             />
 
-            <span
-              className="font-poppins hover:text-darkblue text-center text-2xl font-bold text-black underline hover:cursor-pointer"
+            <button
+              type="button"
+              className="font-poppins hover:text-darkblue w-full cursor-pointer text-center text-2xl font-bold text-black underline"
               onClick={onSigninRedirect}
             >
               Back to Sign-in
-            </span>
+            </button>
           </>
         )}
       </DialogContent>

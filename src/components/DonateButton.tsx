@@ -18,7 +18,7 @@ export default function DonateButton({ className = '' }: Props) {
        
         'h-12 w-32 cursor-pointer bg-white rounded-full border-2 border-black sm:h-20 sm:w-56 sm:border-4',
         
-        'f bg-transparent shadow-sm transition-colors hover:bg-white/10',
+        'bg-transparent shadow-sm transition-colors hover:bg-white/10',
         className,
       ].join(' ')}
     >

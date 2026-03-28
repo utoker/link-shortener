@@ -36,21 +36,23 @@ export default function SignInModal({
         <PopoverContent className="mx-auto">
           <SignInForm onSuccess={onClose} />
           <div className="mt-4 text-center">
-            <span
+            <button
+              type="button"
               onClick={onSignupRedirect}
-              className="font-baloo-thambi hover:text-yellow/80 m-0 block p-1 text-sm text-black underline hover:cursor-pointer"
+              className="font-baloo-thambi hover:text-yellow/80 m-0 block w-full cursor-pointer p-1 text-sm text-black underline"
             >
-              Don’t have an account? Sign up
-            </span>
-            <span
+              Don&apos;t have an account? Sign up
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 setForgotPasswordOpen(true);
                 onClose();
               }}
-              className="font-baloo-thambi hover:text-yellow/80 m-0 block p-1 text-sm text-black underline hover:cursor-pointer"
+              className="font-baloo-thambi hover:text-yellow/80 m-0 block w-full cursor-pointer p-1 text-sm text-black underline"
             >
               Forgot Password?
-            </span>
+            </button>
           </div>
           <PopoverArrow />
         </PopoverContent>
