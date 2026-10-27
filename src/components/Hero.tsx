@@ -1,9 +1,10 @@
 'use client';
 
 import { useActionState, useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
 import UrlInput from './UrlInput';
 import CustomLinkInput from './CustomLinkInput';
-import CenterIcon from '@icons/center-icon.svg';
+import centerIcon from '@icons/center-icon.webp';
 import { useUserContext } from '@/app/context/UserContext';
 import { CreateLinkFormSchema } from '@/lib/schemas/CreateLinkFormSchema';
 import { useDebounce } from '@/lib/hooks/useDebounce';
@@ -134,7 +135,13 @@ export default function Hero() {
         <div className="border-blue relative flex h-48 w-xs flex-col items-center border-10 sm:h-96 sm:w-2xl sm:border-22">
           <div className="absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-12 sm:-translate-y-1">
             <div className="bg-darkblue absolute top-0 left-1/2 -z-50 h-16 w-11 -translate-x-1/2 -translate-y-1 sm:h-0" />
-            <CenterIcon className="h-20 w-20 shrink-0 sm:h-32 sm:w-32" />
+            <Image
+              src={centerIcon}
+              alt=""
+              unoptimized
+              priority
+              className="h-20 w-20 shrink-0 object-contain sm:h-32 sm:w-32"
+            />
           </div>
 
           <UrlInput

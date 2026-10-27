@@ -1,6 +1,7 @@
 'use client';
 
-import CustomLinkIcon from '@/icons/custom-link-icon.svg';
+import Image from 'next/image';
+import customLinkIcon from '@/icons/custom-link-icon.webp';
 import { Input } from './ui/input';
 
 interface CustomLinkInputProps {
@@ -16,7 +17,12 @@ export default function CustomLinkInput({
 }: CustomLinkInputProps) {
   return (
     <div className="bg-yellow focus-within:ring-yellow mt-8 flex h-[76px] max-h-8 items-center rounded-full [box-shadow:0_10px_6px_rgba(0,0,0,0.5)] focus-within:ring-2 sm:mt-32 sm:max-h-[86px] sm:max-w-[444px] sm:px-4">
-      <CustomLinkIcon className="h-full w-auto shrink-0" />
+      <Image
+        src={customLinkIcon}
+        alt=""
+        unoptimized
+        className="h-full w-auto shrink-0"
+      />
       <Input
         id="slug"
         name="slug"

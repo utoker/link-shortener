@@ -2,7 +2,8 @@
 
 import { useTransition } from 'react';
 import { toast } from 'sonner';
-import CreateLinkIcon from '@icons/create-link-icon.svg';
+import Image from 'next/image';
+import createLinkIcon from '@icons/create-link-icon.webp';
 import CopyIcon from '@icons/copy-icon.svg';
 import DeleteIcon from '@icons/delete-icon.svg';
 
@@ -23,7 +24,12 @@ export default function LinksList() {
       <div className="text-yellow font-fredoka-one container mx-auto mt-12 pt-8 text-center text-2xl">
         <p>Paste your link and press the</p>
         <div className="bg-yellow mx-auto my-2 h-8 w-8 rounded-full sm:my-4 sm:h-14 sm:w-14">
-          <CreateLinkIcon className="mx-auto h-8 w-8 p-1 sm:h-14 sm:w-14 sm:p-2" />
+          <Image
+            src={createLinkIcon}
+            alt=""
+            unoptimized
+            className="mx-auto h-8 w-8 p-1 sm:h-14 sm:w-14 sm:p-2"
+          />
         </div>
         <p>button to shorten it!</p>
         <p className="text-yellow font-fredoka-one pt-4 text-2xl">
@@ -37,7 +43,12 @@ export default function LinksList() {
       <div className="text-yellow font-fredoka-one container mx-auto px-4 text-center text-2xl sm:py-16">
         <p>Paste your link and press</p>
         <div className="bg-yellow mx-auto h-8 w-8 rounded-full sm:h-14 sm:w-14">
-          <CreateLinkIcon className="mx-auto h-8 w-8 p-1 sm:h-14 sm:w-14 sm:p-2" />
+          <Image
+            src={createLinkIcon}
+            alt=""
+            unoptimized
+            className="mx-auto h-8 w-8 p-1 sm:h-14 sm:w-14 sm:p-2"
+          />
         </div>
         <p>to shorten it!</p>
       </div>
