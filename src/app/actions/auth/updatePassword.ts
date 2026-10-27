@@ -3,6 +3,7 @@
 // ────────────────────────────────────────────────────────────────
 'use server';
 
+import { z } from 'zod';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import {
   updatePasswordSchema,
@@ -40,7 +41,7 @@ export async function updatePasswordAction(
   if (!parsed.success) {
     return {
       success: false,
-      fieldErrors: parsed.error.flatten().fieldErrors as UpdatePwFieldErrors,
+      fieldErrors: z.flattenError(parsed.error).fieldErrors as UpdatePwFieldErrors,
     };
   }
 

@@ -108,7 +108,7 @@ export default function Hero() {
     }
 
     const parsed = CreateLinkFormSchema.shape.url.safeParse(trimmed);
-    setUrlError(parsed.success ? '' : parsed.error.errors[0].message);
+    setUrlError(parsed.success ? '' : parsed.error.issues[0].message);
   }, [debouncedUrl]);
 
   /* ───────────────────────────── UI ─────────────────────────────────── */

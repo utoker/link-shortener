@@ -3,6 +3,7 @@
 // Server-action: email + password sign-in via Supabase
 // -----------------------------------------------------------------------------
 'use server';
+import { z } from 'zod';
 import { signInSchema } from '@/lib/schemas/singInSchema';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { ActionResult } from '@/lib/types/actions';
@@ -50,7 +51,7 @@ export async function signInWithPasswordAction(
   if (!validation.success) {
     return {
       success: false,
-      fieldErrors: validation.error.flatten().fieldErrors as SignInFieldErrors,
+      fieldErrors: z.flattenError(validation.error).fieldErrors as SignInFieldErrors,
     };
   }
 

@@ -1,6 +1,7 @@
 'use server';
 
 import { customAlphabet } from 'nanoid';
+import { z } from 'zod';
 import { CreateLinkFormSchema } from '@/lib/schemas/CreateLinkFormSchema';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { ActionResult } from '@/lib/types/actions';
@@ -58,7 +59,7 @@ export async function createLink(
   if (!parse.success) {
     return {
       success: false,
-      fieldErrors: parse.error.flatten().fieldErrors as CreateLinkFieldErrors,
+      fieldErrors: z.flattenError(parse.error).fieldErrors as CreateLinkFieldErrors,
     };
   }
 

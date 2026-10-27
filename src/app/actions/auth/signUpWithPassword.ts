@@ -1,5 +1,6 @@
 'use server';
 
+import { z } from 'zod';
 import { signUpSchema } from '@/lib/schemas/signUpSchema';
 // src/actions/auth/signUpWithPassword.ts
 // -----------------------------------------------------------------------------
@@ -56,7 +57,7 @@ export async function signUpWithPasswordAction(
   if (!validation.success) {
     return {
       success: false,
-      fieldErrors: validation.error.flatten().fieldErrors as SignUpFieldErrors,
+      fieldErrors: z.flattenError(validation.error).fieldErrors as SignUpFieldErrors,
     };
   }
 
