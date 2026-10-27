@@ -5,10 +5,11 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseMiddlewareClient } from './lib/supabase/middleware';
 import { redirectRateLimit, getClientIP } from './lib/rateLimit';
 
-// Run for any path that looks like /slug (skip assets & Next internals)
+// Run only for single-segment paths without a dot, i.e. /slug. Slugs are
+// [A-Za-z0-9_-], so this skips "/", files like /manifest.webmanifest and nested routes.
+// (Next also matches an optional ".json" suffix, so avoid *.json public files.)
 export const config = {
-  matcher:
-    '/:slug((?!_next/|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|webp|svg)$).*)',
+  matcher: '/:slug([^/.]+)',
 };
 
 export async function middleware(req: NextRequest) {

@@ -9,16 +9,18 @@ import Footer from '@/components/Footer';
 
 const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['400', '600', '700', '800'], // pick the weights you actually use
+  weight: ['400', '700'], // pick the weights you actually use
   variable: '--font-poppins', // CSS var name Tailwind will reference
+  preload: false, // only used in the forgot-password modal
 });
+// Latin-only WOFF2 subsets of the original TTFs
 const FredokaOne = localFont({
-  src: '../../public/fonts/FredokaOne-Regular.ttf',
+  src: '../../public/fonts/FredokaOne-Regular.woff2',
   variable: '--font-fredoka-one',
 });
 
 const BalooThambi = localFont({
-  src: '../../public/fonts/BalooThambi-Regular.ttf',
+  src: '../../public/fonts/BalooThambi-Regular.woff2',
   variable: '--font-baloo-thambi',
 });
 

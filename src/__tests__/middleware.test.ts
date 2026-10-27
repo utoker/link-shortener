@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
-import { middleware } from '../middleware';
+import { unstable_doesMiddlewareMatch } from 'next/experimental/testing/server';
+import { config, middleware } from '../middleware';
 
 vi.mock('../lib/rateLimit', () => ({
   redirectRateLimit: {
@@ -119,5 +120,24 @@ describe('Middleware Rate Limiting', () => {
     const response = await middleware(request);
 
     expect(response.status).toBe(200);
+  });
+});
+describe('Middleware matcher', () => {
+  it.each(['/abc123', '/My-link_1'])('should run for slug path %s', (url) => {
+    expect(unstable_doesMiddlewareMatch({ config, url })).toBe(true);
+  });
+
+  it.each([
+    '/',
+    '/manifest.webmanifest',
+    '/favicon.ico',
+    '/robots.txt',
+    '/apple-icon.png',
+    '/Images/logo.svg',
+    '/_next/static/chunks/main.js',
+    '/protected/about',
+    '/auth/callback',
+  ])('should skip %s', (url) => {
+    expect(unstable_doesMiddlewareMatch({ config, url })).toBe(false);
   });
 });
