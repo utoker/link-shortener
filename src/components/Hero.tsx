@@ -7,6 +7,7 @@ import CenterIcon from '@icons/center-icon.svg';
 import { useUserContext } from '@/app/context/UserContext';
 import { CreateLinkFormSchema } from '@/lib/schemas/CreateLinkFormSchema';
 import { useDebounce } from '@/lib/hooks/useDebounce';
+import { ensureProtocol } from '@/lib/utils';
 import { createLink } from '@/app/actions/data/createLink';
 import { checkSlug } from '@/app/actions/data';
 import type { CreateLinkResult } from '@/app/actions/data/createLink';
@@ -107,7 +108,9 @@ export default function Hero() {
       return;
     }
 
-    const parsed = CreateLinkFormSchema.shape.url.safeParse(trimmed);
+    const parsed = CreateLinkFormSchema.shape.url.safeParse(
+      ensureProtocol(trimmed),
+    );
     setUrlError(parsed.success ? '' : parsed.error.issues[0].message);
   }, [debouncedUrl]);
 
@@ -156,9 +159,10 @@ export default function Hero() {
               {helper}
             </p>
 
-            {state.fieldErrors?.url && (
-              <p className="text-red-500">{state.fieldErrors.url[0]}</p>
-            )}
+            {/* live check while typing, else the server's error after submit */}
+            <p id="url-error" aria-live="polite" className="text-red-500">
+              {urlError || state.fieldErrors?.url?.[0]}
+            </p>
 
             {state.success && state.slug && (
               <p>

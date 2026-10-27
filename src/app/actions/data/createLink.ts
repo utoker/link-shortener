@@ -6,6 +6,7 @@ import { CreateLinkFormSchema } from '@/lib/schemas/CreateLinkFormSchema';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { ActionResult } from '@/lib/types/actions';
 import { linkCreationRateLimit } from '@/lib/rateLimit';
+import { ensureProtocol } from '@/lib/utils';
 import { headers } from 'next/headers';
 
 // -----------------------------------------------------------------------------
@@ -49,10 +50,8 @@ export async function createLink(
   }
 
   // ---------- basic sanitising ----------------------------------------------
-  let rawUrl = formData.get('url')?.toString().trim() ?? '';
+  const rawUrl = ensureProtocol(formData.get('url')?.toString().trim() ?? '');
   const rawSlug = formData.get('slug')?.toString() || undefined;
-
-  if (!/^https?:\/\//i.test(rawUrl)) rawUrl = 'https://' + rawUrl;
 
   const parse = CreateLinkFormSchema.safeParse({ url: rawUrl, slug: rawSlug });
 

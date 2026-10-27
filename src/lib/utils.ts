@@ -7,6 +7,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Prefixes `https://` when a URL has no http(s) scheme, so "example.com" is
+ * validated and stored the same way on the client and the server.
+ */
+export function ensureProtocol(url: string): string {
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+}
+
+/**
  * Redirects to a specified path with an encoded message as a query parameter.
  * @param {('error' | 'success')} type - The type of message, either 'error' or 'success'.
  * @param {string} path - The path to redirect to.

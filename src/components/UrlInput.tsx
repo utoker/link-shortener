@@ -30,6 +30,8 @@ export default function UrlInput({
         required
         autoComplete="off"
         disabled={disabled}
+        aria-invalid={!!urlError}
+        aria-describedby={urlError ? 'url-error' : undefined}
       />
 
       <Button
