@@ -36,8 +36,10 @@ describe('Middleware Rate Limiting', () => {
 
     vi.mocked(redirectRateLimit.limit).mockResolvedValue({
       success: true,
+      limit: 100,
       remaining: 50,
       reset: Date.now() + 60000,
+      pending: Promise.resolve(),
     });
 
     vi.mocked(createSupabaseMiddlewareClient).mockReturnValue({
@@ -69,8 +71,10 @@ describe('Middleware Rate Limiting', () => {
 
     vi.mocked(redirectRateLimit.limit).mockResolvedValue({
       success: false,
+      limit: 100,
       remaining: 0,
       reset: Date.now() + 30000,
+      pending: Promise.resolve(),
     });
 
     const request = new NextRequest('http://localhost:3000/test-slug');

@@ -19,7 +19,7 @@ vi.mock('@upstash/ratelimit', () => {
     }),
   }));
   
-  mockRatelimit.slidingWindow = mockSlidingWindow;
+  Object.assign(mockRatelimit, { slidingWindow: mockSlidingWindow });
   
   return {
     Ratelimit: mockRatelimit,

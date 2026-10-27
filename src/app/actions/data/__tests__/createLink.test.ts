@@ -30,8 +30,10 @@ describe('createLink Action', () => {
 
     vi.mocked(linkCreationRateLimit.limit).mockResolvedValue({
       success: false,
+      limit: 10,
       remaining: 0,
       reset: Date.now() + 60000,
+      pending: Promise.resolve(),
     });
 
     const formData = new FormData();
@@ -54,8 +56,10 @@ describe('createLink Action', () => {
 
     vi.mocked(linkCreationRateLimit.limit).mockResolvedValue({
       success: true,
+      limit: 10,
       remaining: 9,
       reset: Date.now() + 60000,
+      pending: Promise.resolve(),
     });
 
     const mockSupabase = {
@@ -96,8 +100,10 @@ describe('createLink Action', () => {
 
     vi.mocked(linkCreationRateLimit.limit).mockResolvedValue({
       success: true,
+      limit: 10,
       remaining: 9,
       reset: Date.now() + 60000,
+      pending: Promise.resolve(),
     });
 
     const formData = new FormData();

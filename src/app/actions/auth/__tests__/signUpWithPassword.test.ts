@@ -30,8 +30,10 @@ describe('signUpWithPasswordAction', () => {
 
     vi.mocked(authRateLimit.limit).mockResolvedValue({
       success: false,
+      limit: 5,
       remaining: 0,
       reset: Date.now() + 60000,
+      pending: Promise.resolve(),
     });
 
     const formData = new FormData();
@@ -57,8 +59,10 @@ describe('signUpWithPasswordAction', () => {
 
     vi.mocked(authRateLimit.limit).mockResolvedValue({
       success: true,
+      limit: 5,
       remaining: 4,
       reset: Date.now() + 60000,
+      pending: Promise.resolve(),
     });
 
     const mockSupabase = {

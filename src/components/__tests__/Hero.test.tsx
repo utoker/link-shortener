@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import type { CreateLinkResult } from '@/app/actions/data/createLink';
 
 vi.mock('@/lib/rateLimit', () => ({
   linkCreationRateLimit: {
@@ -10,7 +11,7 @@ describe('Hero Component Error Handling', () => {
   it('should handle formError in createLinkWithRefresh wrapper', () => {
     const mockFormError = 'Too many link creation attempts. Please wait a minute before trying again.';
     
-    const mockResult = {
+    const mockResult: CreateLinkResult = {
       success: false,
       formError: mockFormError,
     };
@@ -21,7 +22,7 @@ describe('Hero Component Error Handling', () => {
   });
 
   it('should handle success case with slug', () => {
-    const mockResult = {
+    const mockResult: CreateLinkResult = {
       success: true,
       slug: 'abc123',
     };
