@@ -109,7 +109,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     slugs,
     loading,
     refetchUser: fetchUser,
-    refetchLinks: fetchLinks,
+    // anonymous users have no link list – skip the fetch (and its error toast)
+    refetchLinks: async () => {
+      if (user) await fetchLinks();
+    },
     triggerConfetti,
     isConfettiActive,
   };
