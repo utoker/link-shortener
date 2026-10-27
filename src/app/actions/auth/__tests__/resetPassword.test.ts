@@ -68,19 +68,6 @@ describe('resetPasswordAction', () => {
 
     const mockSupabase = {
       auth: {
-        admin: {
-          listUsers: vi.fn().mockResolvedValue({
-            data: {
-              users: [
-                {
-                  email: 'test@example.com',
-                  app_metadata: { provider: 'email' },
-                },
-              ],
-            },
-            error: null,
-          }),
-        },
         resetPasswordForEmail: vi.fn().mockResolvedValue({ error: null }),
       },
     };
@@ -93,7 +80,48 @@ describe('resetPasswordAction', () => {
     const result = await resetPasswordAction({ success: false }, formData);
 
     expect(authRateLimit.limit).toHaveBeenCalledWith('192.168.1.1');
+    expect(mockSupabase.auth.resetPasswordForEmail).toHaveBeenCalledWith(
+      'test@example.com',
+      {
+        redirectTo:
+          'http://localhost:3000/auth/callback?redirect_to=/protected/reset-password',
+      },
+    );
     expect(result.success).toBe(true);
+  });
+
+  it('should return the Supabase error message when sending fails', async () => {
+    const { authRateLimit } = await import('@/lib/rateLimit');
+    const { createSupabaseServerClient } = await import('@/lib/supabase/server');
+    const { headers } = await import('next/headers');
+
+    vi.mocked(headers).mockResolvedValue({
+      get: vi.fn().mockReturnValue('192.168.1.1'),
+    } as any);
+
+    vi.mocked(authRateLimit.limit).mockResolvedValue({
+      success: true,
+      limit: 5,
+      remaining: 4,
+      reset: Date.now() + 60000,
+      pending: Promise.resolve(),
+    });
+
+    vi.mocked(createSupabaseServerClient).mockResolvedValue({
+      auth: {
+        resetPasswordForEmail: vi
+          .fn()
+          .mockResolvedValue({ error: { message: 'Email rate limit exceeded' } }),
+      },
+    } as any);
+
+    const formData = new FormData();
+    formData.append('email', 'test@example.com');
+
+    const result = await resetPasswordAction({ success: false }, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.formError).toBe('Email rate limit exceeded');
   });
 
   it('should return validation error for missing email', async () => {

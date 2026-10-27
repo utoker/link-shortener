@@ -15,8 +15,8 @@ import {
   getUserAction, // ActionResult contract
 } from '@/app/actions/auth';
 
-import type { Link, Slug } from '@/lib/types/database';
-import { getAllSlugs, getUserLinks } from '../actions/data';
+import type { Link } from '@/lib/types/database';
+import { getUserLinks } from '../actions/data';
 
 /* ------------------------------------------------------------------------ */
 /* Context shape                                                            */
@@ -24,7 +24,6 @@ import { getAllSlugs, getUserLinks } from '../actions/data';
 interface UserContextType {
   user: User | null;
   links: Link[] | null;
-  slugs: Slug[] | null;
   loading: boolean;
   refetchUser: () => Promise<void>;
   refetchLinks: () => Promise<void>;
@@ -40,7 +39,6 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [links, setLinks] = useState<Link[] | null>(null);
-  const [slugs, setSlugs] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [isConfettiActive, setConfettiActive] = useState(false);
 
@@ -48,16 +46,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const triggerConfetti = () => {
     setConfettiActive(true);
     setTimeout(() => setConfettiActive(false), 3000);
-  };
-
-  const fetchSlugs = async () => {
-    try {
-      const list = await getAllSlugs(); // still returns string[]
-      setSlugs(list.map((s) => s.slug));
-    } catch (err) {
-      console.error('Error fetching slugs:', err);
-      setSlugs(null);
-    }
   };
 
   const fetchLinks = async () => {
@@ -98,7 +86,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   /* --------------------------- initial load ------------------------------ */
   useEffect(() => {
     startTransition(async () => {
-      await Promise.all([fetchUser(), fetchSlugs()]);
+      await fetchUser();
     });
   }, []);
 
@@ -106,7 +94,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const value: UserContextType = {
     user,
     links,
-    slugs,
     loading,
     refetchUser: fetchUser,
     // anonymous users have no link list – skip the fetch (and its error toast)

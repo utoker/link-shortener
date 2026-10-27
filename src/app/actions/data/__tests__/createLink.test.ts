@@ -68,12 +68,8 @@ describe('createLink Action', () => {
           data: { user: { id: 'user-123' } },
         }),
       },
+      rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
       from: vi.fn().mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
-          }),
-        }),
         insert: vi.fn().mockResolvedValue({ error: null }),
       }),
     };
@@ -86,8 +82,51 @@ describe('createLink Action', () => {
     const result = await createLink({ success: false }, formData);
 
     expect(linkCreationRateLimit.limit).toHaveBeenCalledWith('192.168.1.1');
+    expect(mockSupabase.rpc).toHaveBeenCalledWith('slug_exists', {
+      p_slug: result.slug,
+    });
     expect(result.success).toBe(true);
     expect(result.slug).toBeDefined();
+  });
+
+  it('should reject a custom slug that is already taken', async () => {
+    const { linkCreationRateLimit } = await import('@/lib/rateLimit');
+    const { createSupabaseServerClient } = await import('@/lib/supabase/server');
+    const { headers } = await import('next/headers');
+
+    vi.mocked(headers).mockResolvedValue({
+      get: vi.fn().mockReturnValue('192.168.1.1'),
+    } as any);
+
+    vi.mocked(linkCreationRateLimit.limit).mockResolvedValue({
+      success: true,
+      limit: 10,
+      remaining: 9,
+      reset: Date.now() + 60000,
+      pending: Promise.resolve(),
+    });
+
+    const insert = vi.fn();
+    const mockSupabase = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({ data: { user: null } }),
+      },
+      rpc: vi.fn().mockResolvedValue({ data: true, error: null }),
+      from: vi.fn().mockReturnValue({ insert }),
+    };
+
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(mockSupabase as any);
+
+    const formData = new FormData();
+    formData.append('url', 'https://example.com');
+    formData.append('slug', 'taken');
+
+    const result = await createLink({ success: false }, formData);
+
+    expect(mockSupabase.rpc).toHaveBeenCalledWith('slug_exists', { p_slug: 'taken' });
+    expect(result.success).toBe(false);
+    expect(result.fieldErrors?.slug).toEqual(['This slug is already taken.']);
+    expect(insert).not.toHaveBeenCalled();
   });
 
   it('should return validation error for invalid URL', async () => {

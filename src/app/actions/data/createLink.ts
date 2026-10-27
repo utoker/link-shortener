@@ -78,12 +78,10 @@ export async function createLink(
       let attempts = 0;
       while (attempts < 5) {
         const candidate = generateCleanSlug();
-        const { data: existing } = await supabase
-          .from('links')
-          .select('id')
-          .eq('slug', candidate)
-          .maybeSingle();
-        if (!existing) {
+        const { data: taken } = await supabase.rpc('slug_exists', {
+          p_slug: candidate,
+        });
+        if (!taken) {
           slug = candidate;
           break;
         }
@@ -97,13 +95,11 @@ export async function createLink(
       }
     } else {
       /* user-provided slug must be unique */
-      const { data: existing } = await supabase
-        .from('links')
-        .select('id')
-        .eq('slug', slug)
-        .maybeSingle();
+      const { data: taken } = await supabase.rpc('slug_exists', {
+        p_slug: slug,
+      });
 
-      if (existing) {
+      if (taken) {
         return {
           success: false,
           fieldErrors: { slug: ['This slug is already taken.'] },

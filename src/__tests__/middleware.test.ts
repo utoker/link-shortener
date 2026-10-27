@@ -12,13 +12,6 @@ vi.mock('../lib/rateLimit', () => ({
 vi.mock('../lib/supabase/middleware', () => ({
   createSupabaseMiddlewareClient: vi.fn().mockReturnValue({
     supabase: {
-      from: vi.fn().mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            maybeSingle: vi.fn(),
-          }),
-        }),
-      }),
       rpc: vi.fn(),
     },
     res: new NextResponse(),
@@ -42,28 +35,50 @@ describe('Middleware Rate Limiting', () => {
       pending: Promise.resolve(),
     });
 
+    const rpc = vi.fn().mockImplementation(async (fn: string) =>
+      fn === 'resolve_slug'
+        ? { data: 'https://example.com', error: null }
+        : { data: 1, error: null },
+    );
+
     vi.mocked(createSupabaseMiddlewareClient).mockReturnValue({
-      supabase: {
-        from: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              maybeSingle: vi.fn().mockResolvedValue({
-                data: { url: 'https://example.com' },
-                error: null,
-              }),
-            }),
-          }),
-        }),
-        rpc: vi.fn().mockResolvedValue({ error: null }),
-      } as any,
+      supabase: { rpc } as any,
       res: new NextResponse(),
     });
 
     const request = new NextRequest('http://localhost:3000/test-slug');
     const response = await middleware(request);
 
+    expect(rpc).toHaveBeenCalledWith('resolve_slug', { p_slug: 'test-slug' });
+    expect(rpc).toHaveBeenCalledWith('increment_click', { p_slug: 'test-slug' });
     expect(response.status).toBe(302);
     expect(response.headers.get('location')).toBe('https://example.com/');
+  });
+
+  it('should rewrite to 404 when the slug does not exist', async () => {
+    const { redirectRateLimit } = await import('../lib/rateLimit');
+    const { createSupabaseMiddlewareClient } = await import('../lib/supabase/middleware');
+
+    vi.mocked(redirectRateLimit.limit).mockResolvedValue({
+      success: true,
+      limit: 100,
+      remaining: 50,
+      reset: Date.now() + 60000,
+      pending: Promise.resolve(),
+    });
+
+    const rpc = vi.fn().mockResolvedValue({ data: null, error: null });
+
+    vi.mocked(createSupabaseMiddlewareClient).mockReturnValue({
+      supabase: { rpc } as any,
+      res: new NextResponse(),
+    });
+
+    const request = new NextRequest('http://localhost:3000/missing-slug');
+    const response = await middleware(request);
+
+    expect(response.headers.get('x-middleware-rewrite')).toBe('http://localhost:3000/404');
+    expect(rpc).not.toHaveBeenCalledWith('increment_click', expect.anything());
   });
 
   it('should return 429 when rate limit is exceeded', async () => {

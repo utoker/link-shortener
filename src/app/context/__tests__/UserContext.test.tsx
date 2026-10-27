@@ -4,7 +4,7 @@ import type { User } from '@supabase/supabase-js';
 import type { Link } from '@/lib/types/database';
 import { toast } from 'sonner';
 import { getUserAction } from '@/app/actions/auth';
-import { getAllSlugs, getUserLinks } from '@/app/actions/data';
+import { getUserLinks } from '@/app/actions/data';
 import { UserProvider, useUserContext } from '../UserContext';
 
 vi.mock('@/app/actions/auth', () => ({
@@ -12,7 +12,6 @@ vi.mock('@/app/actions/auth', () => ({
 }));
 
 vi.mock('@/app/actions/data', () => ({
-  getAllSlugs: vi.fn(),
   getUserLinks: vi.fn(),
 }));
 
@@ -29,7 +28,6 @@ const renderUserContext = async () => {
 describe('UserContext refetchLinks', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getAllSlugs).mockResolvedValue([]);
   });
 
   it('should skip fetching links when signed out', async () => {

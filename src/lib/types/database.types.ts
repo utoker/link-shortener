@@ -73,7 +73,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_click: {
+        Args: { p_slug: string }
+        Returns: number
+      }
+      resolve_slug: {
+        Args: { p_slug: string }
+        Returns: string
+      }
+      slug_exists: {
+        Args: { p_slug: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

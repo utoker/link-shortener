@@ -25,7 +25,7 @@ export default function ForgotPasswordForm({
   /* Side-effects */
   useEffect(() => {
     if (state.success) {
-      toast.success('Password-reset email sent!');
+      toast.success('If an account exists for that email, a reset link is on its way.');
       formRef.current?.reset();
       onSuccess?.();
     }

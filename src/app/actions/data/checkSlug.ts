@@ -7,11 +7,7 @@ export async function checkSlug(slug: string) {
 
   const supabase = await createSupabaseServerClient();
 
-  const { data } = await supabase
-    .from('links')
-    .select('slug')
-    .eq('slug', slug)
-    .maybeSingle();
+  const { data: taken } = await supabase.rpc('slug_exists', { p_slug: slug });
 
-  return !data;
+  return !taken;
 }

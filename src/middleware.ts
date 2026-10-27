@@ -36,18 +36,16 @@ export async function middleware(req: NextRequest) {
   // 1️⃣  Supabase client that can read *and* set cookies
   const { supabase, res: draftRes } = createSupabaseMiddlewareClient(req);
 
-  // 2️⃣  Look up the destination URL
-  const { data: link, error: linkErr } = await supabase
-    .from('links')
-    .select('url')
-    .eq('slug', slug)
-    .maybeSingle();
+  // 2️⃣  Look up the destination URL (RPC – links rows are owner-only under RLS)
+  const { data: url, error: linkErr } = await supabase.rpc('resolve_slug', {
+    p_slug: slug,
+  });
 
   if (linkErr) {
     console.error('slug lookup failed:', linkErr);
     return draftRes; // 500 in prod, 200 shell in dev
   }
-  if (!link) return NextResponse.rewrite(new URL('/404', req.url));
+  if (!url) return NextResponse.rewrite(new URL('/404', req.url));
 
   // 3️⃣  Fire-and-forget click counter (doesn’t block the redirect)
   (async () => {
@@ -57,7 +55,7 @@ export async function middleware(req: NextRequest) {
   })();
 
   // 4️⃣  Lean 302 redirect (0-byte body)
-  const res = NextResponse.redirect(link.url, { status: 302 });
+  const res = NextResponse.redirect(url, { status: 302 });
 
   // 5️⃣  Propagate any Set-Cookie from Supabase (refresh token, etc.)
   const cookie = draftRes.headers.get('set-cookie');

@@ -52,31 +52,8 @@ export async function resetPasswordAction(
     const origin =
       (await headers()).get('origin') ?? process.env.NEXT_PUBLIC_SITE_URL!;
 
-    // Make sure the user exists and is an email provider
-    const { data, error: listErr } = await supabase.auth.admin.listUsers();
-    if (listErr || !data) {
-      return { success: false, formError: 'Failed to fetch user details.' };
-    }
-
-    const user = data.users.find((u) => u.email === email);
-    if (!user) {
-      return {
-        success: false,
-        fieldErrors: { email: ['No account found with this email.'] },
-      };
-    }
-    if (user.app_metadata?.provider !== 'email') {
-      return {
-        success: false,
-        fieldErrors: {
-          email: [
-            `This account is linked with a ${user.app_metadata?.provider} provider.`,
-          ],
-        },
-      };
-    }
-
-    // Trigger Supabase reset-password email
+    // Trigger Supabase reset-password email. Supabase succeeds silently for
+    // unknown addresses, so the response never reveals whether an account exists.
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${origin}/auth/callback?redirect_to=/protected/reset-password`,
     });
