@@ -26,19 +26,22 @@ const BalooThambi = localFont({
 
 // Optional: Add metadata for <head>
 export const metadata: Metadata = {
+  // Absolute base for the share image (app/opengraph-image.png) and other
+  // metadata URLs, so they always point at reqq.cc, never a vercel.app host.
+  metadataBase: new URL('https://reqq.cc'),
   title: 'Reqq.cc',
   description: 'Shorten your links with ease.',
   openGraph: {
     title: 'Reqq.cc',
-    description: 'Shorten your links with ease. Free, fast, and private.',
+    description: 'Shorten your links with ease. Free, fast and private.',
     url: 'https://reqq.cc',
     siteName: 'Reqq.cc',
     type: 'website',
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Reqq.cc',
-    description: 'Shorten your links with ease. Free, fast, and private.',
+    description: 'Shorten your links with ease. Free, fast and private.',
   },
 };
 
