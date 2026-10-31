@@ -15,13 +15,19 @@ vi.mock('@/lib/supabase/admin', () => ({
   createSupabaseAdminClient: vi.fn(),
 }));
 
+vi.mock('@/lib/safeBrowsing', () => ({
+  checkUrlSafety: vi.fn(),
+}));
+
 vi.mock('next/headers', () => ({
   headers: vi.fn(),
 }));
 
 describe('createLink Action', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    const { checkUrlSafety } = await import('@/lib/safeBrowsing');
+    vi.mocked(checkUrlSafety).mockResolvedValue({ verdict: 'safe' });
   });
 
   it('should return rate limit error when limit exceeded', async () => {
@@ -206,6 +212,112 @@ describe('createLink Action', () => {
     ]);
     expect(createSupabaseServerClient).not.toHaveBeenCalled();
     expect(createSupabaseAdminClient).not.toHaveBeenCalled();
+  });
+
+  it('should refuse a URL that Google Safe Browsing reports as unsafe', async () => {
+    const { linkCreationRateLimit } = await import('@/lib/rateLimit');
+    const { createSupabaseServerClient } = await import('@/lib/supabase/server');
+    const { createSupabaseAdminClient } = await import('@/lib/supabase/admin');
+    const { checkUrlSafety } = await import('@/lib/safeBrowsing');
+    const { headers } = await import('next/headers');
+
+    vi.mocked(headers).mockResolvedValue({
+      get: vi.fn().mockReturnValue('192.168.1.1'),
+    } as any);
+
+    vi.mocked(linkCreationRateLimit.limit).mockResolvedValue({
+      success: true,
+      limit: 10,
+      remaining: 9,
+      reset: Date.now() + 60000,
+      pending: Promise.resolve(),
+    });
+
+    const mockSupabase = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({ data: { user: null } }),
+      },
+      rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
+      from: vi.fn(),
+    };
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(mockSupabase as any);
+
+    const insert = vi.fn().mockResolvedValue({ error: null });
+    vi.mocked(createSupabaseAdminClient).mockReturnValue({
+      from: vi.fn().mockReturnValue({ insert }),
+    } as any);
+    vi.mocked(checkUrlSafety).mockResolvedValue({
+      verdict: 'unsafe',
+      threats: ['SOCIAL_ENGINEERING'],
+    });
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const formData = new FormData();
+    formData.append('url', 'https://bad.example/login');
+
+    const result = await createLink({ success: false }, formData);
+
+    expect(checkUrlSafety).toHaveBeenCalledWith('https://bad.example/login');
+    expect(result.success).toBe(false);
+    expect(result.fieldErrors?.url).toEqual([
+      'Google Safe Browsing reports this link as unsafe.',
+    ]);
+    expect(insert).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it('should still create the link when Google cannot be reached', async () => {
+    const { linkCreationRateLimit } = await import('@/lib/rateLimit');
+    const { createSupabaseServerClient } = await import('@/lib/supabase/server');
+    const { createSupabaseAdminClient } = await import('@/lib/supabase/admin');
+    const { checkUrlSafety } = await import('@/lib/safeBrowsing');
+    const { headers } = await import('next/headers');
+
+    vi.mocked(headers).mockResolvedValue({
+      get: vi.fn().mockReturnValue('192.168.1.1'),
+    } as any);
+
+    vi.mocked(linkCreationRateLimit.limit).mockResolvedValue({
+      success: true,
+      limit: 10,
+      remaining: 9,
+      reset: Date.now() + 60000,
+      pending: Promise.resolve(),
+    });
+
+    const mockSupabase = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({ data: { user: null } }),
+      },
+      rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
+      from: vi.fn(),
+    };
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(mockSupabase as any);
+
+    const insert = vi.fn().mockResolvedValue({ error: null });
+    vi.mocked(createSupabaseAdminClient).mockReturnValue({
+      from: vi.fn().mockReturnValue({ insert }),
+    } as any);
+    vi.mocked(checkUrlSafety).mockResolvedValue({
+      verdict: 'unknown',
+      reason: 'HTTP 503',
+    });
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const formData = new FormData();
+    formData.append('url', 'https://example.com/page');
+
+    const result = await createLink({ success: false }, formData);
+
+    expect(result.success).toBe(true);
+    expect(insert).toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith(
+      'createLink: Safe Browsing check skipped:',
+      'HTTP 503',
+      'https://example.com/page',
+    );
+    error.mockRestore();
   });
 
   it('should return validation error for invalid URL', async () => {

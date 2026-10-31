@@ -7,6 +7,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { ActionResult } from '@/lib/types/actions';
 import { linkCreationRateLimit } from '@/lib/rateLimit';
+import { checkUrlSafety } from '@/lib/safeBrowsing';
 import { ensureProtocol } from '@/lib/utils';
 import { headers } from 'next/headers';
 
@@ -65,6 +66,10 @@ export async function createLink(
 
   const { url, slug: maybeSlug } = parse.data;
 
+  // Ask Google while the slug is being checked; the answer is needed only
+  // before the insert. checkUrlSafety never rejects.
+  const safety = checkUrlSafety(url);
+
   try {
     const supabase = await createSupabaseServerClient();
     const {
@@ -108,14 +113,37 @@ export async function createLink(
       }
     }
 
+    // ---------- Google Safe Browsing ----------------------------------------
+    const result = await safety;
+    if (result.verdict === 'unsafe') {
+      console.warn('createLink: refused unsafe URL', url, result.threats);
+      return {
+        success: false,
+        fieldErrors: {
+          url: ['Google Safe Browsing reports this link as unsafe.'],
+        },
+      };
+    }
+    if (result.verdict === 'unknown') {
+      // Keep the service working when Google can't answer; log it so the
+      // link can be re-checked later.
+      console.error(
+        'createLink: Safe Browsing check skipped:',
+        result.reason,
+        url,
+      );
+    }
+
     // ---------- insert -------------------------------------------------------
     // Browsers can't insert links, so this is the only way a link is created.
-    const { error } = await createSupabaseAdminClient().from('links').insert({
-      url,
-      slug,
-      user_id: user?.id ?? null,
-      click_count: 0,
-    });
+    const { error } = await createSupabaseAdminClient()
+      .from('links')
+      .insert({
+        url,
+        slug,
+        user_id: user?.id ?? null,
+        click_count: 0,
+      });
 
     if (error) {
       console.error('createLink insert error:', error);

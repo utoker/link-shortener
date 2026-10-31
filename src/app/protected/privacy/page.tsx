@@ -5,7 +5,7 @@ export const metadata = {
 };
 
 export default function PrivacyPage() {
-  const lastUpdated = '2025-07-27'; // update when you change the policy
+  const lastUpdated = '2026-10-31'; // update when you change the policy
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 px-4 py-10">
@@ -69,6 +69,11 @@ export default function PrivacyPage() {
           We do not sell personal information. We share data only with service
           providers who help us operate (e.g., hosting, email, payments) under
           appropriate safeguards, or when required by law.
+        </p>
+        <p>
+          When you create a link, its destination URL is sent to Google Safe
+          Browsing to check it for malware and phishing. Links Google reports as
+          unsafe are refused.
         </p>
       </section>
 
