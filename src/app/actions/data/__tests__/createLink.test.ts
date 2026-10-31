@@ -177,6 +177,37 @@ describe('createLink Action', () => {
     expect(createSupabaseAdminClient).not.toHaveBeenCalled();
   });
 
+  it('should reject a link to another shortener before touching the database', async () => {
+    const { linkCreationRateLimit } = await import('@/lib/rateLimit');
+    const { createSupabaseServerClient } = await import('@/lib/supabase/server');
+    const { createSupabaseAdminClient } = await import('@/lib/supabase/admin');
+    const { headers } = await import('next/headers');
+
+    vi.mocked(headers).mockResolvedValue({
+      get: vi.fn().mockReturnValue('192.168.1.1'),
+    } as any);
+
+    vi.mocked(linkCreationRateLimit.limit).mockResolvedValue({
+      success: true,
+      limit: 10,
+      remaining: 9,
+      reset: Date.now() + 60000,
+      pending: Promise.resolve(),
+    });
+
+    const formData = new FormData();
+    formData.append('url', 'bit.ly/abc');
+
+    const result = await createLink({ success: false }, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.fieldErrors?.url).toEqual([
+      'Links to other URL shorteners are not allowed. Use the full destination link.',
+    ]);
+    expect(createSupabaseServerClient).not.toHaveBeenCalled();
+    expect(createSupabaseAdminClient).not.toHaveBeenCalled();
+  });
+
   it('should return validation error for invalid URL', async () => {
     const { linkCreationRateLimit } = await import('@/lib/rateLimit');
     const { headers } = await import('next/headers');
