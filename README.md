@@ -62,11 +62,13 @@ pnpm dev
 
 ### Environment variables
 
-| Variable                        | Example                   | Description                       |
-| ------------------------------- | ------------------------- | --------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`      | `https://xyz.supabase.co` | Your Supabase URL                 |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOi...`           | Public anon key                   |
-| `SUPABASE_SERVICE_ROLE_KEY`     | _(server only)_           | Used in privileged Server Actions |
+| Variable                        | Example                   | Description                              |
+| ------------------------------- | ------------------------- | ---------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | `https://xyz.supabase.co` | Your Supabase URL                        |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOi...`           | Public anon key                          |
+| `UPSTASH_REDIS_REST_URL`        | `https://xyz.upstash.io`  | Upstash Redis for rate limiting          |
+| `UPSTASH_REDIS_REST_TOKEN`      | _(server only)_           | Upstash Redis token                      |
+| `NEXT_PUBLIC_SITE_URL`          | `https://reqq.cc`         | Fallback origin for password-reset links |
 
 ---
 
