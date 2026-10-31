@@ -14,7 +14,7 @@ export default function Footer() {
           <div className="max-w-2xl text-sm text-white/70">
             <p>
               <strong className="text-white">reqq.cc</strong> — a fast, free URL
-              shortener. Donations help cover hosting, domain, and monitoring.
+              shortener. Donations help cover hosting, domain and monitoring.
             </p>
           </div>
 

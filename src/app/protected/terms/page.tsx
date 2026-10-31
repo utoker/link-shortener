@@ -40,20 +40,20 @@ export default function TermsPage() {
             Violate any law or third‑party rights (including IP/copyright).
           </li>
           <li>
-            Contain or distribute malware, spyware, or attempt credential theft.
+            Contain or distribute malware or spyware, or attempt credential
+            theft.
           </li>
           <li>
-            Facilitate phishing, scams, spam, or deceptive/misattributed
-            content.
+            Facilitate phishing, scams, spam or deceptive/misattributed content.
           </li>
           <li>
-            Incite violence, harassment, or hate; or sexual content involving
+            Incite violence, harassment or hate; or sexual content involving
             minors.
           </li>
           <li>Bypass paywalls/DRM or encourage illegal activity.</li>
         </ul>
         <p>
-          We may remove links, block destinations or domains, rate‑limit usage,
+          We may remove links, block destinations or domains, rate‑limit usage
           or suspend accounts to protect users and comply with law.
         </p>
       </section>
@@ -83,7 +83,7 @@ export default function TermsPage() {
             Privacy Policy
           </a>{' '}
           for details. Refunds are generally not provided except for duplicate,
-          accidental, or unauthorized charges—contact{' '}
+          accidental or unauthorized charges—contact{' '}
           <a className="underline" href="mailto:support@reqq.cc">
             support@reqq.cc
           </a>
@@ -125,8 +125,8 @@ export default function TermsPage() {
         <h2 className="text-xl font-semibold">8) Limitation of liability</h2>
         <p>
           To the fullest extent permitted by law, reqq.cc and its operator are
-          not liable for indirect, incidental, special, consequential, or
-          exemplary damages, or for loss of profits, data, or goodwill arising
+          not liable for indirect, incidental, special, consequential or
+          exemplary damages, or for loss of profits, data or goodwill arising
           from your use of the Service.
         </p>
       </section>

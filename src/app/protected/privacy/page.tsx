@@ -1,7 +1,7 @@
 export const metadata = {
   title: 'Privacy Policy – reqq.cc',
   description:
-    'Privacy Policy describing what data reqq.cc collects, why, and your choices.',
+    'Privacy Policy describing what data reqq.cc collects, why and your choices.',
 };
 
 export default function PrivacyPage() {
@@ -17,8 +17,8 @@ export default function PrivacyPage() {
       <section className="space-y-3">
         <p>
           This Policy explains what information <strong>reqq.cc</strong>{' '}
-          collects, how it’s used, and your choices. We keep data minimal and
-          use it only to operate, secure, and improve the Service.
+          collects, how it’s used and your choices. We keep data minimal and use
+          it only to operate, secure and improve the Service.
         </p>
       </section>
 
@@ -31,12 +31,12 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong>Link data</strong>: the destination URL, short slug,
-            timestamps, and limited metrics (e.g., click counts).
+            timestamps and limited metrics (e.g., click counts).
           </li>
           <li>
-            <strong>Technical logs</strong>: IP address, user‑agent, referrer,
+            <strong>Technical logs</strong>: IP address, user‑agent, referrer
             and request metadata captured by our infrastructure for security,
-            rate‑limiting, and abuse prevention.
+            rate‑limiting and abuse prevention.
           </li>
           <li>
             <strong>Cookies/local storage</strong>: used to support
@@ -55,7 +55,7 @@ export default function PrivacyPage() {
         <h2 className="text-xl font-semibold">How we use information</h2>
         <ul className="list-disc space-y-1 pl-5">
           <li>Provide the Service and maintain functionality.</li>
-          <li>Secure the Service (prevent abuse, spam, and fraud).</li>
+          <li>Secure the Service (prevent abuse, spam and fraud).</li>
           <li>
             Communicate with you about your account or reports you submit.
           </li>
@@ -121,7 +121,7 @@ export default function PrivacyPage() {
         <p>
           The Service is operated in the United States. If you access it from
           other regions, you consent to processing in the U.S. Subject to local
-          law, you may have rights to access, correct, or delete certain
+          law, you may have rights to access, correct or delete certain
           data—contact us to exercise these rights.
         </p>
       </section>

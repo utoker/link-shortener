@@ -1,7 +1,7 @@
 export const metadata = {
   title: 'About – reqq.cc',
   description:
-    'What reqq.cc is, how it works, acceptable use, and how to support the project.',
+    'What reqq.cc is, how it works, acceptable use and how to support the project.',
 };
 
 export default function AboutPage() {
@@ -18,7 +18,7 @@ export default function AboutPage() {
         <h2 className="text-xl font-semibold">What is it?</h2>
         <p>
           <strong>reqq.cc</strong> is a fast, free URL shortener I maintain as a
-          solo developer. Paste a long link, optionally customize the slug, and
+          solo developer. Paste a long link, optionally customize the slug and
           share the short link. There are no paid tiers—keeping it simple and
           useful is the goal.
         </p>
@@ -64,15 +64,15 @@ export default function AboutPage() {
         </p>
         <ul className="list-disc space-y-1 pl-5">
           <li>Illegal content; harassment or incitement to violence.</li>
-          <li>Phishing, malware, spyware, or attempts to steal credentials.</li>
-          <li>Spam, bulk unsolicited messaging, or deceptive redirects.</li>
+          <li>Phishing, malware, spyware or attempts to steal credentials.</li>
+          <li>Spam, bulk unsolicited messaging or deceptive redirects.</li>
           <li>
             Sexual content involving minors; non‑consensual intimate imagery.
           </li>
           <li>Infringement of intellectual property rights.</li>
         </ul>
         <p>
-          We may remove links, block domains, or suspend accounts that violate
+          We may remove links, block domains or suspend accounts that violate
           these rules.
         </p>
       </section>
@@ -93,7 +93,7 @@ export default function AboutPage() {
         <h2 className="text-xl font-semibold">Refunds for donations</h2>
         <p>
           Donations help cover ongoing costs and are generally{' '}
-          <strong>non‑refundable</strong>. If you made a duplicate, accidental,
+          <strong>non‑refundable</strong>. If you made a duplicate, accidental
           or unauthorized donation, contact{' '}
           <a className="underline" href="mailto:utoker1@gmail.com">
             utoker1@gmail.com

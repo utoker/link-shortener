@@ -23,8 +23,7 @@ export const CreateLinkFormSchema = z.object({
     .string()
     .max(64, 'Slug must be 64 characters or fewer')
     .regex(/^[a-zA-Z0-9_-]*$/, {
-      error:
-        'Slug can only contain letters, numbers, dashes, and underscores',
+      error: 'Slug can only contain letters, numbers, dashes and underscores',
     })
     .refine((slug) => !isReservedSlug(slug), {
       error: 'This slug is reserved.',
