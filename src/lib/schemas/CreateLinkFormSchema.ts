@@ -4,7 +4,13 @@ import { isOwnUrl, isShortenerUrl } from '@/lib/blockedUrls';
 
 export const CreateLinkFormSchema = z.object({
   url: z
-    .url('Please enter a valid URL (e.g., https://example.com)')
+    .url({
+      // Only characters a real host can have. Chrome's URL parser accepts
+      // "exa mple.com" (as "exa%20mple.com") while the server's rejects it,
+      // so without this the browser and the server disagree.
+      hostname: /^([a-z0-9_.-]+|\[[0-9a-f:.]+\])$/,
+      error: 'Please enter a valid URL (e.g., https://example.com)',
+    })
     .min(1, 'URL is required')
     .refine((url) => !isOwnUrl(url), {
       error: 'That is already a reqq.cc link.',

@@ -78,6 +78,31 @@ describe('CreateLinkFormSchema url', () => {
     expect(url.safeParse('https://youtu.be/abc').success).toBe(true);
   });
 
+  it('should refuse hosts with spaces however the browser encodes them', () => {
+    // Node's URL parser throws on the space; Chrome's turns it into %20
+    for (const input of [
+      'https://exa mple.com',
+      'https://exa%20mple.com',
+      'https://exa"mple.com',
+    ]) {
+      expect(url.safeParse(input).error?.issues[0].message).toBe(
+        'Please enter a valid URL (e.g., https://example.com)',
+      );
+    }
+  });
+
+  it('should accept international, IPv6 and underscore hosts', () => {
+    for (const input of [
+      'https://münchen.de/',
+      'https://[::1]/',
+      'https://my_site.example.com/',
+      'https://example.com./x',
+      'https://example.com/my page',
+    ]) {
+      expect(url.safeParse(input).success).toBe(true);
+    }
+  });
+
   it('should still report an invalid URL as invalid', () => {
     const result = url.safeParse('https://exa mple.com');
     expect(result.error?.issues.map((i) => i.message)).toEqual([
