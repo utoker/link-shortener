@@ -11,6 +11,10 @@ vi.mock('@/lib/supabase/server', () => ({
   createSupabaseServerClient: vi.fn(),
 }));
 
+vi.mock('@/lib/supabase/admin', () => ({
+  createSupabaseAdminClient: vi.fn(),
+}));
+
 vi.mock('next/headers', () => ({
   headers: vi.fn(),
 }));
@@ -48,6 +52,7 @@ describe('createLink Action', () => {
   it('should proceed with link creation when rate limit allows', async () => {
     const { linkCreationRateLimit } = await import('@/lib/rateLimit');
     const { createSupabaseServerClient } = await import('@/lib/supabase/server');
+    const { createSupabaseAdminClient } = await import('@/lib/supabase/admin');
     const { headers } = await import('next/headers');
 
     vi.mocked(headers).mockResolvedValue({
@@ -69,12 +74,14 @@ describe('createLink Action', () => {
         }),
       },
       rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
-      from: vi.fn().mockReturnValue({
-        insert: vi.fn().mockResolvedValue({ error: null }),
-      }),
+      from: vi.fn(),
     };
 
     vi.mocked(createSupabaseServerClient).mockResolvedValue(mockSupabase as any);
+
+    const insert = vi.fn().mockResolvedValue({ error: null });
+    const mockAdmin = { from: vi.fn().mockReturnValue({ insert }) };
+    vi.mocked(createSupabaseAdminClient).mockReturnValue(mockAdmin as any);
 
     const formData = new FormData();
     formData.append('url', 'https://example.com');
@@ -87,6 +94,15 @@ describe('createLink Action', () => {
     });
     expect(result.success).toBe(true);
     expect(result.slug).toBeDefined();
+    // the insert goes through the secret-key client, owned by the signed-in user
+    expect(mockSupabase.from).not.toHaveBeenCalled();
+    expect(mockAdmin.from).toHaveBeenCalledWith('links');
+    expect(insert).toHaveBeenCalledWith({
+      url: 'https://example.com',
+      slug: result.slug,
+      user_id: 'user-123',
+      click_count: 0,
+    });
   });
 
   it('should reject a custom slug that is already taken', async () => {
@@ -116,6 +132,7 @@ describe('createLink Action', () => {
     };
 
     vi.mocked(createSupabaseServerClient).mockResolvedValue(mockSupabase as any);
+    const { createSupabaseAdminClient } = await import('@/lib/supabase/admin');
 
     const formData = new FormData();
     formData.append('url', 'https://example.com');
@@ -127,6 +144,7 @@ describe('createLink Action', () => {
     expect(result.success).toBe(false);
     expect(result.fieldErrors?.slug).toEqual(['This slug is already taken.']);
     expect(insert).not.toHaveBeenCalled();
+    expect(createSupabaseAdminClient).not.toHaveBeenCalled();
   });
 
   it('should return validation error for invalid URL', async () => {

@@ -66,6 +66,7 @@ pnpm dev
 | ------------------------------- | ------------------------- | ---------------------------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`      | `https://xyz.supabase.co` | Your Supabase URL                        |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOi...`           | Public anon key                          |
+| `SUPABASE_SECRET_KEY`           | _(server only)_           | Secret key; the server inserts links     |
 | `UPSTASH_REDIS_REST_URL`        | `https://xyz.upstash.io`  | Upstash Redis for rate limiting          |
 | `UPSTASH_REDIS_REST_TOKEN`      | _(server only)_           | Upstash Redis token                      |
 | `NEXT_PUBLIC_SITE_URL`          | `https://reqq.cc`         | Fallback origin for password-reset links |

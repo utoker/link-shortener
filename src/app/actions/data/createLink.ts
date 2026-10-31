@@ -4,6 +4,7 @@ import { customAlphabet } from 'nanoid';
 import { z } from 'zod';
 import { CreateLinkFormSchema } from '@/lib/schemas/CreateLinkFormSchema';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { ActionResult } from '@/lib/types/actions';
 import { linkCreationRateLimit } from '@/lib/rateLimit';
 import { ensureProtocol } from '@/lib/utils';
@@ -108,7 +109,8 @@ export async function createLink(
     }
 
     // ---------- insert -------------------------------------------------------
-    const { error } = await supabase.from('links').insert({
+    // Browsers can't insert links, so this is the only way a link is created.
+    const { error } = await createSupabaseAdminClient().from('links').insert({
       url,
       slug,
       user_id: user?.id ?? null,
