@@ -12,16 +12,17 @@ export const config = {
   matcher: '/:slug([^/.]+)',
 };
 
+const APP_PAGES = new Set(['about', 'terms', 'privacy', 'protected', 'auth']);
+
 export async function middleware(req: NextRequest) {
   const slug = req.nextUrl.pathname.slice(1); // "/yxzh5x" → "yxzh5x"
 
   // If no slug is present, we assume it's the home page
   if (!slug) return NextResponse.next(); // home page → normal routing
 
-   // Skip redirect for /protected and /auth routes
-  if (slug === 'protected' || slug === 'auth' || slug.startsWith('protected/') || slug.startsWith('auth/')) {
-    return NextResponse.next();
-  }
+  // App pages share the /slug shape (they are reserved slugs, so no short link
+  // can take them); /protected/* and /auth/* never match, but skip them too.
+  if (APP_PAGES.has(slug.split('/')[0])) return NextResponse.next();
 
   // Rate limiting for redirects
   const ip = getClientIP(req);

@@ -35,13 +35,13 @@ export default function Footer() {
 
         {/* Link rows */}
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm text-white/80 sm:grid-cols-3 md:grid-cols-6">
-          <Link href="/protected/about" className="hover:underline">
+          <Link href="/about" className="hover:underline">
             About
           </Link>
-          <Link href="/protected/terms" className="hover:underline">
+          <Link href="/terms" className="hover:underline">
             Terms
           </Link>
-          <Link href="/protected/privacy" className="hover:underline">
+          <Link href="/privacy" className="hover:underline">
             Privacy
           </Link>
           {/* <Link href="/report" className="hover:underline">Report abuse</Link> */}
@@ -56,11 +56,11 @@ export default function Footer() {
           <p>© {year} reqq.cc — All rights reserved.</p>
           <p>
             By using reqq.cc you agree to our{' '}
-            <Link href="/protected/terms" className="underline">
+            <Link href="/terms" className="underline">
               Terms
             </Link>{' '}
             and{' '}
-            <Link href="/protected/privacy" className="underline">
+            <Link href="/privacy" className="underline">
               Privacy Policy
             </Link>
             .

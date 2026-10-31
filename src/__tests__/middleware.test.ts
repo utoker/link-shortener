@@ -115,6 +115,21 @@ describe('Middleware Rate Limiting', () => {
     expect(response.status).toBe(200);
   });
 
+  it.each(['/about', '/terms', '/privacy'])(
+    'should let the %s page through without a slug lookup',
+    async (path) => {
+      const { redirectRateLimit } = await import('../lib/rateLimit');
+      const { createSupabaseMiddlewareClient } = await import('../lib/supabase/middleware');
+
+      const response = await middleware(new NextRequest(`http://localhost:3000${path}`));
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('x-middleware-next')).toBe('1');
+      expect(redirectRateLimit.limit).not.toHaveBeenCalled();
+      expect(createSupabaseMiddlewareClient).not.toHaveBeenCalled();
+    },
+  );
+
   it('should skip rate limiting for home page', async () => {
     const request = new NextRequest('http://localhost:3000/');
     const response = await middleware(request);
