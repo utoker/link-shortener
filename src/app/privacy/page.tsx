@@ -2,6 +2,7 @@ export const metadata = {
   title: 'Privacy Policy – reqq.cc',
   description:
     'Privacy Policy describing what data reqq.cc collects, why and your choices.',
+  alternates: { canonical: '/privacy' },
 };
 
 export default function PrivacyPage() {

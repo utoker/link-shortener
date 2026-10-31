@@ -2,6 +2,7 @@ export const metadata = {
   title: 'Terms of Service – reqq.cc',
   description:
     'Terms of Service for using reqq.cc, including acceptable use and moderation.',
+  alternates: { canonical: '/terms' },
 };
 
 export default function TermsPage() {

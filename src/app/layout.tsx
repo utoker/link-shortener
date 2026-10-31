@@ -24,24 +24,28 @@ const BalooThambi = localFont({
   variable: '--font-baloo-thambi',
 });
 
+const TITLE = 'reqq.cc – Free URL Shortener';
+const DESCRIPTION =
+  'Free, fast and private URL shortener. Paste a long link and get a short reqq.cc link, with an optional custom name.';
+
 // Optional: Add metadata for <head>
 export const metadata: Metadata = {
   // Absolute base for the share image (app/opengraph-image.png) and other
   // metadata URLs, so they always point at reqq.cc, never a vercel.app host.
   metadataBase: new URL('https://reqq.cc'),
-  title: 'Reqq.cc',
-  description: 'Shorten your links with ease.',
+  title: TITLE,
+  description: DESCRIPTION,
+  // No og:url here: pages would inherit it. Each page sets its canonical URL.
   openGraph: {
-    title: 'Reqq.cc',
-    description: 'Shorten your links with ease. Free, fast and private.',
-    url: 'https://reqq.cc',
-    siteName: 'Reqq.cc',
+    title: TITLE,
+    description: DESCRIPTION,
+    siteName: 'reqq.cc',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Reqq.cc',
-    description: 'Shorten your links with ease. Free, fast and private.',
+    title: TITLE,
+    description: DESCRIPTION,
   },
 };
 

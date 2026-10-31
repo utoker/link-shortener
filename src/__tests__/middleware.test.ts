@@ -147,6 +147,7 @@ describe('Middleware matcher', () => {
     '/manifest.webmanifest',
     '/favicon.ico',
     '/robots.txt',
+    '/sitemap.xml',
     '/apple-icon.png',
     '/Images/logo.svg',
     '/_next/static/chunks/main.js',

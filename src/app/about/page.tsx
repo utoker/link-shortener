@@ -2,6 +2,7 @@ export const metadata = {
   title: 'About – reqq.cc',
   description:
     'What reqq.cc is, how it works, acceptable use and how to support the project.',
+  alternates: { canonical: '/about' },
 };
 
 export default function AboutPage() {
