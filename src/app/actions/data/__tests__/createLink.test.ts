@@ -147,6 +147,36 @@ describe('createLink Action', () => {
     expect(createSupabaseAdminClient).not.toHaveBeenCalled();
   });
 
+  it('should reject a reserved custom slug before touching the database', async () => {
+    const { linkCreationRateLimit } = await import('@/lib/rateLimit');
+    const { createSupabaseServerClient } = await import('@/lib/supabase/server');
+    const { createSupabaseAdminClient } = await import('@/lib/supabase/admin');
+    const { headers } = await import('next/headers');
+
+    vi.mocked(headers).mockResolvedValue({
+      get: vi.fn().mockReturnValue('192.168.1.1'),
+    } as any);
+
+    vi.mocked(linkCreationRateLimit.limit).mockResolvedValue({
+      success: true,
+      limit: 10,
+      remaining: 9,
+      reset: Date.now() + 60000,
+      pending: Promise.resolve(),
+    });
+
+    const formData = new FormData();
+    formData.append('url', 'https://example.com');
+    formData.append('slug', 'Admin');
+
+    const result = await createLink({ success: false }, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.fieldErrors?.slug).toEqual(['This slug is reserved.']);
+    expect(createSupabaseServerClient).not.toHaveBeenCalled();
+    expect(createSupabaseAdminClient).not.toHaveBeenCalled();
+  });
+
   it('should return validation error for invalid URL', async () => {
     const { linkCreationRateLimit } = await import('@/lib/rateLimit');
     const { headers } = await import('next/headers');

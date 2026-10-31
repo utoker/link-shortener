@@ -9,12 +9,19 @@ import { useUserContext } from '@/app/context/UserContext';
 import { CreateLinkFormSchema } from '@/lib/schemas/CreateLinkFormSchema';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { ensureProtocol } from '@/lib/utils';
+import { isReservedSlug } from '@/lib/reservedSlugs';
 import { createLink } from '@/app/actions/data/createLink';
 import { checkSlug } from '@/app/actions/data';
 import type { CreateLinkResult } from '@/app/actions/data/createLink';
 import { toast } from 'sonner';
 
-type SlugStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
+type SlugStatus =
+  | 'idle'
+  | 'checking'
+  | 'available'
+  | 'taken'
+  | 'invalid'
+  | 'reserved';
 
 export default function Hero() {
   /* ──────────────────────────── local state ─────────────────────────── */
@@ -46,7 +53,8 @@ export default function Hero() {
       } else {
         /* ─ failure flow ─────────────────────────────── */
         if (res.fieldErrors?.slug) {
-          setSlugStatus('taken');
+          const submitted = fd.get('slug')?.toString().trim() ?? '';
+          setSlugStatus(isReservedSlug(submitted) ? 'reserved' : 'taken');
           toast.error(res.fieldErrors.slug[0]); // slug-specific error
         }
 
@@ -85,7 +93,7 @@ export default function Hero() {
 
     const parsed = CreateLinkFormSchema.shape.slug.safeParse(trimmed);
     if (!parsed.success) {
-      setSlugStatus('invalid');
+      setSlugStatus(isReservedSlug(trimmed) ? 'reserved' : 'invalid');
       return;
     }
 
@@ -124,6 +132,8 @@ export default function Hero() {
         return 'This slug is already taken.';
       case 'invalid':
         return 'Only a-z, 0-9 and “-” (1-64 chars).';
+      case 'reserved':
+        return 'This slug is reserved.';
       default:
         return '';
     }

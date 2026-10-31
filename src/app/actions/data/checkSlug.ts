@@ -1,9 +1,10 @@
 'use server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { isReservedSlug } from '@/lib/reservedSlugs';
 
 export async function checkSlug(slug: string) {
-  if (!slug) return false;
+  if (!slug || isReservedSlug(slug)) return false;
 
   const supabase = await createSupabaseServerClient();
 
