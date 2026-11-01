@@ -7,7 +7,9 @@ import {
   type NextRequest,
 } from 'next/server';
 import { createSupabaseMiddlewareClient } from './lib/supabase/middleware';
+import { createSupabaseAdminClient } from './lib/supabase/admin';
 import { redirectRateLimit, getClientIP } from './lib/rateLimit';
+import { clickDetails, isCountedClick } from './lib/clickDetails';
 
 // Run only for single-segment paths without a dot, i.e. /slug. Slugs are
 // [A-Za-z0-9_-], so this skips "/", files like /manifest.webmanifest and nested routes.
@@ -53,15 +55,26 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
   }
   if (!url) return NextResponse.rewrite(new URL('/404', req.url));
 
-  // 3️⃣  Click counter: doesn’t block the redirect, and waitUntil keeps the
-  //     function running until the update has finished
-  event.waitUntil(
-    (async () => {
-      const { error } = await supabase.rpc('increment_click', { p_slug: slug });
+  // 3️⃣  Click counter (people only, not preview bots): doesn’t block the
+  //     redirect, and waitUntil keeps the function running until it’s stored.
+  //     record_click only accepts the server’s secret key.
+  if (isCountedClick(req)) {
+    event.waitUntil(
+      (async () => {
+        const { referrerHost, country, device } = clickDetails(req);
+        const admin = createSupabaseAdminClient();
+        // unknown values are left out, so the database stores null
+        const { error } = await admin.rpc('record_click', {
+          p_slug: slug,
+          p_referrer_host: referrerHost ?? undefined,
+          p_country: country ?? undefined,
+          p_device: device,
+        });
 
-      if (error) console.error('increment_click failed:', error);
-    })(),
-  );
+        if (error) console.error('record_click failed:', error);
+      })(),
+    );
+  }
 
   // 4️⃣  Lean 302 redirect (0-byte body)
   const res = NextResponse.redirect(url, { status: 302 });

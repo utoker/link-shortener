@@ -11,25 +11,28 @@ export type Database = {
     Tables: {
       click_events: {
         Row: {
-          clicked_at: string | null
+          clicked_at: string
+          country: string | null
+          device: string | null
           id: string
-          ip_address: string | null
-          link_id: string | null
-          user_agent: string | null
+          link_id: string
+          referrer_host: string | null
         }
         Insert: {
-          clicked_at?: string | null
+          clicked_at?: string
+          country?: string | null
+          device?: string | null
           id?: string
-          ip_address?: string | null
-          link_id?: string | null
-          user_agent?: string | null
+          link_id: string
+          referrer_host?: string | null
         }
         Update: {
-          clicked_at?: string | null
+          clicked_at?: string
+          country?: string | null
+          device?: string | null
           id?: string
-          ip_address?: string | null
-          link_id?: string | null
-          user_agent?: string | null
+          link_id?: string
+          referrer_host?: string | null
         }
         Relationships: [
           {
@@ -73,9 +76,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      increment_click: {
-        Args: { p_slug: string }
-        Returns: number
+      record_click: {
+        Args: {
+          p_country?: string
+          p_device?: string
+          p_referrer_host?: string
+          p_slug: string
+        }
+        Returns: undefined
       }
       resolve_slug: {
         Args: { p_slug: string }

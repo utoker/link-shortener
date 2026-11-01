@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 export default function PrivacyPage() {
-  const lastUpdated = '2026-10-31'; // update when you change the policy
+  const lastUpdated = '2026-11-01'; // update when you change the policy
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 px-4 py-10">
@@ -35,6 +35,16 @@ export default function PrivacyPage() {
             timestamps and limited metrics (e.g., click counts).
           </li>
           <li>
+            <strong>Click details</strong> (links created while signed in): when
+            someone opens the short link, we record the time, the name of the
+            site they came from (e.g., linkedin.com, not the full page address),
+            their country and their device type (phone, tablet or computer). We
+            don’t store the visitor’s IP address or browser details, and
+            link-preview bots aren’t counted. Only the link’s owner can see
+            these stats. Links created without an account only keep a total
+            click count.
+          </li>
+          <li>
             <strong>Technical logs</strong>: IP address, user‑agent, referrer
             and request metadata captured by our infrastructure for security,
             rate‑limiting and abuse prevention.
@@ -56,6 +66,7 @@ export default function PrivacyPage() {
         <h2 className="text-xl font-semibold">How we use information</h2>
         <ul className="list-disc space-y-1 pl-5">
           <li>Provide the Service and maintain functionality.</li>
+          <li>Show link owners how their links are used (click stats).</li>
           <li>Secure the Service (prevent abuse, spam and fraud).</li>
           <li>
             Communicate with you about your account or reports you submit.
@@ -82,8 +93,9 @@ export default function PrivacyPage() {
         <h2 className="text-xl font-semibold">Data retention</h2>
         <p>
           We retain account and link data while your account is active and for a
-          reasonable period thereafter. Technical logs are kept for a limited
-          time for security and diagnostics, then deleted or anonymized.
+          reasonable period thereafter. Click details are kept until you delete
+          the link or your account. Technical logs are kept for a limited time
+          for security and diagnostics, then deleted or anonymized.
         </p>
       </section>
 
