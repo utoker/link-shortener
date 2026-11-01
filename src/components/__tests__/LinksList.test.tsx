@@ -1,0 +1,59 @@
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import type { User } from '@supabase/supabase-js';
+import { useUserContext } from '@/app/context/UserContext';
+import LinksList from '../LinksList';
+
+vi.mock('@/app/context/UserContext', () => ({
+  useUserContext: vi.fn(),
+}));
+
+vi.mock('@/app/actions/data', () => ({
+  deleteLink: vi.fn(),
+}));
+
+vi.mock('@/lib/qr', () => ({
+  qrSvg: vi
+    .fn()
+    .mockResolvedValue('<svg xmlns="http://www.w3.org/2000/svg"></svg>'),
+  qrPng: vi.fn(),
+}));
+
+// SVG icons are React components in the app (svgr); plain stand-ins here
+vi.mock('@icons/copy-icon.svg', () => ({ default: () => null }));
+vi.mock('@icons/delete-icon.svg', () => ({ default: () => null }));
+
+describe('LinksList', () => {
+  it('should open the QR code of the link whose button was pressed', async () => {
+    vi.mocked(useUserContext).mockReturnValue({
+      user: { id: 'user-1' } as User,
+      links: [
+        {
+          id: '1',
+          slug: 'first',
+          url: 'https://example.com/1',
+          click_count: 3,
+        },
+        {
+          id: '2',
+          slug: 'second',
+          url: 'https://example.com/2',
+          click_count: 0,
+        },
+      ],
+      refetchLinks: vi.fn(),
+    } as unknown as ReturnType<typeof useUserContext>);
+    const user = userEvent.setup();
+
+    render(<LinksList />);
+    const buttons = screen.getAllByRole('button', { name: 'Show QR code' });
+    expect(buttons).toHaveLength(2);
+
+    await user.click(buttons[1]);
+
+    expect(
+      await screen.findByAltText('QR code for reqq.cc/second'),
+    ).toBeInTheDocument();
+  });
+});

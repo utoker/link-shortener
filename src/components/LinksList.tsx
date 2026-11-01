@@ -1,8 +1,10 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { QrCode } from 'lucide-react';
 import createLinkIcon from '@icons/create-link-icon.webp';
 import CopyIcon from '@icons/copy-icon.svg';
 import DeleteIcon from '@icons/delete-icon.svg';
@@ -12,8 +14,13 @@ import type { Link } from '@/lib/types/database';
 import { deleteLink } from '@/app/actions/data';
 import type { DeleteLinkResult } from '@/app/actions/data/deleteLink';
 
+// Loaded the first time a QR code is opened.
+const QrCodeDialog = dynamic(() => import('./QrCodeDialog'), { ssr: false });
+
 export default function LinksList() {
   const [_isPending, startAction] = useTransition();
+  // the slug stays set while the dialog closes, so its text doesn't flicker
+  const [qr, setQr] = useState<{ slug: string; open: boolean } | null>(null);
   const { user, links, refetchLinks } = useUserContext();
 
   /* ------------------------------------------------------------------ */
@@ -80,7 +87,7 @@ export default function LinksList() {
   return (
     <div className="font-fredoka-one mx-auto max-w-sm px-4 sm:max-w-7xl sm:py-32">
       <div className="bg-yellow w-full overflow-hidden rounded-full border-2 border-black">
-        <div className="grid grid-cols-[95px_1fr_30px_85px] items-center py-1 pl-2 text-left text-sm text-black sm:grid-cols-[180px_1fr_100px_100px] sm:gap-x-8 sm:py-3 sm:pr-12 sm:pl-6 sm:text-4xl">
+        <div className="grid grid-cols-[95px_1fr_30px_85px] items-center py-1 pl-2 text-left text-sm text-black sm:grid-cols-[180px_1fr_100px_220px] sm:gap-x-8 sm:py-3 sm:pr-12 sm:pl-6 sm:text-4xl">
           <div>Shortlinks</div>
           <div>Urls</div>
           <div className="text-center">Clicks</div>
@@ -95,7 +102,7 @@ export default function LinksList() {
       {links.map((link: Link) => (
         <div
           key={link.id}
-          className="bg-blue hover:bg-blue/80 font-baloo-thambi grid grid-cols-[95px_1fr_30px_85px] items-center rounded-full border-2 border-black px-2 py-0.5 text-left text-xs text-black transition-colors sm:grid-cols-[180px_1fr_100px_100px] sm:gap-x-8 sm:py-3 sm:pr-12 sm:pl-6 sm:text-lg"
+          className="bg-blue hover:bg-blue/80 font-baloo-thambi grid grid-cols-[95px_1fr_30px_85px] items-center rounded-full border-2 border-black px-2 py-0.5 text-left text-xs text-black transition-colors sm:grid-cols-[180px_1fr_100px_220px] sm:gap-x-8 sm:py-3 sm:pr-12 sm:pl-6 sm:text-lg"
         >
           <div className="truncate">
             <a
@@ -119,7 +126,7 @@ export default function LinksList() {
             </a>
           </div>
 
-          <div className="flex justify-center pl-4">
+          <div className="flex justify-center pl-1 sm:pl-4">
             <button
               onClick={() => {
                 navigator.clipboard.writeText(`https://reqq.cc/${link.slug}`);
@@ -132,6 +139,14 @@ export default function LinksList() {
             </button>
 
             <button
+              onClick={() => setQr({ slug: link.slug, open: true })}
+              className="bg-yellow rounded-full border-1 border-black px-1 text-sm text-black shadow-md transition-transform hover:scale-110 hover:cursor-pointer active:scale-90 sm:px-4 sm:py-1.5"
+              aria-label="Show QR code"
+            >
+              <QrCode className="mx-auto h-4 w-4 sm:h-8 sm:w-8" />
+            </button>
+
+            <button
               onClick={() => handleDelete(link.id)}
               className="bg-yellow rounded-full border-1 border-black px-1 text-sm text-black shadow-md transition-transform hover:scale-110 hover:cursor-pointer active:scale-90 sm:px-4 sm:py-1.5"
               aria-label="Delete shortlink"
@@ -141,6 +156,14 @@ export default function LinksList() {
           </div>
         </div>
       ))}
+
+      {qr && (
+        <QrCodeDialog
+          slug={qr.slug}
+          open={qr.open}
+          onOpenChange={(open) => setQr({ ...qr, open })}
+        />
+      )}
     </div>
   );
 }
