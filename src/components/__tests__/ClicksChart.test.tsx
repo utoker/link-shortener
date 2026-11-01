@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import ClicksChart from '../ClicksChart';
+import s from '../LinkStats.module.css';
 
 // 30 days ending Nov 1, 2026, with clicks on a few of them
 const days = Array.from({ length: 30 }, (_, i) => {
@@ -17,7 +18,7 @@ describe('ClicksChart', () => {
     expect(chart).toHaveAccessibleName(
       'Clicks per day: 12 clicks in 30 days, most on Oct 23 (7).',
     );
-    const bars = container.querySelectorAll('.bg-chart-bar');
+    const bars = container.getElementsByClassName(s.bar);
     expect(bars).toHaveLength(30);
     // peak 7 → gridlines 0/2/4/6/8, so 7 clicks reach 87.5% of the height
     expect((bars[20] as HTMLElement).style.height).toBe('87.5%');

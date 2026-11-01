@@ -18,6 +18,7 @@ import {
   referrerLabel,
   type LinkStats,
 } from '@/lib/linkStats';
+import s from '@/components/LinkStats.module.css';
 
 export const metadata: Metadata = {
   title: 'Link stats – reqq.cc',
@@ -37,7 +38,9 @@ export default async function LinkStatsPage({
 
   if (!user) {
     return (
-      <div className="font-fredoka-one text-yellow mx-auto px-4 py-16 text-center text-2xl">
+      <div
+        className={`${s.signedOut} font-fredoka-one text-yellow mx-auto px-4 text-center text-2xl`}
+      >
         <p>Log in to see the stats for your links.</p>
         <RefreshOnAuthChange />
       </div>
@@ -61,31 +64,31 @@ export default async function LinkStatsPage({
   const earlier = stats.click_count - stats.detailed_clicks;
 
   return (
-    <div className="font-baloo-thambi mx-auto w-full max-w-4xl space-y-6 px-4 pb-16">
+    <div className={`${s.page} font-baloo-thambi mx-auto w-full px-4`}>
       <RefreshOnAuthChange />
 
-      <header className="min-w-0">
+      <header>
         <Link
           href="/"
           prefetch={false}
-          className="text-sm text-white/70 underline underline-offset-2 hover:text-white"
+          className={`${s.back} text-sm text-white/70 underline underline-offset-2`}
         >
           ← Your links
         </Link>
-        <h1 className="font-fredoka-one text-yellow mt-2 text-3xl break-all sm:text-5xl">
+        <h1 className={`${s.slug} font-fredoka-one text-yellow mt-2 text-3xl`}>
           reqq.cc/{stats.slug}
         </h1>
         <p className="mt-1 truncate text-white/70">→ {stats.url}</p>
       </header>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-chart-card rounded-3xl border-2 border-black p-4 sm:p-6">
+        <div className={`${s.card} rounded-3xl border-2 border-black p-4`}>
           <p className="text-sm text-white/70">Total clicks</p>
           <p className="font-fredoka-one text-5xl">
             {stats.click_count.toLocaleString('en')}
           </p>
         </div>
-        <div className="bg-chart-card rounded-3xl border-2 border-black p-4 sm:p-6">
+        <div className={`${s.card} rounded-3xl border-2 border-black p-4`}>
           <p className="text-sm text-white/70">Last 30 days</p>
           <p className="font-fredoka-one mt-2 text-3xl">
             {recent.toLocaleString('en')}
@@ -93,7 +96,7 @@ export default async function LinkStatsPage({
         </div>
       </div>
 
-      <section className="bg-chart-card rounded-3xl border-2 border-black p-4 sm:p-6">
+      <section className={`${s.card} rounded-3xl border-2 border-black p-4`}>
         <h2 className="font-fredoka-one text-xl">Clicks per day</h2>
         <p className="text-xs text-white/60">
           Last 30 days, in {stats.time_zone.replace(/_/g, ' ')} time
@@ -109,7 +112,7 @@ export default async function LinkStatsPage({
         </p>
       )}
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className={`${s.breakdowns} grid gap-4`}>
         <StatsBreakdown
           title="Sites and apps"
           rows={breakdownRows(stats.referrers, referrerLabel, 'Other sites')}

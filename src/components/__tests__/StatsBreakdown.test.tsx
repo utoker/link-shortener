@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import StatsBreakdown from '../StatsBreakdown';
+import s from '../LinkStats.module.css';
 
 describe('StatsBreakdown', () => {
   it('should show each row with its count, share and a bar scaled to the top row', () => {
@@ -22,7 +23,9 @@ describe('StatsBreakdown', () => {
     const items = screen.getAllByRole('listitem');
     expect(items[0]).toHaveTextContent('Phone6 60%');
     expect(items[2]).toHaveTextContent('Tablet1 10%');
-    const bars = container.querySelectorAll<HTMLElement>('.bg-chart-bar');
+    const bars = container.getElementsByClassName(
+      s.fill,
+    ) as HTMLCollectionOf<HTMLElement>;
     expect(Array.from(bars, (b) => b.style.width)).toEqual([
       '100%',
       '50%',

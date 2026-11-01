@@ -1,6 +1,7 @@
 // One card of the stats page: clicks per site, country or device, as bars
 // scaled to the biggest row, with each row's count and share.
 import type { Row } from '@/lib/linkStats';
+import s from './LinkStats.module.css';
 
 interface StatsBreakdownProps {
   title: string;
@@ -17,19 +18,19 @@ export default function StatsBreakdown({
   const max = Math.max(1, ...rows.map((r) => r.clicks));
 
   return (
-    <section className="bg-chart-card rounded-3xl border-2 border-black p-4 sm:p-6">
+    <section className={`${s.card} rounded-3xl border-2 border-black p-4`}>
       <h2 className="font-fredoka-one text-xl">{title}</h2>
       <p className="text-xs text-white/60">Last 30 days</p>
 
       {total === 0 ? (
-        <p className="mt-3 text-sm text-white/70">No clicks yet.</p>
+        <p className="mt-4 text-sm text-white/70">No clicks yet.</p>
       ) : (
-        <ul className="mt-3 space-y-3">
+        <ul className={`${s.rows} mt-4`}>
           {rows.map((r) => (
             <li key={r.label}>
-              <div className="flex items-baseline justify-between gap-3 text-sm">
+              <div className={`${s.rowHead} text-sm`}>
                 <span className="truncate">{r.label}</span>
-                <span className="shrink-0 tabular-nums">
+                <span className={`${s.numbers} shrink-0`}>
                   <strong>{r.clicks.toLocaleString('en')}</strong>{' '}
                   <span className="text-white/60">
                     {Math.round((r.clicks / total) * 100)}%
@@ -37,7 +38,7 @@ export default function StatsBreakdown({
                 </span>
               </div>
               <div
-                className="bg-chart-bar mt-1 h-2 rounded-r"
+                className={s.fill}
                 style={{ width: `${(r.clicks / max) * 100}%` }}
               />
             </li>

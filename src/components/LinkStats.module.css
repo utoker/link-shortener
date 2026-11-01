@@ -1,0 +1,185 @@
+/* Styles only the stats page uses. They live here rather than as new Tailwind
+   classes because Tailwind builds one stylesheet for the whole site, and the
+   static homepage can't paint until it has downloaded that stylesheet. */
+
+.page {
+  max-width: 56rem;
+  padding-bottom: 4rem;
+}
+.page > * + * {
+  margin-top: 1.5rem;
+}
+
+.signedOut {
+  padding-block: 4rem;
+}
+
+.back:hover {
+  color: #f4f1f0;
+}
+
+.slug {
+  word-break: break-all;
+}
+@media (min-width: 40rem) {
+  .slug {
+    font-size: 3rem;
+    line-height: 1;
+  }
+}
+
+/* Bars keep 3:1 contrast on this card colour, not on the page background. */
+.card {
+  background-color: #0f424a;
+}
+@media (min-width: 40rem) {
+  .card {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .breakdowns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.numbers {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Clicks per day */
+
+.yAxis {
+  position: relative;
+  height: 11rem;
+  width: 1.75rem;
+  flex-shrink: 0;
+  text-align: right;
+}
+.yValue {
+  position: absolute;
+  right: 0;
+  transform: translateY(50%);
+}
+
+.plot {
+  position: relative;
+  height: 11rem;
+  min-width: 0;
+  flex: 1;
+}
+.gridline {
+  position: absolute;
+  inset-inline: 0;
+  height: 1px;
+  background-color: rgb(244 241 240 / 0.15);
+}
+.empty {
+  position: absolute;
+  inset-inline: 0;
+  top: 33%;
+}
+
+.columns {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+.column {
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: center;
+  outline: none;
+}
+.bar {
+  width: 100%;
+  max-width: 1.25rem;
+  border-radius: 0.25rem 0.25rem 0 0;
+  background-color: #b88e1b;
+}
+.peak {
+  position: absolute;
+}
+.tip {
+  pointer-events: none;
+  position: absolute;
+  z-index: 10;
+  display: none;
+  white-space: nowrap;
+  border-radius: 0.375rem;
+  background-color: #000;
+  padding: 0.25rem 0.5rem;
+}
+.tipStart {
+  left: 0;
+}
+.tipEnd {
+  right: 0;
+}
+
+/* A tap focuses the column; hover only where there's a real pointer. */
+.column:focus .bar {
+  filter: brightness(1.25);
+}
+.column:focus .peak {
+  display: none;
+}
+.column:focus .tip {
+  display: block;
+}
+@media (hover: hover) {
+  .column:hover .bar {
+    filter: brightness(1.25);
+  }
+  .column:hover .peak {
+    display: none;
+  }
+  .column:hover .tip {
+    display: block;
+  }
+}
+
+.xAxis {
+  position: relative;
+  margin-top: 0.25rem;
+  margin-left: 2.25rem;
+  height: 1rem;
+}
+.xLabel {
+  position: absolute;
+  white-space: nowrap;
+}
+.xLabelMiddle {
+  transform: translateX(-50%);
+}
+.xLabelEnd {
+  transform: translateX(-100%);
+}
+
+.right {
+  text-align: right;
+}
+
+/* Breakdown cards */
+
+.rows > * + * {
+  margin-top: 0.75rem;
+}
+.rowHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.fill {
+  margin-top: 0.25rem;
+  height: 0.5rem;
+  border-radius: 0 0.25rem 0.25rem 0;
+  background-color: #b88e1b;
+}

@@ -8,6 +8,7 @@ import {
   yAxisTicks,
   type DayCount,
 } from '@/lib/linkStats';
+import s from './LinkStats.module.css';
 
 const compact = new Intl.NumberFormat('en', { notation: 'compact' });
 
@@ -31,58 +32,43 @@ export default function ClicksChart({ days }: { days: DayCount[] }) {
         className="flex gap-2"
       >
         {/* y-axis values, level with their gridlines */}
-        <div className="relative h-44 w-7 shrink-0 text-right text-xs text-white/60 tabular-nums">
+        <div className={`${s.yAxis} ${s.numbers} text-xs text-white/60`}>
           {ticks.map((t) => (
-            <span
-              key={t}
-              className="absolute right-0 translate-y-1/2"
-              style={{ bottom: pct(t) }}
-            >
+            <span key={t} className={s.yValue} style={{ bottom: pct(t) }}>
               {compact.format(t)}
             </span>
           ))}
         </div>
 
-        <div className="relative h-44 min-w-0 flex-1">
+        <div className={s.plot}>
           {ticks.map((t) => (
-            <div
-              key={t}
-              className="absolute inset-x-0 h-px bg-white/15"
-              style={{ bottom: pct(t) }}
-            />
+            <div key={t} className={s.gridline} style={{ bottom: pct(t) }} />
           ))}
 
           {total === 0 && (
-            <p className="absolute inset-x-0 top-1/3 text-center text-sm text-white/70">
+            <p className={`${s.empty} text-center text-sm text-white/70`}>
               No clicks in the last {days.length} days yet.
             </p>
           )}
 
-          <div className="absolute inset-0 flex items-end gap-0.5">
+          <div className={s.columns}>
             {days.map((d, i) => (
               // tabIndex -1: a tap focuses the day (showing its count) without
               // adding 30 stops to keyboard navigation; the table has them all
-              <div
-                key={d.day}
-                tabIndex={-1}
-                className="group relative flex h-full flex-1 items-end justify-center outline-none"
-              >
-                <div
-                  className="bg-chart-bar w-full max-w-5 rounded-t group-hover:brightness-125 group-focus:brightness-125"
-                  style={{ height: pct(d.clicks) }}
-                />
+              <div key={d.day} tabIndex={-1} className={s.column}>
+                <div className={s.bar} style={{ height: pct(d.clicks) }} />
                 {i === peak && (
                   <span
-                    className="absolute text-xs text-white tabular-nums group-hover:hidden group-focus:hidden"
+                    className={`${s.peak} ${s.numbers} text-xs text-white`}
                     style={{ bottom: `calc(${pct(d.clicks)} + 2px)` }}
                   >
                     {compact.format(d.clicks)}
                   </span>
                 )}
                 <span
-                  className={`pointer-events-none absolute z-10 hidden rounded-md bg-black px-2 py-1 text-xs whitespace-nowrap group-hover:block group-focus:block ${
-                    i < 5 ? 'left-0' : i >= days.length - 5 ? 'right-0' : ''
-                  }`}
+                  className={`${s.tip} ${
+                    i < 5 ? s.tipStart : i >= days.length - 5 ? s.tipEnd : ''
+                  } text-xs`}
                   style={{ bottom: `calc(${pct(d.clicks)} + 6px)` }}
                 >
                   <strong className="text-white">{clicksText(d.clicks)}</strong>{' '}
@@ -95,45 +81,41 @@ export default function ClicksChart({ days }: { days: DayCount[] }) {
       </div>
 
       {/* x-axis: first, middle and last day under their columns */}
-      <div
-        className="relative mt-1 ml-9 h-4 text-xs text-white/60"
-        aria-hidden="true"
-      >
-        {xLabels.map((i, n) => (
-          <span
-            key={i}
-            className={`absolute whitespace-nowrap ${
-              n === 0
-                ? ''
-                : n === xLabels.length - 1
-                  ? '-translate-x-full'
-                  : '-translate-x-1/2'
-            }`}
-            style={{
-              left: `${n === 0 ? 0 : n === xLabels.length - 1 ? 100 : ((i + 0.5) / days.length) * 100}%`,
-            }}
-          >
-            {formatDay(days[i].day)}
-          </span>
-        ))}
+      <div className={`${s.xAxis} text-xs text-white/60`} aria-hidden="true">
+        {xLabels.map((i, n) => {
+          const last = n === xLabels.length - 1;
+          return (
+            <span
+              key={i}
+              className={`${s.xLabel} ${
+                n === 0 ? '' : last ? s.xLabelEnd : s.xLabelMiddle
+              }`}
+              style={{
+                left: `${n === 0 ? 0 : last ? 100 : ((i + 0.5) / days.length) * 100}%`,
+              }}
+            >
+              {formatDay(days[i].day)}
+            </span>
+          );
+        })}
       </div>
 
       <details className="mt-4 text-sm">
-        <summary className="cursor-pointer text-white/70 hover:text-white">
+        <summary className={`${s.back} cursor-pointer text-white/70`}>
           Show the numbers
         </summary>
-        <table className="mt-2 w-full max-w-xs tabular-nums">
+        <table className={`${s.numbers} mt-2 w-full max-w-xs`}>
           <thead>
             <tr className="text-left text-white/60">
               <th className="py-1 font-normal">Day</th>
-              <th className="py-1 text-right font-normal">Clicks</th>
+              <th className={`${s.right} py-1 font-normal`}>Clicks</th>
             </tr>
           </thead>
           <tbody>
             {[...days].reverse().map((d) => (
               <tr key={d.day} className="border-t border-white/10">
                 <td className="py-1">{formatDayLong(d.day)}</td>
-                <td className="py-1 text-right">
+                <td className={`${s.right} py-1`}>
                   {d.clicks.toLocaleString('en')}
                 </td>
               </tr>
