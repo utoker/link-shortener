@@ -2,6 +2,8 @@
 
 import { useActionState, useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { QrCode } from 'lucide-react';
 import UrlInput from './UrlInput';
 import CustomLinkInput from './CustomLinkInput';
 import centerIcon from '@icons/center-icon.webp';
@@ -14,6 +16,9 @@ import { createLink } from '@/app/actions/data/createLink';
 import { checkSlug } from '@/app/actions/data';
 import type { CreateLinkResult } from '@/app/actions/data/createLink';
 import { toast } from 'sonner';
+
+// Loaded only once a link has been created, so the homepage stays light.
+const QrCodeDialog = dynamic(() => import('./QrCodeDialog'), { ssr: false });
 
 type SlugStatus =
   | 'idle'
@@ -29,6 +34,7 @@ export default function Hero() {
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
   const [urlInput, setUrlInput] = useState('');
   const [urlError, setUrlError] = useState('');
+  const [qrOpen, setQrOpen] = useState(false);
 
   const debouncedSlug = useDebounce(slugInput, 300);
   const debouncedUrl = useDebounce(urlInput, 300);
@@ -183,7 +189,10 @@ export default function Hero() {
 
             {state.success && state.slug && (
               <p>
-                Your link is ready:&nbsp;
+                {/* shorter on phones so the link and QR button fit one row */}
+                <span className="sm:hidden">Ready:</span>
+                <span className="hidden sm:inline">Your link is ready:</span>
+                &nbsp;
                 <a
                   href={`/${state.slug}`}
                   target="_blank"
@@ -192,11 +201,28 @@ export default function Hero() {
                 >
                   reqq.cc/{state.slug}
                 </a>
+                <button
+                  type="button"
+                  onClick={() => setQrOpen(true)}
+                  className="hover:text-blue text-yellow ml-2 inline-flex items-center gap-1 align-middle underline transition-colors hover:cursor-pointer sm:ml-3"
+                >
+                  <QrCode className="h-5 w-5" aria-hidden="true" />
+                  {/* icon only on phones, so the line still fits on one row */}
+                  <span className="sr-only sm:not-sr-only">QR code</span>
+                </button>
               </p>
             )}
           </div>
         </div>
       </form>
+
+      {state.success && state.slug && (
+        <QrCodeDialog
+          slug={state.slug}
+          open={qrOpen}
+          onOpenChange={setQrOpen}
+        />
+      )}
     </div>
   );
 }
