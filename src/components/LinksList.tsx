@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { QrCode } from 'lucide-react';
+import { Pencil, QrCode } from 'lucide-react';
 import createLinkIcon from '@icons/create-link-icon.webp';
 import CopyIcon from '@icons/copy-icon.svg';
 import DeleteIcon from '@icons/delete-icon.svg';
@@ -16,11 +16,20 @@ import type { DeleteLinkResult } from '@/app/actions/data/deleteLink';
 
 // Loaded the first time a QR code is opened.
 const QrCodeDialog = dynamic(() => import('./QrCodeDialog'), { ssr: false });
+const EditLinkDialog = dynamic(() => import('./EditLinkDialog'), {
+  ssr: false,
+});
 
 export default function LinksList() {
   const [_isPending, startAction] = useTransition();
   // the slug stays set while the dialog closes, so its text doesn't flicker
   const [qr, setQr] = useState<{ slug: string; open: boolean } | null>(null);
+  // a new key per opening starts the edit dialog from the saved URL
+  const [edit, setEdit] = useState<{
+    link: Link;
+    open: boolean;
+    key: number;
+  } | null>(null);
   const { user, links, refetchLinks } = useUserContext();
 
   /* ------------------------------------------------------------------ */
@@ -115,7 +124,16 @@ export default function LinksList() {
             </a>
           </div>
 
-          <div className="truncate">{link.url}</div>
+          <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+            <button
+              onClick={() => setEdit({ link, open: true, key: Date.now() })}
+              className="shrink-0 rounded-full transition-transform hover:scale-110 hover:cursor-pointer active:scale-90"
+              aria-label={`Edit where reqq.cc/${link.slug} leads`}
+            >
+              <Pencil className="h-3 w-3 sm:h-5 sm:w-5" aria-hidden="true" />
+            </button>
+            <span className="truncate">{link.url}</span>
+          </div>
           <div className="text-center">
             <a
               href={`/links/${link.slug}/stats`}
@@ -156,6 +174,16 @@ export default function LinksList() {
           </div>
         </div>
       ))}
+
+      {edit && (
+        <EditLinkDialog
+          key={edit.key}
+          link={edit.link}
+          open={edit.open}
+          onOpenChange={(open) => setEdit({ ...edit, open })}
+          onSaved={refetchLinks}
+        />
+      )}
 
       {qr && (
         <QrCodeDialog

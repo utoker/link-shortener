@@ -7,7 +7,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { ActionResult } from '@/lib/types/actions';
 import { linkCreationRateLimit } from '@/lib/rateLimit';
-import { checkUrlSafety } from '@/lib/safeBrowsing';
+import { checkUrlSafety, UNSAFE_URL_MESSAGE } from '@/lib/safeBrowsing';
 import { ensureProtocol } from '@/lib/utils';
 import { headers } from 'next/headers';
 
@@ -119,9 +119,7 @@ export async function createLink(
       console.warn('createLink: refused unsafe URL', url, result.threats);
       return {
         success: false,
-        fieldErrors: {
-          url: ['Google Safe Browsing reports this link as unsafe.'],
-        },
+        fieldErrors: { url: [UNSAFE_URL_MESSAGE] },
       };
     }
     if (result.verdict === 'unknown') {

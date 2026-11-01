@@ -16,6 +16,9 @@ const THREAT_TYPES: Record<number, string> = {
   4: 'POTENTIALLY_HARMFUL_APPLICATION',
 };
 
+export const UNSAFE_URL_MESSAGE =
+  'Google Safe Browsing reports this link as unsafe.';
+
 export type SafetyVerdict =
   | { verdict: 'safe' }
   | { verdict: 'unsafe'; threats: string[] }

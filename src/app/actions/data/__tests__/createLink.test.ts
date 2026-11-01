@@ -15,7 +15,8 @@ vi.mock('@/lib/supabase/admin', () => ({
   createSupabaseAdminClient: vi.fn(),
 }));
 
-vi.mock('@/lib/safeBrowsing', () => ({
+vi.mock('@/lib/safeBrowsing', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/safeBrowsing')>()),
   checkUrlSafety: vi.fn(),
 }));
 

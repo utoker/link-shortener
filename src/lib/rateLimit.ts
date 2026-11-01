@@ -18,6 +18,14 @@ export const linkCreationRateLimit = new Ratelimit({
   analytics: true,
 });
 
+// Its own prefix keeps edits off the counter the limits above share.
+export const linkEditRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, '1 m'),
+  analytics: true,
+  prefix: 'ratelimit:link-edit',
+});
+
 export const authRateLimit = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(5, '1 m'),
