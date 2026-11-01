@@ -1,7 +1,11 @@
 // ────────────────────────────────────────────────────────────────
 // src/middleware.ts   –   Next 15  +  Supabase  Edge Middleware
 // ────────────────────────────────────────────────────────────────
-import { NextResponse, type NextRequest } from 'next/server';
+import {
+  NextResponse,
+  type NextFetchEvent,
+  type NextRequest,
+} from 'next/server';
 import { createSupabaseMiddlewareClient } from './lib/supabase/middleware';
 import { redirectRateLimit, getClientIP } from './lib/rateLimit';
 
@@ -14,7 +18,7 @@ export const config = {
 
 const APP_PAGES = new Set(['about', 'terms', 'privacy', 'protected', 'auth']);
 
-export async function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest, event: NextFetchEvent) {
   const slug = req.nextUrl.pathname.slice(1); // "/yxzh5x" → "yxzh5x"
 
   // If no slug is present, we assume it's the home page
@@ -49,12 +53,15 @@ export async function middleware(req: NextRequest) {
   }
   if (!url) return NextResponse.rewrite(new URL('/404', req.url));
 
-  // 3️⃣  Fire-and-forget click counter (doesn’t block the redirect)
-  (async () => {
-    const { error } = await supabase.rpc('increment_click', { p_slug: slug });
+  // 3️⃣  Click counter: doesn’t block the redirect, and waitUntil keeps the
+  //     function running until the update has finished
+  event.waitUntil(
+    (async () => {
+      const { error } = await supabase.rpc('increment_click', { p_slug: slug });
 
-    if (error) console.error('increment_click failed:', error);
-  })();
+      if (error) console.error('increment_click failed:', error);
+    })(),
+  );
 
   // 4️⃣  Lean 302 redirect (0-byte body)
   const res = NextResponse.redirect(url, { status: 302 });

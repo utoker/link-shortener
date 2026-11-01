@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, type NextFetchEvent } from 'next/server';
 import { unstable_doesMiddlewareMatch } from 'next/experimental/testing/server';
 import { config, middleware } from '../middleware';
 
@@ -18,6 +18,9 @@ vi.mock('../lib/supabase/middleware', () => ({
     res: new NextResponse(),
   }),
 }));
+
+// Stand-in for the event whose waitUntil keeps the click count running.
+const fakeEvent = () => ({ waitUntil: vi.fn() }) as unknown as NextFetchEvent;
 
 describe('Middleware Rate Limiting', () => {
   beforeEach(() => {
@@ -48,12 +51,50 @@ describe('Middleware Rate Limiting', () => {
     });
 
     const request = new NextRequest('http://localhost:3000/test-slug');
-    const response = await middleware(request);
+    const event = fakeEvent();
+    const response = await middleware(request, event);
 
     expect(rpc).toHaveBeenCalledWith('resolve_slug', { p_slug: 'test-slug' });
-    expect(rpc).toHaveBeenCalledWith('increment_click', { p_slug: 'test-slug' });
     expect(response.status).toBe(302);
     expect(response.headers.get('location')).toBe('https://example.com/');
+
+    // the click is counted after the redirect, kept alive by waitUntil
+    expect(event.waitUntil).toHaveBeenCalledTimes(1);
+    await vi.mocked(event.waitUntil).mock.calls[0][0];
+    expect(rpc).toHaveBeenCalledWith('increment_click', { p_slug: 'test-slug' });
+  });
+
+  it('should log a failed click count without affecting the redirect', async () => {
+    const { redirectRateLimit } = await import('../lib/rateLimit');
+    const { createSupabaseMiddlewareClient } = await import('../lib/supabase/middleware');
+
+    vi.mocked(redirectRateLimit.limit).mockResolvedValue({
+      success: true,
+      limit: 100,
+      remaining: 50,
+      reset: Date.now() + 60000,
+      pending: Promise.resolve(),
+    });
+
+    const rpc = vi.fn().mockImplementation(async (fn: string) =>
+      fn === 'resolve_slug'
+        ? { data: 'https://example.com', error: null }
+        : { data: null, error: { message: 'boom' } },
+    );
+
+    vi.mocked(createSupabaseMiddlewareClient).mockReturnValue({
+      supabase: { rpc } as any,
+      res: new NextResponse(),
+    });
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const event = fakeEvent();
+    const response = await middleware(new NextRequest('http://localhost:3000/test-slug'), event);
+    await vi.mocked(event.waitUntil).mock.calls[0][0];
+
+    expect(response.status).toBe(302);
+    expect(error).toHaveBeenCalledWith('increment_click failed:', { message: 'boom' });
+    error.mockRestore();
   });
 
   it('should rewrite to 404 when the slug does not exist', async () => {
@@ -76,7 +117,7 @@ describe('Middleware Rate Limiting', () => {
     });
 
     const request = new NextRequest('http://localhost:3000/missing-slug');
-    const response = await middleware(request);
+    const response = await middleware(request, fakeEvent());
 
     expect(response.headers.get('x-middleware-rewrite')).toBe('http://localhost:3000/404');
     expect(rpc).not.toHaveBeenCalledWith('increment_click', expect.anything());
@@ -94,7 +135,7 @@ describe('Middleware Rate Limiting', () => {
     });
 
     const request = new NextRequest('http://localhost:3000/test-slug');
-    const response = await middleware(request);
+    const response = await middleware(request, fakeEvent());
 
     expect(response.status).toBe(429);
     expect(response.headers.get('Retry-After')).toBeDefined();
@@ -103,14 +144,14 @@ describe('Middleware Rate Limiting', () => {
 
   it('should skip rate limiting for protected routes', async () => {
     const request = new NextRequest('http://localhost:3000/protected/about');
-    const response = await middleware(request);
+    const response = await middleware(request, fakeEvent());
 
     expect(response.status).toBe(200);
   });
 
   it('should skip rate limiting for auth routes', async () => {
     const request = new NextRequest('http://localhost:3000/auth/callback');
-    const response = await middleware(request);
+    const response = await middleware(request, fakeEvent());
 
     expect(response.status).toBe(200);
   });
@@ -121,7 +162,10 @@ describe('Middleware Rate Limiting', () => {
       const { redirectRateLimit } = await import('../lib/rateLimit');
       const { createSupabaseMiddlewareClient } = await import('../lib/supabase/middleware');
 
-      const response = await middleware(new NextRequest(`http://localhost:3000${path}`));
+      const response = await middleware(
+        new NextRequest(`http://localhost:3000${path}`),
+        fakeEvent(),
+      );
 
       expect(response.status).toBe(200);
       expect(response.headers.get('x-middleware-next')).toBe('1');
@@ -132,7 +176,7 @@ describe('Middleware Rate Limiting', () => {
 
   it('should skip rate limiting for home page', async () => {
     const request = new NextRequest('http://localhost:3000/');
-    const response = await middleware(request);
+    const response = await middleware(request, fakeEvent());
 
     expect(response.status).toBe(200);
   });
