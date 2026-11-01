@@ -76,6 +76,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      link_click_stats: {
+        Args: { p_days?: number; p_slug: string; p_time_zone?: string }
+        Returns: Json
+      }
       record_click: {
         Args: {
           p_country?: string

@@ -109,7 +109,15 @@ export default function LinksList() {
           </div>
 
           <div className="truncate">{link.url}</div>
-          <div className="text-center">{link.click_count}</div>
+          <div className="text-center">
+            <a
+              href={`/links/${link.slug}/stats`}
+              className="underline underline-offset-2"
+              aria-label={`Stats for reqq.cc/${link.slug}: ${link.click_count} clicks`}
+            >
+              {link.click_count}
+            </a>
+          </div>
 
           <div className="flex justify-center pl-4">
             <button

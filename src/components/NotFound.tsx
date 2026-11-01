@@ -7,7 +7,7 @@ export default function NotFound() {
     <div className="bg-darkBlue mx-auto flex flex-col items-center justify-center text-white">
       <div className="mb-6">
         <Image
-          src="Images/sad-browser.svg"
+          src="/Images/sad-browser.svg"
           alt="Illustration of a sad browser indicating the page was not found"
           width={400}
           height={400}
