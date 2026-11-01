@@ -101,6 +101,25 @@ describe('Middleware Rate Limiting', () => {
     });
   });
 
+  it('should record a QR code scan with the QR source', async () => {
+    const { adminRpc } = await mockRedirect();
+
+    const event = fakeEvent();
+    const response = await middleware(
+      new NextRequest(`${TEST_URL}?qr`, { headers: { 'user-agent': IPHONE } }),
+      event,
+    );
+    await vi.mocked(event.waitUntil).mock.calls[0][0];
+
+    expect(response.headers.get('location')).toBe('https://example.com/');
+    expect(adminRpc).toHaveBeenCalledWith('record_click', {
+      p_slug: 'test-slug',
+      p_referrer_host: 'qr',
+      p_country: undefined,
+      p_device: 'phone',
+    });
+  });
+
   it('should leave unknown click details out of the record', async () => {
     const { adminRpc } = await mockRedirect();
 

@@ -2,11 +2,12 @@
 // name, the visitor's country and a device type. The full referrer URL, the
 // user-agent and the IP address are only read here, never stored.
 import { isbot } from 'isbot';
+import { QR_MARKER } from './qrMarker';
 
 export type Device = 'phone' | 'tablet' | 'computer';
 
 export interface ClickDetails {
-  referrerHost: string | null; // null = direct / unknown
+  referrerHost: string | null; // null = direct / unknown, QR_MARKER = QR scan
   country: string | null;
   device: Device;
 }
@@ -74,8 +75,11 @@ export function isCountedClick(req: Request): boolean {
 }
 
 export function clickDetails(req: Request): ClickDetails {
+  // A QR code scan (reqq.cc/<slug>?qr) is stored as its own source. Camera
+  // apps send no referrer, or only their own app name, so nothing is lost.
+  const fromQr = new URL(req.url).searchParams.has(QR_MARKER);
   return {
-    referrerHost: referrerHost(req.headers.get('referer')),
+    referrerHost: fromQr ? QR_MARKER : referrerHost(req.headers.get('referer')),
     country: country(req.headers),
     device: deviceType(req.headers.get('user-agent') ?? ''),
   };

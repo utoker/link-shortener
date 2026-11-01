@@ -50,6 +50,10 @@ describe('breakdownRows', () => {
     ]);
   });
 
+  it('should label QR code scans', () => {
+    expect(referrerLabel('qr')).toBe('QR code');
+  });
+
   it('should fold everything after the top 8 into one row', () => {
     const rows = breakdownRows(counts(12), referrerLabel, 'Other sites');
 

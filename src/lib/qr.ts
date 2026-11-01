@@ -5,6 +5,8 @@
 // The qrcode library is imported on demand, so it only loads when someone
 // opens a QR code.
 
+import { QR_MARKER } from './qrMarker';
+
 const QR_OPTIONS = {
   errorCorrectionLevel: 'M', // survives ~15% damage, keeps the code small
   margin: 2,
@@ -12,7 +14,7 @@ const QR_OPTIONS = {
 } as const;
 
 export function qrTarget(slug: string): string {
-  return `https://reqq.cc/${slug}?qr`;
+  return `https://reqq.cc/${slug}?${QR_MARKER}`;
 }
 
 export async function qrSvg(slug: string): Promise<string> {

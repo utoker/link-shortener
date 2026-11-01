@@ -165,6 +165,18 @@ describe('clickDetails', () => {
     });
   });
 
+  it('should record a QR code scan (?qr) as its own source', () => {
+    const request = new Request('https://reqq.cc/abc?qr', {
+      headers: {
+        'user-agent': UA.iphone,
+        // Google Lens opens scanned links from the Google app
+        referer: 'android-app://com.google.android.googlequicksearchbox/',
+      },
+    });
+
+    expect(clickDetails(request).referrerHost).toBe('qr');
+  });
+
   it('should report unknowns as null', () => {
     const request = new Request('https://reqq.cc/abc', {
       headers: { 'user-agent': UA.chromeWindows },

@@ -1,5 +1,6 @@
 // Shapes and display helpers for a link's stats page. The numbers come from
 // the link_click_stats database function (see its migration).
+import { QR_MARKER } from './qrMarker';
 
 export interface Count {
   name: string | null; // null = not known (no referrer, no country)
@@ -66,7 +67,7 @@ export function breakdownRows(
 }
 
 export const referrerLabel = (host: string | null) =>
-  host ?? 'Direct / unknown';
+  host === QR_MARKER ? 'QR code' : (host ?? 'Direct / unknown');
 
 const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
 
