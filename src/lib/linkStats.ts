@@ -1,5 +1,5 @@
 // Shapes and display helpers for a link's stats page. The numbers come from
-// the link_click_stats database function (see its migration).
+// the link_stats database function (see its migration).
 import { QR_MARKER } from './qrMarker';
 
 export interface Count {
@@ -7,8 +7,15 @@ export interface Count {
   clicks: number;
 }
 
-export interface DayCount {
-  day: string; // YYYY-MM-DD in the viewer's time zone
+export type Range = '7d' | '30d' | '90d' | 'all';
+export type Bucket = 'day' | 'week' | 'month';
+
+// One bar: the clicks of a day, a week (Monday to Sunday) or a month, cut to
+// the range. Dates are YYYY-MM-DD in the viewer's time zone.
+export interface BucketCount {
+  start: string;
+  end: string;
+  partial: boolean; // the current week or month, so far
   clicks: number;
 }
 
@@ -17,8 +24,12 @@ export interface LinkStats {
   url: string;
   click_count: number;
   time_zone: string;
+  range: Range;
+  bucket: Bucket;
+  first_day: string;
+  last_day: string;
   detailed_clicks: number; // clicks stored with details, all time
-  days: DayCount[];
+  buckets: BucketCount[];
   referrers: Count[];
   countries: Count[];
   devices: Count[];
@@ -32,6 +43,17 @@ export interface Row {
 // Per-click details started with this release; earlier clicks are only in
 // click_count.
 export const DETAILS_SINCE = 'Nov 1, 2026';
+
+// The range buttons, in order.
+export const RANGES: { value: Range; label: string }[] = [
+  { value: '7d', label: '7 days' },
+  { value: '30d', label: '30 days' },
+  { value: '90d', label: '90 days' },
+  { value: 'all', label: 'All time' },
+];
+
+export const parseRange = (value: unknown): Range =>
+  RANGES.find((r) => r.value === value)?.value ?? '30d';
 
 // Gridline values from 0 to a round top at or above max, 2–5 steps of
 // 1, 2 or 5 × 10ⁿ (whole clicks only).
@@ -102,10 +124,57 @@ const longDay = new Intl.DateTimeFormat('en', {
   timeZone: 'UTC',
 });
 
-export const formatDay = (day: string) =>
-  shortDay.format(new Date(`${day}T00:00:00Z`));
-export const formatDayLong = (day: string) =>
-  longDay.format(new Date(`${day}T00:00:00Z`));
+const fullDate = new Intl.DateTimeFormat('en', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const monthYear = new Intl.DateTimeFormat('en', {
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+const utc = (day: string) => new Date(`${day}T00:00:00Z`);
+
+export const formatDay = (day: string) => shortDay.format(utc(day));
+export const formatDayLong = (day: string) => longDay.format(utc(day));
+export const formatDate = (day: string) => fullDate.format(utc(day));
+
+// "Aug 5 – Nov 2, 2026", with both years when they differ.
+export function formatSpan(first: string, last: string): string {
+  return first.slice(0, 4) === last.slice(0, 4)
+    ? `${formatDay(first)} – ${formatDate(last)}`
+    : `${formatDate(first)} – ${formatDate(last)}`;
+}
+
+// What the tiles and cards say the numbers cover.
+export const periodText = (stats: Pick<LinkStats, 'range' | 'first_day'>) =>
+  stats.range === 'all'
+    ? `Since ${formatDate(stats.first_day)}`
+    : `Last ${RANGES.find((r) => r.value === stats.range)!.label}`;
+
+// What one bar covers, for its hover text and the table:
+// "Sun, Nov 1", "Oct 26 – Nov 1", "Nov 2026" or "Nov 1 – Nov 2, 2026 (so far)".
+export function bucketLabel(b: BucketCount, bucket: Bucket): string {
+  const soFar = b.partial ? ' (so far)' : '';
+  if (b.start === b.end) return formatDayLong(b.start) + soFar;
+
+  const next = utc(b.end);
+  next.setUTCDate(next.getUTCDate() + 1);
+  const wholeMonth = b.start.endsWith('-01') && next.getUTCDate() === 1;
+  if (bucket === 'month') {
+    return wholeMonth
+      ? monthYear.format(utc(b.start))
+      : `${formatDay(b.start)} – ${formatDate(b.end)}${soFar}`;
+  }
+  return `${formatDay(b.start)} – ${formatDay(b.end)}${soFar}`;
+}
+
+// Under the chart: the day a bar starts, or its month.
+export const bucketAxisLabel = (b: BucketCount, bucket: Bucket) =>
+  bucket === 'month' ? monthYear.format(utc(b.start)) : formatDay(b.start);
 
 export const clicksText = (n: number) =>
   `${n.toLocaleString('en')} ${n === 1 ? 'click' : 'clicks'}`;

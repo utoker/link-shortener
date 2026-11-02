@@ -8,6 +8,7 @@ describe('StatsBreakdown', () => {
     const { container } = render(
       <StatsBreakdown
         title="Devices"
+        period="Last 90 days"
         rows={[
           { label: 'Phone', clicks: 6 },
           { label: 'Computer', clicks: 3 },
@@ -20,6 +21,7 @@ describe('StatsBreakdown', () => {
     expect(
       screen.getByRole('heading', { name: 'Devices' }),
     ).toBeInTheDocument();
+    expect(screen.getByText('Last 90 days')).toBeInTheDocument();
     const items = screen.getAllByRole('listitem');
     expect(items[0]).toHaveTextContent('Phone6 60%');
     expect(items[2]).toHaveTextContent('Tablet1 10%');
@@ -35,7 +37,7 @@ describe('StatsBreakdown', () => {
   });
 
   it('should say so when there are no clicks', () => {
-    render(<StatsBreakdown title="Countries" rows={[]} />);
+    render(<StatsBreakdown title="Countries" period="All time" rows={[]} />);
 
     expect(screen.getByText('No clicks yet.')).toBeInTheDocument();
     expect(screen.queryByRole('list')).not.toBeInTheDocument();

@@ -5,12 +5,14 @@ import s from './LinkStats.module.css';
 
 interface StatsBreakdownProps {
   title: string;
+  period: string; // e.g. "Last 30 days"
   rows: Row[];
   note?: string;
 }
 
 export default function StatsBreakdown({
   title,
+  period,
   rows,
   note,
 }: StatsBreakdownProps) {
@@ -20,7 +22,7 @@ export default function StatsBreakdown({
   return (
     <section className={`${s.card} rounded-3xl border-2 border-black p-4`}>
       <h2 className="font-fredoka-one text-xl">{title}</h2>
-      <p className="text-xs text-white/60">Last 30 days</p>
+      <p className="text-xs text-white/60">{period}</p>
 
       {total === 0 ? (
         <p className="mt-4 text-sm text-white/70">No clicks yet.</p>

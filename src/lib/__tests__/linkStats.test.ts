@@ -6,9 +6,42 @@ import {
   deviceLabel,
   formatDay,
   formatDayLong,
+  formatSpan,
+  parseRange,
+  periodText,
   referrerLabel,
   yAxisTicks,
 } from '../linkStats';
+
+describe('ranges', () => {
+  it('should accept the four ranges and fall back to 30 days', () => {
+    expect(parseRange('7d')).toBe('7d');
+    expect(parseRange('90d')).toBe('90d');
+    expect(parseRange('all')).toBe('all');
+    expect(parseRange(undefined)).toBe('30d');
+    expect(parseRange('365d')).toBe('30d');
+    expect(parseRange(['7d', 'all'])).toBe('30d');
+  });
+
+  it('should say what the numbers cover', () => {
+    expect(periodText({ range: '7d', first_day: '2026-10-27' })).toBe(
+      'Last 7 days',
+    );
+    expect(periodText({ range: '90d', first_day: '2026-08-05' })).toBe(
+      'Last 90 days',
+    );
+    expect(periodText({ range: 'all', first_day: '2026-11-01' })).toBe(
+      'Since Nov 1, 2026',
+    );
+  });
+
+  it('should show a span with one year, or both when they differ', () => {
+    expect(formatSpan('2026-08-05', '2026-11-02')).toBe('Aug 5 – Nov 2, 2026');
+    expect(formatSpan('2026-11-01', '2027-02-03')).toBe(
+      'Nov 1, 2026 – Feb 3, 2027',
+    );
+  });
+});
 
 describe('yAxisTicks', () => {
   it.each([
