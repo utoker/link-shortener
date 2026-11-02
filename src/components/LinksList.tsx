@@ -94,7 +94,9 @@ export default function LinksList() {
   /* UI — unchanged styling                                             */
   /* ------------------------------------------------------------------ */
   return (
-    <div className="font-fredoka-one mx-auto max-w-sm px-4 sm:max-w-7xl sm:py-32">
+    // Phones: the same 80 px gap as the signed-out text above, so messages
+    // under the form (e.g. "Ready: reqq.cc/…") don't cover the first rows.
+    <div className="font-fredoka-one mx-auto mt-20 max-w-sm px-4 sm:mt-0 sm:max-w-7xl sm:py-32">
       <div className="bg-yellow w-full overflow-hidden rounded-full border-2 border-black">
         <div className="grid grid-cols-[95px_1fr_30px_85px] items-center py-1 pl-2 text-left text-sm text-black sm:grid-cols-[180px_1fr_100px_220px] sm:gap-x-8 sm:py-3 sm:pr-12 sm:pl-6 sm:text-4xl">
           <div>Shortlinks</div>
