@@ -85,6 +85,22 @@ describe('Rate Limiter Utilities', () => {
       expect(authRateLimit).toBeDefined();
     });
 
+    it('should give every limiter its own counter', async () => {
+      vi.resetModules();
+      await import('../rateLimit');
+      const { Ratelimit } = await import('@upstash/ratelimit');
+
+      const prefixes = vi
+        .mocked(Ratelimit)
+        .mock.calls.map(([config]) => config.prefix);
+      expect(prefixes).toEqual([
+        'ratelimit:redirect',
+        'ratelimit:link-create',
+        'ratelimit:link-edit',
+        'ratelimit:auth',
+      ]);
+    });
+
     it('should allow requests within limits', async () => {
       const { redirectRateLimit } = await import('../rateLimit');
       const result = await redirectRateLimit.limit('192.168.1.1');
