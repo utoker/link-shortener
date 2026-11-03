@@ -182,8 +182,14 @@ export default function Hero() {
               {helper}
             </p>
 
-            {/* live check while typing, else the server's error after submit */}
-            <p id="url-error" aria-live="polite" className="text-red-500">
+            {/* live check while typing, else the server's error after submit;
+                smaller on phones so even the longest message stays two lines
+                and ends above whatever comes after the form */}
+            <p
+              id="url-error"
+              aria-live="polite"
+              className="text-sm text-red-500 sm:text-2xl"
+            >
               {urlError || state.fieldErrors?.url?.[0]}
             </p>
 
