@@ -8,7 +8,7 @@
 
 const ENDPOINT = 'https://safebrowsing.googleapis.com/v5alpha1/urls:search';
 const TIMEOUT_MS = 3000;
-const BATCH_TIMEOUT_MS = 10000;
+const BATCH_TIMEOUT_MS = 5000;
 const MAX_URLS_PER_CALL = 50; // the API's limit
 
 const THREAT_TYPES: Record<number, string> = {
@@ -36,29 +36,38 @@ export async function checkUrlSafety(url: string): Promise<SafetyVerdict> {
  * call is tried again after each of `retryDelaysMs`. Google reports a hit in
  * its own canonical form ("host/path"), not as the URL sent, so a call with a
  * hit is repeated one URL at a time to see which URLs it was. Never throws.
+ *
+ * All calls go out at once: even if Google times out on every try, this takes
+ * about 40 s, within the cron route's 60 s limit on Vercel Hobby.
  */
 export async function checkUrlsSafety(
   urls: string[],
-  retryDelaysMs = [2000, 5000],
+  retryDelaysMs = [1000, 3000],
 ): Promise<Map<string, SafetyVerdict>> {
   const verdicts = new Map<string, SafetyVerdict>();
   const unique = Array.from(new Set(urls));
   const searchWithRetries = (batch: string[]) =>
     withRetries(() => search(batch, BATCH_TIMEOUT_MS), retryDelaysMs);
 
+  const batches: string[][] = [];
   for (let i = 0; i < unique.length; i += MAX_URLS_PER_CALL) {
-    const batch = unique.slice(i, i + MAX_URLS_PER_CALL);
-    const result = await searchWithRetries(batch);
+    batches.push(unique.slice(i, i + MAX_URLS_PER_CALL));
+  }
 
-    if (!result.ok || result.threats.length === 0 || batch.length === 1) {
-      for (const url of batch) verdicts.set(url, toVerdict(result));
-    } else {
+  await Promise.all(
+    batches.map(async (batch) => {
+      const result = await searchWithRetries(batch);
+
+      if (!result.ok || result.threats.length === 0 || batch.length === 1) {
+        for (const url of batch) verdicts.set(url, toVerdict(result));
+        return;
+      }
       const single = await Promise.all(
         batch.map(async (url) => toVerdict(await searchWithRetries([url]))),
       );
       batch.forEach((url, j) => verdicts.set(url, single[j]));
-    }
-  }
+    }),
+  );
   return verdicts;
 }
 

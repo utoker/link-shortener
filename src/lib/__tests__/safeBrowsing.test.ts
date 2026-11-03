@@ -164,6 +164,27 @@ describe('checkUrlsSafety', () => {
     ).toBe(true);
   });
 
+  it('should send all calls at once', async () => {
+    // Google answers only once all three calls are waiting, so calls made
+    // one after another would never finish
+    const waiting: (() => void)[] = [];
+    fetchMock.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          waiting.push(() => resolve(reply(CACHE_300S)));
+          if (waiting.length === 3) waiting.forEach((answer) => answer());
+        }),
+    );
+    const urls = Array.from(
+      { length: 120 },
+      (_, i) => `https://example.com/${i}`,
+    );
+
+    const verdicts = await checkUrlsSafety(urls, NO_WAIT);
+
+    expect(verdicts.size).toBe(120);
+  });
+
   it('should ask about each URL once', async () => {
     fetchMock.mockImplementation(async () => reply(CACHE_300S));
 

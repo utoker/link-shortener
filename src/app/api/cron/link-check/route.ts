@@ -3,7 +3,8 @@
 // a bearer token; any other caller is turned away.
 import { runLinkCheck } from '@/lib/linkCheck';
 
-export const maxDuration = 300;
+// the most Vercel Hobby allows without Fluid compute; a run takes seconds
+export const maxDuration = 60;
 
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
