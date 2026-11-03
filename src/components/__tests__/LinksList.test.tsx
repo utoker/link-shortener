@@ -64,6 +64,36 @@ describe('LinksList', () => {
     ).toBeInTheDocument();
   });
 
+  it('should mark only the links Google Safe Browsing flagged as blocked', () => {
+    vi.mocked(useUserContext).mockReturnValue({
+      user: { id: 'user-1' } as User,
+      links: [
+        {
+          id: '1',
+          slug: 'bad',
+          url: 'https://bad.example/',
+          click_count: 0,
+          safety_threats: ['SOCIAL_ENGINEERING'],
+        },
+        {
+          id: '2',
+          slug: 'good',
+          url: 'https://example.com/',
+          click_count: 0,
+          safety_threats: null,
+        },
+      ],
+      refetchLinks: vi.fn(),
+    } as unknown as ReturnType<typeof useUserContext>);
+
+    render(<LinksList />);
+
+    expect(screen.getAllByText('Blocked')).toHaveLength(1);
+    expect(screen.getByText('Blocked').nextSibling).toHaveTextContent(
+      'https://bad.example/',
+    );
+  });
+
   it('should open the edit dialog for the link whose pencil was pressed', async () => {
     signedInWithTwoLinks();
     const user = userEvent.setup();

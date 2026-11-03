@@ -45,7 +45,7 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
   const { supabase, res: draftRes } = createSupabaseMiddlewareClient(req);
 
   // 2️⃣  Look up the destination URL (RPC – links rows are owner-only under RLS)
-  const { data: url, error: linkErr } = await supabase.rpc('resolve_slug', {
+  const { data, error: linkErr } = await supabase.rpc('resolve_link', {
     p_slug: slug,
   });
 
@@ -53,7 +53,12 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
     console.error('slug lookup failed:', linkErr);
     return draftRes; // 500 in prod, 200 shell in dev
   }
-  if (!url) return NextResponse.rewrite(new URL('/404', req.url));
+  const link = data?.[0];
+  if (!link) return NextResponse.rewrite(new URL('/404', req.url));
+
+  // Google Safe Browsing flagged the destination (weekly link check): show a
+  // warning instead of redirecting, and don't count it as a click.
+  if (link.blocked) return NextResponse.rewrite(new URL('/blocked', req.url));
 
   // 3️⃣  Click counter (people only, not preview bots): doesn’t block the
   //     redirect, and waitUntil keeps the function running until it’s stored.
@@ -77,7 +82,7 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
   }
 
   // 4️⃣  Lean 302 redirect (0-byte body)
-  const res = NextResponse.redirect(url, { status: 302 });
+  const res = NextResponse.redirect(link.url, { status: 302 });
 
   // 5️⃣  Propagate any Set-Cookie from Supabase (refresh token, etc.)
   const cookie = draftRes.headers.get('set-cookie');

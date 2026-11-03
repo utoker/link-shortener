@@ -28,6 +28,24 @@ describe('EditLinkDialog', () => {
 
     expect(input).toHaveValue('https://example.com/old');
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    expect(screen.queryByText(/Google Safe Browsing/)).not.toBeInTheDocument();
+  });
+
+  it('should explain why a blocked link is blocked and how to lift it', () => {
+    render(
+      <EditLinkDialog
+        link={{ ...LINK, safety_threats: ['MALWARE'] }}
+        open
+        onOpenChange={vi.fn()}
+        onSaved={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        'Google Safe Browsing reports this destination as malware, so visitors see a warning page instead. Save a different destination to lift the block.',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('should explain a refused destination while typing', async () => {

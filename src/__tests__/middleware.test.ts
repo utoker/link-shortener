@@ -39,9 +39,12 @@ const click = (headers: Record<string, string> = {}, method = 'GET') =>
     headers: { 'user-agent': IPHONE, ...headers },
   });
 
-// The rate limit lets the request through, the slug leads to example.com and
-// record_click answers with recordError.
-async function mockRedirect(recordError: { message: string } | null = null) {
+// The rate limit lets the request through, the slug leads to example.com
+// (blocked or not) and record_click answers with recordError.
+async function mockRedirect(
+  recordError: { message: string } | null = null,
+  blocked = false,
+) {
   const { redirectRateLimit } = await import('../lib/rateLimit');
   const { createSupabaseMiddlewareClient } = await import(
     '../lib/supabase/middleware'
@@ -55,7 +58,10 @@ async function mockRedirect(recordError: { message: string } | null = null) {
     pending: Promise.resolve(),
   });
 
-  const resolved = { data: 'https://example.com', error: null };
+  const resolved = {
+    data: [{ url: 'https://example.com', blocked }],
+    error: null,
+  };
   const recorded = { data: null, error: recordError };
   const rpc = vi.fn().mockResolvedValue(resolved);
   const adminRpc = vi.fn().mockResolvedValue(recorded);
@@ -86,7 +92,7 @@ describe('Middleware Rate Limiting', () => {
     const event = fakeEvent();
     const response = await middleware(request, event);
 
-    expect(rpc).toHaveBeenCalledWith('resolve_slug', { p_slug: 'test-slug' });
+    expect(rpc).toHaveBeenCalledWith('resolve_link', { p_slug: 'test-slug' });
     expect(response.status).toBe(302);
     expect(response.headers.get('location')).toBe('https://example.com/');
 
@@ -166,6 +172,22 @@ describe('Middleware Rate Limiting', () => {
     error.mockRestore();
   });
 
+  it('should show the warning page instead of redirecting a blocked link', async () => {
+    await mockRedirect(null, true);
+
+    const event = fakeEvent();
+    const response = await middleware(click(), event);
+
+    expect(response.status).not.toBe(302);
+    expect(response.headers.get('location')).toBeNull();
+    expect(response.headers.get('x-middleware-rewrite')).toBe(
+      'http://localhost:3000/blocked',
+    );
+    // not a click: nobody went to the destination
+    expect(event.waitUntil).not.toHaveBeenCalled();
+    expect(createSupabaseAdminClient).not.toHaveBeenCalled();
+  });
+
   it('should rewrite to 404 when the slug does not exist', async () => {
     const { redirectRateLimit } = await import('../lib/rateLimit');
     const { createSupabaseMiddlewareClient } = await import('../lib/supabase/middleware');
@@ -178,7 +200,7 @@ describe('Middleware Rate Limiting', () => {
       pending: Promise.resolve(),
     });
 
-    const rpc = vi.fn().mockResolvedValue({ data: null, error: null });
+    const rpc = vi.fn().mockResolvedValue({ data: [], error: null });
 
     vi.mocked(createSupabaseMiddlewareClient).mockReturnValue({
       supabase: { rpc } as any,

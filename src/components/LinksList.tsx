@@ -134,6 +134,12 @@ export default function LinksList() {
             >
               <Pencil className="h-3 w-3 sm:h-5 sm:w-5" aria-hidden="true" />
             </button>
+            {/* Google Safe Browsing flagged it; the edit dialog explains */}
+            {link.safety_threats && (
+              <span className="shrink-0 rounded-full bg-red-500 px-1 sm:px-4">
+                Blocked
+              </span>
+            )}
             <span className="truncate">{link.url}</span>
           </div>
           <div className="text-center">

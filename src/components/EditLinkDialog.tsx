@@ -15,9 +15,16 @@ import type { UpdateLinkResult } from '@/app/actions/data/updateLink';
 import { CreateLinkFormSchema } from '@/lib/schemas/CreateLinkFormSchema';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { ensureProtocol } from '@/lib/utils';
+import { describeThreats } from '@/lib/threatNames';
 
 interface EditLinkDialogProps {
-  link: { id: string; slug: string; url: string };
+  /** safety_threats: set when the weekly link check blocked the link */
+  link: {
+    id: string;
+    slug: string;
+    url: string;
+    safety_threats?: string[] | null;
+  };
   open: boolean;
   onOpenChange: (open: boolean) => void;
   /** Called after a successful save, e.g. to reload the link list */
@@ -79,6 +86,14 @@ export default function EditLinkDialog({
             same.
           </DialogDescription>
         </DialogHeader>
+
+        {link.safety_threats && (
+          <p className="font-poppins text-sm text-red-800">
+            Google Safe Browsing reports this destination as{' '}
+            {describeThreats(link.safety_threats)}, so visitors see a warning
+            page instead. Save a different destination to lift the block.
+          </p>
+        )}
 
         <form action={formAction} className="space-y-2">
           <input type="hidden" name="linkId" value={link.id} />

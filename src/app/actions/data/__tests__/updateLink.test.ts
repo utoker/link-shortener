@@ -90,8 +90,14 @@ describe('updateLink Action', () => {
 
     expect(result).toEqual({ success: true });
     expect(checkUrlSafety).toHaveBeenCalledWith('https://example.com/new');
+    // a block from the weekly link check was about the old destination
     expect(update).toHaveBeenCalledWith(
-      { url: 'https://example.com/new' },
+      {
+        url: 'https://example.com/new',
+        safety_threats: null,
+        safety_flagged_at: null,
+        safety_checked_at: expect.any(String),
+      },
       { count: 'exact' },
     );
     expect(eqId).toHaveBeenCalledWith('id', 'link-1');
@@ -198,7 +204,14 @@ describe('updateLink Action', () => {
     );
 
     expect(result.success).toBe(true);
-    expect(update).toHaveBeenCalled();
+    // not checked yet: the weekly link check asks Google again
+    expect(update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        safety_threats: null,
+        safety_checked_at: null,
+      }),
+      { count: 'exact' },
+    );
     expect(error).toHaveBeenCalledWith(
       'updateLink: Safe Browsing check skipped:',
       'HTTP 503',

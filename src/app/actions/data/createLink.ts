@@ -123,8 +123,8 @@ export async function createLink(
       };
     }
     if (result.verdict === 'unknown') {
-      // Keep the service working when Google can't answer; log it so the
-      // link can be re-checked later.
+      // Keep the service working when Google can't answer; the weekly link
+      // check (src/lib/linkCheck.ts) asks again.
       console.error(
         'createLink: Safe Browsing check skipped:',
         result.reason,
@@ -141,6 +141,8 @@ export async function createLink(
         slug,
         user_id: user?.id ?? null,
         click_count: 0,
+        safety_checked_at:
+          result.verdict === 'safe' ? new Date().toISOString() : null,
       });
 
     if (error) {

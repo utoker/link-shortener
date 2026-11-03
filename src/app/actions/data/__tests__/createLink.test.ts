@@ -109,6 +109,8 @@ describe('createLink Action', () => {
       slug: result.slug,
       user_id: 'user-123',
       click_count: 0,
+      // Google vouched for it just now
+      safety_checked_at: expect.any(String),
     });
   });
 
@@ -312,7 +314,10 @@ describe('createLink Action', () => {
     const result = await createLink({ success: false }, formData);
 
     expect(result.success).toBe(true);
-    expect(insert).toHaveBeenCalled();
+    // not checked yet: the weekly link check asks Google again
+    expect(insert).toHaveBeenCalledWith(
+      expect.objectContaining({ safety_checked_at: null }),
+    );
     expect(error).toHaveBeenCalledWith(
       'createLink: Safe Browsing check skipped:',
       'HTTP 503',

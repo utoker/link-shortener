@@ -49,6 +49,9 @@ export type Database = {
           click_count: number | null
           created_at: string | null
           id: string
+          safety_checked_at: string | null
+          safety_flagged_at: string | null
+          safety_threats: string[] | null
           slug: string
           url: string
           user_id: string | null
@@ -57,6 +60,9 @@ export type Database = {
           click_count?: number | null
           created_at?: string | null
           id?: string
+          safety_checked_at?: string | null
+          safety_flagged_at?: string | null
+          safety_threats?: string[] | null
           slug: string
           url: string
           user_id?: string | null
@@ -65,6 +71,9 @@ export type Database = {
           click_count?: number | null
           created_at?: string | null
           id?: string
+          safety_checked_at?: string | null
+          safety_flagged_at?: string | null
+          safety_threats?: string[] | null
           slug?: string
           url?: string
           user_id?: string | null
@@ -89,9 +98,12 @@ export type Database = {
         }
         Returns: undefined
       }
-      resolve_slug: {
+      resolve_link: {
         Args: { p_slug: string }
-        Returns: string
+        Returns: {
+          blocked: boolean
+          url: string
+        }[]
       }
       slug_exists: {
         Args: { p_slug: string }

@@ -8,6 +8,8 @@
 
 const ENDPOINT = 'https://safebrowsing.googleapis.com/v5alpha1/urls:search';
 const TIMEOUT_MS = 3000;
+const BATCH_TIMEOUT_MS = 10000;
+const MAX_URLS_PER_CALL = 50; // the API's limit
 
 const THREAT_TYPES: Record<number, string> = {
   1: 'MALWARE',
@@ -26,24 +28,90 @@ export type SafetyVerdict =
 
 /** Never throws: any failure (no key, timeout, bad reply) is 'unknown'. */
 export async function checkUrlSafety(url: string): Promise<SafetyVerdict> {
+  return toVerdict(await search([url], TIMEOUT_MS));
+}
+
+/**
+ * For the weekly re-check of every link: up to 50 URLs per call, and a failed
+ * call is tried again after each of `retryDelaysMs`. Google reports a hit in
+ * its own canonical form ("host/path"), not as the URL sent, so a call with a
+ * hit is repeated one URL at a time to see which URLs it was. Never throws.
+ */
+export async function checkUrlsSafety(
+  urls: string[],
+  retryDelaysMs = [2000, 5000],
+): Promise<Map<string, SafetyVerdict>> {
+  const verdicts = new Map<string, SafetyVerdict>();
+  const unique = Array.from(new Set(urls));
+  const searchWithRetries = (batch: string[]) =>
+    withRetries(() => search(batch, BATCH_TIMEOUT_MS), retryDelaysMs);
+
+  for (let i = 0; i < unique.length; i += MAX_URLS_PER_CALL) {
+    const batch = unique.slice(i, i + MAX_URLS_PER_CALL);
+    const result = await searchWithRetries(batch);
+
+    if (!result.ok || result.threats.length === 0 || batch.length === 1) {
+      for (const url of batch) verdicts.set(url, toVerdict(result));
+    } else {
+      const single = await Promise.all(
+        batch.map(async (url) => toVerdict(await searchWithRetries([url]))),
+      );
+      batch.forEach((url, j) => verdicts.set(url, single[j]));
+    }
+  }
+  return verdicts;
+}
+
+type SearchResult =
+  | { ok: true; threats: string[][] }
+  | { ok: false; reason: string };
+
+function toVerdict(result: SearchResult): SafetyVerdict {
+  if (!result.ok) return { verdict: 'unknown', reason: result.reason };
+  if (result.threats.length === 0) return { verdict: 'safe' };
+  return {
+    verdict: 'unsafe',
+    threats: Array.from(new Set(result.threats.flat())),
+  };
+}
+
+async function search(
+  urls: string[],
+  timeoutMs: number,
+): Promise<SearchResult> {
   const key = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
-  if (!key) return { verdict: 'unknown', reason: 'no API key' };
+  if (!key) return { ok: false, reason: 'no API key' };
 
   try {
-    const query = new URLSearchParams({ key, urls: url });
+    const query = new URLSearchParams({ key });
+    for (const url of urls) query.append('urls', url);
     const res = await fetch(`${ENDPOINT}?${query}`, {
-      signal: AbortSignal.timeout(TIMEOUT_MS),
+      signal: AbortSignal.timeout(timeoutMs),
     });
-    if (!res.ok) return { verdict: 'unknown', reason: `HTTP ${res.status}` };
+    if (!res.ok) return { ok: false, reason: `HTTP ${res.status}` };
 
-    const threats = readThreats(new Uint8Array(await res.arrayBuffer()));
-    if (threats.length === 0) return { verdict: 'safe' };
-    return { verdict: 'unsafe', threats: Array.from(new Set(threats.flat())) };
+    return {
+      ok: true,
+      threats: readThreats(new Uint8Array(await res.arrayBuffer())),
+    };
   } catch (err) {
     const reason =
       err instanceof Error ? `${err.name}: ${err.message}` : String(err);
-    return { verdict: 'unknown', reason: reason.replaceAll(key, '***') };
+    return { ok: false, reason: reason.replaceAll(key, '***') };
   }
+}
+
+async function withRetries(
+  attempt: () => Promise<SearchResult>,
+  delaysMs: number[],
+): Promise<SearchResult> {
+  let result = await attempt();
+  for (const delay of delaysMs) {
+    if (result.ok || result.reason === 'no API key') break;
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    result = await attempt();
+  }
+  return result;
 }
 
 /** One list of threat type names per ThreatUrl in a SearchUrlsResponse. */

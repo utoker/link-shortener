@@ -9,6 +9,7 @@ const RESERVED_SLUGS = new Set([
   '_vercel',
   'api',
   'auth',
+  'blocked',
   'callback',
   'protected',
   'reset-password',

@@ -91,9 +91,20 @@ export async function updateLink(
 
     // ---------- update -------------------------------------------------------
     // Browsers can't update links; the owner check is repeated in the query.
+    // A new destination also lifts a block from the weekly link check, which
+    // was about the old one.
     const { error, count } = await createSupabaseAdminClient()
       .from('links')
-      .update({ url }, { count: 'exact' })
+      .update(
+        {
+          url,
+          safety_threats: null,
+          safety_flagged_at: null,
+          safety_checked_at:
+            result.verdict === 'safe' ? new Date().toISOString() : null,
+        },
+        { count: 'exact' },
+      )
       .eq('id', linkId)
       .eq('user_id', user.id);
 

@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 export default function PrivacyPage() {
-  const lastUpdated = '2026-11-01'; // update when you change the policy
+  const lastUpdated = '2026-11-03'; // update when you change the policy
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 px-4 py-10">
@@ -83,9 +83,11 @@ export default function PrivacyPage() {
           appropriate safeguards, or when required by law.
         </p>
         <p>
-          When you create a link, its destination URL is sent to Google Safe
-          Browsing to check it for malware and phishing. Links Google reports as
-          unsafe are refused.
+          When you create or edit a link, its destination URL is sent to Google
+          Safe Browsing to check it for malware and phishing. Links Google
+          reports as unsafe are refused. Every link is checked again once a
+          week; if Google reports one as unsafe later, it shows a warning page
+          instead of redirecting and we email its owner.
         </p>
       </section>
 

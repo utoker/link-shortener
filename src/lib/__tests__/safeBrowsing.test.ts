@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { checkUrlSafety } from '../safeBrowsing';
+import { checkUrlSafety, checkUrlsSafety } from '../safeBrowsing';
 
 // Tiny protobuf encoder for test replies (lengths stay below 128).
 const field = (num: number, bytes: number[]) => [
@@ -124,5 +124,121 @@ describe('checkUrlSafety', () => {
       reason: 'no API key',
     });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('checkUrlsSafety', () => {
+  const fetchMock = vi.fn();
+  const NO_WAIT = [0, 0]; // retry delays
+
+  // the URLs sent in each call to Google
+  const askedFor = () =>
+    fetchMock.mock.calls.map(([url]) =>
+      new URL(url).searchParams.getAll('urls'),
+    );
+
+  beforeEach(() => {
+    vi.stubEnv('GOOGLE_SAFE_BROWSING_API_KEY', 'test-key');
+    vi.stubGlobal('fetch', fetchMock);
+    fetchMock.mockReset();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it('should send at most 50 URLs per call', async () => {
+    fetchMock.mockImplementation(async () => reply(CACHE_300S));
+    const urls = Array.from(
+      { length: 120 },
+      (_, i) => `https://example.com/${i}`,
+    );
+
+    const verdicts = await checkUrlsSafety(urls, NO_WAIT);
+
+    expect(askedFor().map((batch) => batch.length)).toEqual([50, 50, 20]);
+    expect(verdicts.size).toBe(120);
+    expect(
+      Array.from(verdicts.values()).every((v) => v.verdict === 'safe'),
+    ).toBe(true);
+  });
+
+  it('should ask about each URL once', async () => {
+    fetchMock.mockImplementation(async () => reply(CACHE_300S));
+
+    await checkUrlsSafety(
+      ['https://a.example/', 'https://a.example/', 'https://b.example/'],
+      NO_WAIT,
+    );
+
+    expect(askedFor()).toEqual([['https://a.example/', 'https://b.example/']]);
+  });
+
+  it('should find which URLs of a flagged call it was by asking about each', async () => {
+    // Google names a hit in its own form, without the scheme or the query
+    fetchMock.mockImplementation(async (url: string) => {
+      const asked = new URL(url).searchParams.getAll('urls');
+      return reply(
+        asked.includes('https://bad.example/login?x=1')
+          ? [...threatUrl('bad.example/login', [2]), ...CACHE_300S]
+          : CACHE_300S,
+      );
+    });
+    const urls = [
+      'https://example.com/',
+      'https://bad.example/login?x=1',
+      'https://example.org/',
+    ];
+
+    const verdicts = await checkUrlsSafety(urls, NO_WAIT);
+
+    expect(askedFor()).toEqual([urls, ...urls.map((url) => [url])]);
+    expect(verdicts.get('https://bad.example/login?x=1')).toEqual({
+      verdict: 'unsafe',
+      threats: ['SOCIAL_ENGINEERING'],
+    });
+    expect(verdicts.get('https://example.com/')).toEqual({ verdict: 'safe' });
+    expect(verdicts.get('https://example.org/')).toEqual({ verdict: 'safe' });
+  });
+
+  it('should try a failed call again', async () => {
+    fetchMock
+      .mockResolvedValueOnce(reply([], 503))
+      .mockRejectedValueOnce(new Error('network down'))
+      .mockResolvedValueOnce(reply(CACHE_300S));
+
+    const verdicts = await checkUrlsSafety(['https://example.com/'], NO_WAIT);
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(verdicts.get('https://example.com/')).toEqual({ verdict: 'safe' });
+  });
+
+  it('should leave the URLs unknown when Google keeps failing', async () => {
+    fetchMock.mockImplementation(async () => reply([], 503));
+
+    const verdicts = await checkUrlsSafety(
+      ['https://example.com/', 'https://example.org/'],
+      NO_WAIT,
+    );
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(verdicts.get('https://example.org/')).toEqual({
+      verdict: 'unknown',
+      reason: 'HTTP 503',
+    });
+  });
+
+  it('should not wait to retry when no key is set', async () => {
+    vi.stubEnv('GOOGLE_SAFE_BROWSING_API_KEY', '');
+
+    // a retry would wait a minute and time the test out
+    const verdicts = await checkUrlsSafety(['https://example.com/'], [60000]);
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(verdicts.get('https://example.com/')).toEqual({
+      verdict: 'unknown',
+      reason: 'no API key',
+    });
   });
 });

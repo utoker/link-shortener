@@ -8,6 +8,7 @@ describe('isReservedSlug', () => {
       'auth',
       'protected',
       '404',
+      'blocked',
       'api',
       '_next',
       'admin',
