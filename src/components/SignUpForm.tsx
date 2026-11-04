@@ -31,7 +31,14 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
   const { refetchUser, triggerConfetti } = useUserContext();
 
   useEffect(() => {
-    if (state.success) {
+    if (state.success && state.needsConfirmation) {
+      // not signed in until the link in the email is opened
+      toast.success(
+        'Almost done! Open the link we emailed you to finish signing up.',
+        { duration: 15000 },
+      );
+      onSuccess();
+    } else if (state.success) {
       toast.success('Account created successfully!');
       startTransition(refetchUser);
       triggerConfetti();

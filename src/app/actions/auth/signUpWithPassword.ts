@@ -23,7 +23,10 @@ export interface SignUpFieldErrors {
   confirmPassword?: string[];
 }
 
-export type SignUpResult = ActionResult<SignUpFieldErrors>;
+export type SignUpResult = ActionResult<SignUpFieldErrors> & {
+  /** The account exists but its email address must be confirmed first */
+  needsConfirmation?: boolean;
+};
 
 // -----------------------------------------------------------------------------
 // Action implementation
@@ -62,12 +65,17 @@ export async function signUpWithPasswordAction(
 
   try {
     const supabase = await createSupabaseServerClient();
+    const origin =
+      (await headers()).get('origin') ?? process.env.NEXT_PUBLIC_SITE_URL!;
 
-    const { error } = await supabase.auth.signUp({
+    // The confirmation email's link goes through /auth/callback, which signs
+    // the new user in (in the browser they signed up in).
+    const { data: signUp, error } = await supabase.auth.signUp({
       email: validation.data.email,
       password: validation.data.password,
       options: {
         data: { name: validation.data.name, full_name: validation.data.name },
+        emailRedirectTo: `${origin}/auth/callback`,
       },
     });
 
@@ -75,7 +83,8 @@ export async function signUpWithPasswordAction(
       return { success: false, formError: error.message };
     }
 
-    return { success: true };
+    // No session yet: Supabase sent a confirmation email instead.
+    return { success: true, needsConfirmation: !signUp.session };
   } catch (err) {
     console.error('signUpWithPasswordAction:', err);
     return {
