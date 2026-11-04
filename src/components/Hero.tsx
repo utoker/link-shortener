@@ -137,7 +137,7 @@ export default function Hero() {
       case 'taken':
         return 'This slug is already taken.';
       case 'invalid':
-        return 'Only a-z, 0-9 and “-” (1-64 chars).';
+        return 'Letters, numbers, - and _ (max 64).';
       case 'reserved':
         return 'This slug is reserved.';
       default:
