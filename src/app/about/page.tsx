@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="mx-auto max-w-3xl space-y-8 px-4 py-10">
+    <div className="mx-auto max-w-3xl space-y-8 px-4 py-10">
       <header className="space-y-2">
         <h1 className="text-3xl font-bold">About reqq.cc</h1>
         <p className="text-sm text-white/70">
@@ -126,6 +126,6 @@ export default function AboutPage() {
           </li>
         </ul>
       </section>
-    </main>
+    </div>
   );
 }

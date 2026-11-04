@@ -14,13 +14,13 @@ export const metadata = { alternates: { canonical: '/' } };
 
 export default function Home() {
   return (
-    <main className="bg-background text-foreground mx-auto flex min-h-screen flex-col items-center">
+    <div className="bg-background text-foreground mx-auto flex min-h-screen flex-col items-center">
       <ConfettiEffect />
       <Hero />
       <LinksList />
       <SignedOutOnly>
         <FeaturesSection />
       </SignedOutOnly>
-    </main>
+    </div>
   );
 }

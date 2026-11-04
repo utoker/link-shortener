@@ -9,7 +9,7 @@ export default function PrivacyPage() {
   const lastUpdated = '2026-11-03'; // update when you change the policy
 
   return (
-    <main className="mx-auto max-w-3xl space-y-8 px-4 py-10">
+    <div className="mx-auto max-w-3xl space-y-8 px-4 py-10">
       <header className="space-y-2">
         <h1 className="text-3xl font-bold">Privacy Policy</h1>
         <p className="text-sm text-neutral-400">Last updated: {lastUpdated}</p>
@@ -148,6 +148,6 @@ export default function PrivacyPage() {
           new “Last updated” date.
         </p>
       </section>
-    </main>
+    </div>
   );
 }

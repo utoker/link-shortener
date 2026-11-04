@@ -9,7 +9,7 @@ export default function TermsPage() {
   const lastUpdated = '2025-07-27'; // update when you change the terms
 
   return (
-    <main className="mx-auto max-w-3xl space-y-8 px-4 py-10">
+    <div className="mx-auto max-w-3xl space-y-8 px-4 py-10">
       <header className="space-y-2">
         <h1 className="text-3xl font-bold">Terms of Service</h1>
         <p className="text-sm text-neutral-400">Last updated: {lastUpdated}</p>
@@ -158,6 +158,6 @@ export default function TermsPage() {
           .
         </p>
       </footer>
-    </main>
+    </div>
   );
 }
