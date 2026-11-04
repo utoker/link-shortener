@@ -5,3 +5,8 @@ onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - sharp
   - supabase
+
+# Next.js pins postcss 8.4.31, which has known advisories (build-time only,
+# sourceMappingURL file reads); use a fixed 8.5 release everywhere.
+overrides:
+  postcss: 8.5.31
