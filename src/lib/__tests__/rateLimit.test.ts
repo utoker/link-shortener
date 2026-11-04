@@ -31,52 +31,6 @@ describe('Rate Limiter Utilities', () => {
     vi.clearAllMocks();
   });
 
-  describe('getClientIP', () => {
-    it('should extract IP from x-forwarded-for header', async () => {
-      const { getClientIP } = await import('../rateLimit');
-      const mockRequest = {
-        headers: {
-          get: vi.fn().mockImplementation((key) => {
-            if (key === 'x-forwarded-for') return '192.168.1.1, 10.0.0.1';
-            if (key === 'x-real-ip') return null;
-            return null;
-          }),
-        },
-      } as any;
-
-      const ip = getClientIP(mockRequest);
-      expect(ip).toBe('192.168.1.1');
-    });
-
-    it('should extract IP from x-real-ip header when x-forwarded-for is not available', async () => {
-      const { getClientIP } = await import('../rateLimit');
-      const mockRequest = {
-        headers: {
-          get: vi.fn().mockImplementation((key) => {
-            if (key === 'x-forwarded-for') return null;
-            if (key === 'x-real-ip') return '192.168.1.1';
-            return null;
-          }),
-        },
-      } as any;
-
-      const ip = getClientIP(mockRequest);
-      expect(ip).toBe('192.168.1.1');
-    });
-
-    it('should return localhost when no IP headers are present', async () => {
-      const { getClientIP } = await import('../rateLimit');
-      const mockRequest = {
-        headers: {
-          get: vi.fn().mockReturnValue(null),
-        },
-      } as any;
-
-      const ip = getClientIP(mockRequest);
-      expect(ip).toBe('127.0.0.1');
-    });
-  });
-
   describe('Rate Limiter Instances', () => {
     it('should have different rate limiters for different use cases', async () => {
       const { redirectRateLimit, linkCreationRateLimit, authRateLimit } = await import('../rateLimit');
@@ -99,6 +53,36 @@ describe('Rate Limiter Utilities', () => {
         'ratelimit:link-edit',
         'ratelimit:auth',
       ]);
+    });
+
+    it('should give a redirect only a second before letting it through', async () => {
+      vi.resetModules();
+      await import('../rateLimit');
+      const { Ratelimit } = await import('@upstash/ratelimit');
+
+      const [redirect, ...others] = vi
+        .mocked(Ratelimit)
+        .mock.calls.map(([config]) => config.timeout);
+      expect(redirect).toBe(1000);
+      expect(others).toEqual([undefined, undefined, undefined]); // 5 s
+    });
+
+    it('should let requests through when Upstash fails', async () => {
+      vi.resetModules();
+      const { redirectRateLimit } = await import('../rateLimit');
+      const { Ratelimit } = await import('@upstash/ratelimit');
+      const upstash = vi.mocked(Ratelimit).mock.results[0].value;
+      upstash.limit.mockRejectedValueOnce(new Error('ERR max requests limit exceeded'));
+      const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const result = await redirectRateLimit.limit('192.168.1.1');
+
+      expect(result.success).toBe(true);
+      expect(error).toHaveBeenCalledWith(
+        'rate limit redirect failed, letting it through:',
+        expect.any(Error),
+      );
+      error.mockRestore();
     });
 
     it('should allow requests within limits', async () => {

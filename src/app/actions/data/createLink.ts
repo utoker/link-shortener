@@ -7,6 +7,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { ActionResult } from '@/lib/types/actions';
 import { linkCreationRateLimit } from '@/lib/rateLimit';
+import { getClientIP } from '@/lib/clientIp';
 import { checkUrlSafety, UNSAFE_URL_MESSAGE } from '@/lib/safeBrowsing';
 import { ensureProtocol } from '@/lib/utils';
 import { headers } from 'next/headers';
@@ -39,9 +40,7 @@ export async function createLink(
   formData: FormData,
 ): Promise<CreateLinkResult> {
   // ---------- rate limiting -------------------------------------------------
-  const headersList = await headers();
-  const forwarded = headersList.get('x-forwarded-for');
-  const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1';
+  const ip = getClientIP(await headers());
   
   const { success } = await linkCreationRateLimit.limit(ip);
   if (!success) {

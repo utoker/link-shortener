@@ -8,6 +8,7 @@ import { signInSchema } from '@/lib/schemas/singInSchema';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { ActionResult } from '@/lib/types/actions';
 import { authRateLimit } from '@/lib/rateLimit';
+import { getClientIP } from '@/lib/clientIp';
 import { headers } from 'next/headers';
 
 // -----------------------------------------------------------------------------
@@ -28,9 +29,7 @@ export async function signInWithPasswordAction(
   formData: FormData,
 ): Promise<SignInResult> {
   // ---------- rate limiting -------------------------------------------------
-  const headersList = await headers();
-  const forwarded = headersList.get('x-forwarded-for');
-  const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1';
+  const ip = getClientIP(await headers());
   
   const { success } = await authRateLimit.limit(ip);
   if (!success) {

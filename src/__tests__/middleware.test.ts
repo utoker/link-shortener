@@ -8,7 +8,6 @@ vi.mock('../lib/rateLimit', () => ({
   redirectRateLimit: {
     limit: vi.fn(),
   },
-  getClientIP: vi.fn().mockReturnValue('192.168.1.1'),
 }));
 
 vi.mock('../lib/supabase/public', () => ({

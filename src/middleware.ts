@@ -8,7 +8,8 @@ import {
 } from 'next/server';
 import { createSupabasePublicClient } from './lib/supabase/public';
 import { createSupabaseAdminClient } from './lib/supabase/admin';
-import { redirectRateLimit, getClientIP } from './lib/rateLimit';
+import { redirectRateLimit } from './lib/rateLimit';
+import { getClientIP } from './lib/clientIp';
 import { clickDetails, isCountedClick } from './lib/clickDetails';
 
 // Run only for single-segment paths without a dot, i.e. /slug. Slugs are
@@ -31,7 +32,7 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
   if (APP_PAGES.has(slug.split('/')[0])) return NextResponse.next();
 
   // Rate limiting for redirects
-  const ip = getClientIP(req);
+  const ip = getClientIP(req.headers);
   const { success, remaining, reset } = await redirectRateLimit.limit(ip);
   
   if (!success) {
