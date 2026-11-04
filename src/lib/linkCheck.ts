@@ -4,6 +4,8 @@
 // is lifted once Google reports the URL clean again, or when the owner changes
 // the URL (updateLink). Links Google couldn't answer for stay as they are until
 // next week. ALERT_EMAIL only hears about runs where something went wrong.
+// Every run also pings healthchecks.io (HEALTHCHECK_URL), which emails the
+// owner when a Monday passes without one, i.e. when the job stopped running.
 import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { checkUrlsSafety } from '@/lib/safeBrowsing';
 import { sendEmail } from '@/lib/email';
@@ -56,6 +58,7 @@ export async function runLinkCheck(): Promise<LinkCheckSummary> {
 
   console.info('link check:', JSON.stringify(summary));
   if (summary.problems.length > 0) await sendAlert(summary);
+  await pingHealthcheck(summary);
   return summary;
 }
 
@@ -257,6 +260,35 @@ async function sendAlert(summary: LinkCheckSummary) {
     ].join('\n'),
   });
   if (!sent.ok) console.error('link check: alert email failed:', sent.reason);
+}
+
+/**
+ * Tells healthchecks.io the run happened; a run with problems pings
+ * ".../fail" so its check goes down at once. The ping carries only counts:
+ * problem texts can hold an owner's email address and stay in the alert.
+ * Never throws.
+ */
+async function pingHealthcheck(summary: LinkCheckSummary) {
+  const url = process.env.HEALTHCHECK_URL;
+  if (!url) return;
+
+  const failed = summary.problems.length > 0;
+  try {
+    const res = await fetch(failed ? `${url}/fail` : url, {
+      method: 'POST',
+      body:
+        `Links: ${summary.links}. Checked: ${summary.checked}. ` +
+        `Skipped: ${summary.skipped}. Blocked: ${summary.blocked.length}. ` +
+        `Unblocked: ${summary.unblocked.length}. ` +
+        `Problems: ${summary.problems.length}.`,
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) {
+      console.error('link check: healthcheck ping failed: HTTP', res.status);
+    }
+  } catch (err) {
+    console.error('link check: healthcheck ping failed:', errorText(err));
+  }
 }
 
 function errorText(err: unknown): string {

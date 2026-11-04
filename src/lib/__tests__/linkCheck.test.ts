@@ -123,6 +123,7 @@ describe('runLinkCheck', () => {
 
   afterEach(() => {
     vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
@@ -308,6 +309,65 @@ describe('runLinkCheck', () => {
     ]);
     expect(checkUrlsSafety).not.toHaveBeenCalled();
     expect(sentTo()).toEqual(['admin@example.com']);
+  });
+
+  describe('healthchecks.io ping', () => {
+    const fetchMock = vi.fn();
+    beforeEach(() => {
+      vi.stubEnv('HEALTHCHECK_URL', 'https://hc-ping.example/abc');
+      vi.stubGlobal('fetch', fetchMock);
+      fetchMock.mockReset().mockResolvedValue(new Response('OK'));
+    });
+
+    it('should report a run with its counts', async () => {
+      database([row('1', 'https://example.com/'), row('2', 'https://bad.example/')]);
+      google({ 'https://bad.example/': PHISHING });
+
+      await runLinkCheck();
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      const [url, init] = fetchMock.mock.calls[0];
+      expect(url).toBe('https://hc-ping.example/abc');
+      expect(init.method).toBe('POST');
+      expect(init.body).toBe(
+        'Links: 2. Checked: 2. Skipped: 0. Blocked: 1. Unblocked: 0. Problems: 0.',
+      );
+    });
+
+    it('should report a run with problems as failed, without their text', async () => {
+      database([], { readError: { message: 'database down' } });
+
+      await runLinkCheck();
+
+      const [url, init] = fetchMock.mock.calls[0];
+      expect(url).toBe('https://hc-ping.example/abc/fail');
+      expect(init.body).toMatch(/Problems: 1\.$/);
+      expect(init.body).not.toMatch(/database down/);
+    });
+
+    it('should finish when healthchecks.io cannot be reached', async () => {
+      fetchMock.mockRejectedValue(new Error('network down'));
+      database([row('1', 'https://example.com/')]);
+      google();
+
+      const summary = await runLinkCheck();
+
+      expect(summary.checked).toBe(1);
+      expect(console.error).toHaveBeenCalledWith(
+        'link check: healthcheck ping failed:',
+        'network down',
+      );
+    });
+
+    it('should not ping without HEALTHCHECK_URL', async () => {
+      vi.stubEnv('HEALTHCHECK_URL', '');
+      database([row('1', 'https://example.com/')]);
+      google();
+
+      await runLinkCheck();
+
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
   });
 
   it('should still finish when there is nobody to alert', async () => {
