@@ -19,6 +19,9 @@ const QrCodeDialog = dynamic(() => import('./QrCodeDialog'), { ssr: false });
 const EditLinkDialog = dynamic(() => import('./EditLinkDialog'), {
   ssr: false,
 });
+const DeleteLinkDialog = dynamic(() => import('./DeleteLinkDialog'), {
+  ssr: false,
+});
 
 export default function LinksList() {
   const [_isPending, startAction] = useTransition();
@@ -30,6 +33,8 @@ export default function LinksList() {
     open: boolean;
     key: number;
   } | null>(null);
+  // the link whose delete button was pressed, until the user confirms
+  const [del, setDel] = useState<{ link: Link; open: boolean } | null>(null);
   const { user, links, refetchLinks } = useUserContext();
 
   /* ------------------------------------------------------------------ */
@@ -173,7 +178,7 @@ export default function LinksList() {
             </button>
 
             <button
-              onClick={() => handleDelete(link.id)}
+              onClick={() => setDel({ link, open: true })}
               className="bg-yellow rounded-full border-1 border-black px-1 text-sm text-black shadow-md transition-transform hover:scale-110 hover:cursor-pointer active:scale-90 sm:px-4 sm:py-1.5"
               aria-label="Delete shortlink"
             >
@@ -190,6 +195,15 @@ export default function LinksList() {
           open={edit.open}
           onOpenChange={(open) => setEdit({ ...edit, open })}
           onSaved={refetchLinks}
+        />
+      )}
+
+      {del && (
+        <DeleteLinkDialog
+          slug={del.link.slug}
+          open={del.open}
+          onOpenChange={(open) => setDel({ ...del, open })}
+          onConfirm={() => handleDelete(del.link.id)}
         />
       )}
 

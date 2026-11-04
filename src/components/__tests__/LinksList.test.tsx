@@ -1,8 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { User } from '@supabase/supabase-js';
 import { useUserContext } from '@/app/context/UserContext';
+import { deleteLink } from '@/app/actions/data';
 import LinksList from '../LinksList';
 
 vi.mock('@/app/context/UserContext', () => ({
@@ -92,6 +93,31 @@ describe('LinksList', () => {
     expect(screen.getByText('Blocked').nextSibling).toHaveTextContent(
       'https://bad.example/',
     );
+  });
+
+  it('should ask before deleting a link, and delete it only once confirmed', async () => {
+    signedInWithTwoLinks();
+    vi.mocked(deleteLink).mockResolvedValue({ success: true });
+    const user = userEvent.setup();
+
+    render(<LinksList />);
+    const deleteButtons = screen.getAllByRole('button', {
+      name: 'Delete shortlink',
+    });
+
+    await user.click(deleteButtons[1]);
+    expect(
+      await screen.findByText(/reqq\.cc\/second and its QR codes will stop working/),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(deleteLink).not.toHaveBeenCalled();
+
+    await user.click(deleteButtons[1]);
+    await user.click(await screen.findByRole('button', { name: 'Delete' }));
+
+    await waitFor(() => expect(deleteLink).toHaveBeenCalledTimes(1));
+    const formData = vi.mocked(deleteLink).mock.calls[0][1];
+    expect(formData.get('linkId')).toBe('2');
   });
 
   it('should open the edit dialog for the link whose pencil was pressed', async () => {
