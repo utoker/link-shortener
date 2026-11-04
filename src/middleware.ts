@@ -6,7 +6,7 @@ import {
   type NextFetchEvent,
   type NextRequest,
 } from 'next/server';
-import { createSupabaseMiddlewareClient } from './lib/supabase/middleware';
+import { createSupabasePublicClient } from './lib/supabase/public';
 import { createSupabaseAdminClient } from './lib/supabase/admin';
 import { redirectRateLimit, getClientIP } from './lib/rateLimit';
 import { clickDetails, isCountedClick } from './lib/clickDetails';
@@ -41,17 +41,16 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
     return response;
   }
 
-  // 1️⃣  Supabase client that can read *and* set cookies
-  const { supabase, res: draftRes } = createSupabaseMiddlewareClient(req);
-
-  // 2️⃣  Look up the destination URL (RPC – links rows are owner-only under RLS)
-  const { data, error: linkErr } = await supabase.rpc('resolve_link', {
-    p_slug: slug,
-  });
+  // 1️⃣  Look up the destination URL (RPC – links rows are owner-only under
+  //     RLS). Anyone may, so the client leaves the visitor's login alone.
+  const { data, error: linkErr } = await createSupabasePublicClient().rpc(
+    'resolve_link',
+    { p_slug: slug },
+  );
 
   if (linkErr) {
     console.error('slug lookup failed:', linkErr);
-    return draftRes; // 500 in prod, 200 shell in dev
+    return NextResponse.next(); // no such page, so Next shows its 404
   }
   const link = data?.[0];
   if (!link) return NextResponse.rewrite(new URL('/404', req.url));
@@ -60,7 +59,7 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
   // warning instead of redirecting, and don't count it as a click.
   if (link.blocked) return NextResponse.rewrite(new URL('/blocked', req.url));
 
-  // 3️⃣  Click counter (people only, not preview bots): doesn’t block the
+  // 2️⃣  Click counter (people only, not preview bots): doesn’t block the
   //     redirect, and waitUntil keeps the function running until it’s stored.
   //     record_click only accepts the server’s secret key.
   if (isCountedClick(req)) {
@@ -81,13 +80,8 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
     );
   }
 
-  // 4️⃣  Lean 302 redirect (0-byte body)
+  // 3️⃣  Lean 302 redirect (0-byte body)
   const res = NextResponse.redirect(link.url, { status: 302 });
-
-  // 5️⃣  Propagate any Set-Cookie from Supabase (refresh token, etc.)
-  const cookie = draftRes.headers.get('set-cookie');
-  if (cookie) res.headers.set('set-cookie', cookie);
-
   res.headers.set('x-middleware', 'hit');
 
   return res;

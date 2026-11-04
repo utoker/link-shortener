@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { NextRequest, NextResponse, type NextFetchEvent } from 'next/server';
+import { NextRequest, type NextFetchEvent } from 'next/server';
 import { unstable_doesMiddlewareMatch } from 'next/experimental/testing/server';
 import { config, middleware } from '../middleware';
 import { createSupabaseAdminClient } from '../lib/supabase/admin';
@@ -11,13 +11,8 @@ vi.mock('../lib/rateLimit', () => ({
   getClientIP: vi.fn().mockReturnValue('192.168.1.1'),
 }));
 
-vi.mock('../lib/supabase/middleware', () => ({
-  createSupabaseMiddlewareClient: vi.fn().mockReturnValue({
-    supabase: {
-      rpc: vi.fn(),
-    },
-    res: new NextResponse(),
-  }),
+vi.mock('../lib/supabase/public', () => ({
+  createSupabasePublicClient: vi.fn(),
 }));
 
 vi.mock('../lib/supabase/admin', () => ({
@@ -46,8 +41,8 @@ async function mockRedirect(
   blocked = false,
 ) {
   const { redirectRateLimit } = await import('../lib/rateLimit');
-  const { createSupabaseMiddlewareClient } = await import(
-    '../lib/supabase/middleware'
+  const { createSupabasePublicClient } = await import(
+    '../lib/supabase/public'
   );
 
   vi.mocked(redirectRateLimit.limit).mockResolvedValue({
@@ -66,10 +61,7 @@ async function mockRedirect(
   const rpc = vi.fn().mockResolvedValue(resolved);
   const adminRpc = vi.fn().mockResolvedValue(recorded);
 
-  vi.mocked(createSupabaseMiddlewareClient).mockReturnValue({
-    supabase: { rpc } as any,
-    res: new NextResponse(),
-  });
+  vi.mocked(createSupabasePublicClient).mockReturnValue({ rpc } as any);
   vi.mocked(createSupabaseAdminClient).mockReturnValue({
     rpc: adminRpc,
   } as any);
@@ -190,7 +182,7 @@ describe('Middleware Rate Limiting', () => {
 
   it('should rewrite to 404 when the slug does not exist', async () => {
     const { redirectRateLimit } = await import('../lib/rateLimit');
-    const { createSupabaseMiddlewareClient } = await import('../lib/supabase/middleware');
+    const { createSupabasePublicClient } = await import('../lib/supabase/public');
 
     vi.mocked(redirectRateLimit.limit).mockResolvedValue({
       success: true,
@@ -202,10 +194,7 @@ describe('Middleware Rate Limiting', () => {
 
     const rpc = vi.fn().mockResolvedValue({ data: [], error: null });
 
-    vi.mocked(createSupabaseMiddlewareClient).mockReturnValue({
-      supabase: { rpc } as any,
-      res: new NextResponse(),
-    });
+    vi.mocked(createSupabasePublicClient).mockReturnValue({ rpc } as any);
 
     const request = new NextRequest('http://localhost:3000/missing-slug', {
       headers: { 'user-agent': IPHONE },
@@ -255,7 +244,7 @@ describe('Middleware Rate Limiting', () => {
     'should let the %s page through without a slug lookup',
     async (path) => {
       const { redirectRateLimit } = await import('../lib/rateLimit');
-      const { createSupabaseMiddlewareClient } = await import('../lib/supabase/middleware');
+      const { createSupabasePublicClient } = await import('../lib/supabase/public');
 
       const response = await middleware(
         new NextRequest(`http://localhost:3000${path}`),
@@ -265,7 +254,7 @@ describe('Middleware Rate Limiting', () => {
       expect(response.status).toBe(200);
       expect(response.headers.get('x-middleware-next')).toBe('1');
       expect(redirectRateLimit.limit).not.toHaveBeenCalled();
-      expect(createSupabaseMiddlewareClient).not.toHaveBeenCalled();
+      expect(createSupabasePublicClient).not.toHaveBeenCalled();
     },
   );
 
