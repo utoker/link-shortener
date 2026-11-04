@@ -12,6 +12,9 @@ export const CreateLinkFormSchema = z.object({
       error: 'Please enter a valid URL (e.g., https://example.com)',
     })
     .min(1, 'URL is required')
+    // Google Safe Browsing refuses much longer URLs, and a link it can't
+    // check would be created unchecked (see createLink).
+    .max(2048, 'Links can be up to 2,048 characters long.')
     .refine((url) => !isOwnUrl(url), {
       error: 'That is already a reqq.cc link.',
     })

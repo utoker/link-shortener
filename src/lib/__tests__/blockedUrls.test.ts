@@ -103,6 +103,16 @@ describe('CreateLinkFormSchema url', () => {
     }
   });
 
+  it('should refuse URLs longer than 2,048 characters', () => {
+    const base = 'https://example.com/?q=';
+    const at = (n: number) => base + 'a'.repeat(n - base.length);
+
+    expect(url.safeParse(at(2048)).success).toBe(true);
+    expect(url.safeParse(at(2049)).error?.issues[0].message).toBe(
+      'Links can be up to 2,048 characters long.',
+    );
+  });
+
   it('should still report an invalid URL as invalid', () => {
     const result = url.safeParse('https://exa mple.com');
     expect(result.error?.issues.map((i) => i.message)).toEqual([

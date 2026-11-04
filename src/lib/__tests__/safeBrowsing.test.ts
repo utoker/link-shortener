@@ -164,6 +164,47 @@ describe('checkUrlsSafety', () => {
     ).toBe(true);
   });
 
+  it('should keep each call under 12,000 characters of URLs', async () => {
+    fetchMock.mockImplementation(async () => reply(CACHE_300S));
+    const urls = Array.from(
+      { length: 10 },
+      (_, i) => `https://example.com/${i}?q=${'a'.repeat(2000)}`,
+    );
+
+    const verdicts = await checkUrlsSafety(urls, NO_WAIT);
+
+    expect(askedFor().map((batch) => batch.length)).toEqual([5, 5]);
+    for (const batch of askedFor()) {
+      const query = new URLSearchParams(batch.map((u) => ['urls', u]));
+      expect(query.toString().length).toBeLessThanOrEqual(12000);
+    }
+    expect(verdicts.size).toBe(10);
+  });
+
+  it('should ask about each URL of a call Google refuses, once', async () => {
+    // Google can't take one of the URLs, so it refuses every call with it
+    fetchMock.mockImplementation(async (url: string) =>
+      new URL(url).searchParams.getAll('urls').includes('https://odd.example/')
+        ? reply([], 400)
+        : reply(CACHE_300S),
+    );
+    const urls = [
+      'https://example.com/',
+      'https://odd.example/',
+      'https://example.org/',
+    ];
+
+    const verdicts = await checkUrlsSafety(urls, NO_WAIT);
+
+    expect(askedFor()).toEqual([urls, ...urls.map((url) => [url])]);
+    expect(verdicts.get('https://odd.example/')).toEqual({
+      verdict: 'unknown',
+      reason: 'HTTP 400',
+    });
+    expect(verdicts.get('https://example.com/')).toEqual({ verdict: 'safe' });
+    expect(verdicts.get('https://example.org/')).toEqual({ verdict: 'safe' });
+  });
+
   it('should send all calls at once', async () => {
     // Google answers only once all three calls are waiting, so calls made
     // one after another would never finish

@@ -10,6 +10,12 @@ const ENDPOINT = 'https://safebrowsing.googleapis.com/v5alpha1/urls:search';
 const TIMEOUT_MS = 3000;
 const BATCH_TIMEOUT_MS = 5000;
 const MAX_URLS_PER_CALL = 50; // the API's limit
+// Google refuses a request whose address is too long (HTTP 400 at about
+// 30,000 characters; 16,000 still worked), so a call also stops here.
+const MAX_QUERY_CHARS = 12000;
+// Replies that mean the request itself was refused, e.g. a URL too long or
+// one Google can't read, rather than Google having trouble.
+const REFUSED = [400, 413, 414];
 
 const THREAT_TYPES: Record<number, string> = {
   1: 'MALWARE',
@@ -32,10 +38,12 @@ export async function checkUrlSafety(url: string): Promise<SafetyVerdict> {
 }
 
 /**
- * For the weekly re-check of every link: up to 50 URLs per call, and a failed
- * call is tried again after each of `retryDelaysMs`. Google reports a hit in
- * its own canonical form ("host/path"), not as the URL sent, so a call with a
- * hit is repeated one URL at a time to see which URLs it was. Never throws.
+ * For the weekly re-check of every link: up to 50 URLs (and 12,000 characters
+ * of them) per call, and a failed call is tried again after each of
+ * `retryDelaysMs`. Google reports a hit in its own canonical form
+ * ("host/path"), not as the URL sent, so a call with a hit is repeated one URL
+ * at a time to see which URLs it was. So is a call Google refuses, so that one
+ * URL it can't take doesn't leave the others unchecked. Never throws.
  *
  * All calls go out at once: even if Google times out on every try, this takes
  * about 40 s, within the cron route's 60 s limit on Vercel Hobby.
@@ -45,20 +53,35 @@ export async function checkUrlsSafety(
   retryDelaysMs = [1000, 3000],
 ): Promise<Map<string, SafetyVerdict>> {
   const verdicts = new Map<string, SafetyVerdict>();
-  const unique = Array.from(new Set(urls));
   const searchWithRetries = (batch: string[]) =>
     withRetries(() => search(batch, BATCH_TIMEOUT_MS), retryDelaysMs);
 
   const batches: string[][] = [];
-  for (let i = 0; i < unique.length; i += MAX_URLS_PER_CALL) {
-    batches.push(unique.slice(i, i + MAX_URLS_PER_CALL));
+  let chars = 0;
+  for (const url of Array.from(new Set(urls))) {
+    const size = new URLSearchParams({ urls: url }).toString().length + 1;
+    const last = batches.at(-1);
+    if (
+      !last ||
+      last.length === MAX_URLS_PER_CALL ||
+      chars + size > MAX_QUERY_CHARS
+    ) {
+      batches.push([url]);
+      chars = size;
+    } else {
+      last.push(url);
+      chars += size;
+    }
   }
 
   await Promise.all(
     batches.map(async (batch) => {
       const result = await searchWithRetries(batch);
+      const askEach =
+        batch.length > 1 &&
+        (result.ok ? result.threats.length > 0 : result.refused);
 
-      if (!result.ok || result.threats.length === 0 || batch.length === 1) {
+      if (!askEach) {
         for (const url of batch) verdicts.set(url, toVerdict(result));
         return;
       }
@@ -73,7 +96,7 @@ export async function checkUrlsSafety(
 
 type SearchResult =
   | { ok: true; threats: string[][] }
-  | { ok: false; reason: string };
+  | { ok: false; reason: string; refused?: boolean };
 
 function toVerdict(result: SearchResult): SafetyVerdict {
   if (!result.ok) return { verdict: 'unknown', reason: result.reason };
@@ -97,7 +120,13 @@ async function search(
     const res = await fetch(`${ENDPOINT}?${query}`, {
       signal: AbortSignal.timeout(timeoutMs),
     });
-    if (!res.ok) return { ok: false, reason: `HTTP ${res.status}` };
+    if (!res.ok) {
+      return {
+        ok: false,
+        reason: `HTTP ${res.status}`,
+        refused: REFUSED.includes(res.status),
+      };
+    }
 
     return {
       ok: true,
@@ -116,7 +145,7 @@ async function withRetries(
 ): Promise<SearchResult> {
   let result = await attempt();
   for (const delay of delaysMs) {
-    if (result.ok || result.reason === 'no API key') break;
+    if (result.ok || result.reason === 'no API key' || result.refused) break;
     await new Promise((resolve) => setTimeout(resolve, delay));
     result = await attempt();
   }
