@@ -206,6 +206,21 @@ describe('Middleware Rate Limiting', () => {
     expect(createSupabaseAdminClient).not.toHaveBeenCalled();
   });
 
+  it('should ask to try again when the lookup fails', async () => {
+    const { rpc } = await mockRedirect();
+    rpc.mockResolvedValue({ data: null, error: { message: 'timeout' } });
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const event = fakeEvent();
+
+    const response = await middleware(click(), event);
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get('Retry-After')).toBe('30');
+    expect(await response.text()).toMatch(/try again/);
+    expect(event.waitUntil).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
   it('should return 429 when rate limit is exceeded', async () => {
     const { redirectRateLimit } = await import('../lib/rateLimit');
 

@@ -49,9 +49,13 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
     { p_slug: slug },
   );
 
+  // The link may well exist, so don't say "not found": ask to come back.
   if (linkErr) {
     console.error('slug lookup failed:', linkErr);
-    return NextResponse.next(); // no such page, so Next shows its 404
+    return new NextResponse(
+      'Something went wrong. Please try again in a moment.',
+      { status: 503, headers: { 'Retry-After': '30' } },
+    );
   }
   const link = data?.[0];
   if (!link) return NextResponse.rewrite(new URL('/404', req.url));
