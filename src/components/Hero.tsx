@@ -175,9 +175,11 @@ export default function Hero() {
 
           {/* helper text */}
           <div className="font-fredoka-one pt-8 text-lg text-white sm:pt-0 sm:text-2xl">
+            {/* on phones it grows to fit its line, so a URL error shown with
+                it starts below it instead of on top of it */}
             <p
               aria-live="polite"
-              className="font-baloo-thambi text-yellow h-6 pt-2 text-lg"
+              className="font-baloo-thambi text-yellow min-h-6 pt-2 text-lg sm:h-6"
             >
               {helper}
             </p>
