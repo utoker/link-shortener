@@ -146,7 +146,7 @@ export default function Hero() {
   })();
 
   return (
-    <div className="flex items-center justify-center ">
+    <div className="flex items-center justify-center">
       <form action={formAction}>
         <div className="border-blue relative flex h-48 w-xs flex-col items-center border-10 sm:h-96 sm:w-2xl sm:border-22">
           <div className="absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-12 sm:-translate-y-1">
@@ -172,21 +172,30 @@ export default function Hero() {
             setSlugInput={setSlugInput}
             disabled={pending}
           />
+        </div>
 
+        {/* Messages under the form, in the page flow so they push what
+            follows down instead of covering it. They start where they always
+            have (inside the frame's padding on phones, below the custom name
+            box on desktop) and exactly as wide as the frame, so a long message
+            can't widen the form; the padding matches its border. The room that
+            is free below the form anyway (106 px on phones, 58 px on desktop)
+            is reserved and handed back by the negative bottom margin, so
+            nothing moves unless the messages need more than that. */}
+        <div className="-mt-7.5 -mb-19 flex min-h-26.5 w-xs flex-col items-center px-2.5 sm:mt-4.5 sm:min-h-14.5 sm:w-2xl sm:px-5.5">
           {/* helper text */}
           <div className="font-fredoka-one pt-8 text-lg text-white sm:pt-0 sm:text-2xl">
-            {/* on phones it grows to fit its line, so a URL error shown with
-                it starts below it instead of on top of it */}
+            {/* grows to fit its line, so a URL error shown with it starts
+                below it instead of on top of it */}
             <p
               aria-live="polite"
-              className="font-baloo-thambi text-yellow min-h-6 pt-2 text-lg sm:h-6"
+              className="font-baloo-thambi text-yellow min-h-6 pt-2 text-lg"
             >
               {helper}
             </p>
 
             {/* live check while typing, else the server's error after submit;
-                smaller on phones so even the longest message stays two lines
-                and ends above whatever comes after the form */}
+                smaller on phones so even the longest message stays two lines */}
             <p
               id="url-error"
               aria-live="polite"

@@ -61,7 +61,9 @@ export default function LinksList() {
   }
   if (links.length === 0) {
     return (
-      <div className="text-yellow font-fredoka-one container mx-auto px-4 text-center text-2xl sm:py-16">
+      // the signed-out text's gap below the form, so the messages under the
+      // form (Hero) fit in between instead of covering it
+      <div className="text-yellow font-fredoka-one container mx-auto mt-12 px-4 pt-8 text-center text-2xl sm:py-16">
         <p>Paste your link and press</p>
         <div className="bg-yellow mx-auto h-8 w-8 rounded-full sm:h-14 sm:w-14">
           <Image
