@@ -9,13 +9,7 @@ onlyBuiltDependencies:
 # sourceMappingURL file reads); use a fixed 8.5 release everywhere.
 overrides:
   postcss: 8.5.31
-  # Build-time tools with known advisories whose parents still allow an older
-  # release; each fixed version is within the range the parent asks for.
+  # A build-time tool with known advisories whose parent still allows an older
+  # release; the fixed version is within the range the parent asks for.
   # tar: unpacking archives (@tailwindcss/oxide).
   tar: 7.5.22
-  # js-yaml, svgo and the Babel plugin: config parsing and SVG optimising for
-  # the icons @svgr/webpack turns into components. (deepmerge, also under
-  # svgr, has no fixed release.)
-  js-yaml: ^4.3.2
-  svgo: ^3.3.5
-  '@babel/plugin-transform-modules-systemjs': ^7.29.4

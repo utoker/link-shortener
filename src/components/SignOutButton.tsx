@@ -6,7 +6,7 @@ import { signOutAction } from '@/app/actions/auth';
 import type { SignOutResult } from '@/app/actions/auth/signOut';
 import { useUserContext } from '@/app/context/UserContext';
 import { Button } from './ui/button';
-import SignOutIcon from '@/icons/signout-icon.svg';
+import SignOutIcon from './icons/SignOutIcon';
 
 interface SignOutButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {}

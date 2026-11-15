@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from './ui/button';
-import SignInIcon from '@/icons/signin-icon.svg';
+import SignInIcon from './icons/SignInIcon';
 interface SigninButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 

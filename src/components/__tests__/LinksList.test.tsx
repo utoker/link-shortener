@@ -25,10 +25,6 @@ vi.mock('@/app/actions/data/updateLink', () => ({
   updateLink: vi.fn(),
 }));
 
-// SVG icons are React components in the app (svgr); plain stand-ins here
-vi.mock('@icons/copy-icon.svg', () => ({ default: () => null }));
-vi.mock('@icons/delete-icon.svg', () => ({ default: () => null }));
-
 const signedInWithTwoLinks = () =>
   vi.mocked(useUserContext).mockReturnValue({
     user: { id: 'user-1' } as User,

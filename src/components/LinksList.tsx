@@ -6,8 +6,8 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { Pencil, QrCode } from 'lucide-react';
 import createLinkIcon from '@icons/create-link-icon.webp';
-import CopyIcon from '@icons/copy-icon.svg';
-import DeleteIcon from '@icons/delete-icon.svg';
+import CopyIcon from './icons/CopyIcon';
+import DeleteIcon from './icons/DeleteIcon';
 
 import { useUserContext } from '@/app/context/UserContext';
 import type { Link } from '@/lib/types/database';
