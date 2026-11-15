@@ -127,16 +127,16 @@ describe('ClicksChart', () => {
         <ClicksChart buckets={buckets} bucket="day" />,
       );
       const axis = container.getElementsByClassName(s.xAxis)[0];
-      const left = Array.from(
-        axis.children,
-        (c) => (c as HTMLElement).style.left,
+      // in %, as numbers: jsdom rounds the percentages it reads back
+      const left = Array.from(axis.children, (c) =>
+        parseFloat((c as HTMLElement).style.left),
       );
       unmount();
       return left;
     };
 
-    expect(positions(days.slice(-2))).toEqual(['25%', '75%']);
-    expect(positions(days)).toEqual(['0%', '48.333333333333336%', '100%']);
+    expect(positions(days.slice(-2))).toEqual([25, 75]);
+    expect(positions(days)).toEqual([0, expect.closeTo(48.3333, 4), 100]);
   });
 
   it('should say so when there are no clicks yet', () => {

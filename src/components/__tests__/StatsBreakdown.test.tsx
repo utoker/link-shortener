@@ -28,10 +28,11 @@ describe('StatsBreakdown', () => {
     const bars = container.getElementsByClassName(
       s.fill,
     ) as HTMLCollectionOf<HTMLElement>;
-    expect(Array.from(bars, (b) => b.style.width)).toEqual([
-      '100%',
-      '50%',
-      '16.666666666666664%',
+    // in %, as numbers: jsdom rounds the percentages it reads back
+    expect(Array.from(bars, (b) => parseFloat(b.style.width))).toEqual([
+      100,
+      50,
+      expect.closeTo(16.6667, 4),
     ]);
     expect(screen.getByText('A note')).toBeInTheDocument();
   });

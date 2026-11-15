@@ -1,23 +1,29 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+// Both are called with `new`, so the mocks use `function`: Vitest refuses to
+// construct an arrow function.
 vi.mock('@upstash/redis', () => ({
-  Redis: vi.fn().mockImplementation(() => ({
-    get: vi.fn(),
-    set: vi.fn(),
-    incr: vi.fn(),
-    expire: vi.fn(),
-  })),
+  Redis: vi.fn().mockImplementation(function () {
+    return {
+      get: vi.fn(),
+      set: vi.fn(),
+      incr: vi.fn(),
+      expire: vi.fn(),
+    };
+  }),
 }));
 
 const mockSlidingWindow = vi.fn();
 vi.mock('@upstash/ratelimit', () => {
-  const mockRatelimit = vi.fn().mockImplementation(() => ({
-    limit: vi.fn().mockResolvedValue({
-      success: true,
-      remaining: 10,
-      reset: Date.now() + 60000,
-    }),
-  }));
+  const mockRatelimit = vi.fn().mockImplementation(function () {
+    return {
+      limit: vi.fn().mockResolvedValue({
+        success: true,
+        remaining: 10,
+        reset: Date.now() + 60000,
+      }),
+    };
+  });
   
   Object.assign(mockRatelimit, { slidingWindow: mockSlidingWindow });
   
