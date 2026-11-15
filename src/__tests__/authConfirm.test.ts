@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { GET } from '../app/auth/confirm/route';
+import { POST } from '../app/auth/confirm/verify/route';
 import { createSupabaseServerClient } from '../lib/supabase/server';
 
 vi.mock('../lib/supabase/server', () => ({
@@ -8,12 +8,27 @@ vi.mock('../lib/supabase/server', () => ({
 
 const verifyOtp = vi.fn();
 
-const confirm = async (query: string) =>
-  (await GET(new Request(`https://reqq.cc/auth/confirm${query}`))).headers.get(
-    'location',
+// What the button on /auth/confirm sends.
+const press = async (
+  fields: Record<string, string>,
+  origin: string | null = 'https://reqq.cc',
+) => {
+  const headers = new Headers();
+  if (origin !== null) headers.set('origin', origin);
+  const body = new FormData();
+  for (const [k, v] of Object.entries(fields)) body.set(k, v);
+  const res = await POST(
+    new Request('https://reqq.cc/auth/confirm/verify', {
+      method: 'POST',
+      headers,
+      body,
+    }),
   );
+  expect(res.status).toBe(303);
+  return res.headers.get('location');
+};
 
-describe('/auth/confirm', () => {
+describe('/auth/confirm/verify', () => {
   beforeEach(() => {
     verifyOtp.mockReset().mockResolvedValue({ data: {}, error: null });
     vi.mocked(createSupabaseServerClient).mockResolvedValue({
@@ -22,7 +37,7 @@ describe('/auth/confirm', () => {
   });
 
   it('confirms a sign-up and says so on the homepage', async () => {
-    expect(await confirm('?token_hash=abc&type=email')).toBe(
+    expect(await press({ token_hash: 'abc', type: 'email' })).toBe(
       'https://reqq.cc/?auth=confirmed',
     );
     expect(verifyOtp).toHaveBeenCalledWith({
@@ -32,17 +47,15 @@ describe('/auth/confirm', () => {
   });
 
   it('accepts the older "signup" type too', async () => {
-    expect(await confirm('?token_hash=abc&type=signup')).toBe(
+    expect(await press({ token_hash: 'abc', type: 'signup' })).toBe(
       'https://reqq.cc/?auth=confirmed',
     );
   });
 
   it('signs a password reset in and goes to the reset page', async () => {
-    expect(
-      await confirm(
-        '?token_hash=abc&type=recovery&next=/protected/reset-password',
-      ),
-    ).toBe('https://reqq.cc/protected/reset-password');
+    expect(await press({ token_hash: 'abc', type: 'recovery' })).toBe(
+      'https://reqq.cc/protected/reset-password',
+    );
     expect(verifyOtp).toHaveBeenCalledWith({
       type: 'recovery',
       token_hash: 'abc',
@@ -57,19 +70,33 @@ describe('/auth/confirm', () => {
     '/about',
   ])('never follows next=%s', async (target) => {
     expect(
-      await confirm(
-        `?token_hash=abc&type=email&next=${encodeURIComponent(target)}`,
-      ),
+      await press({ token_hash: 'abc', type: 'email', next: target }),
     ).toBe('https://reqq.cc/?auth=confirmed');
   });
 
+  it('works when the browser sends no Origin header', async () => {
+    expect(await press({ token_hash: 'abc', type: 'email' }, null)).toBe(
+      'https://reqq.cc/?auth=confirmed',
+    );
+  });
+
+  it.each(['https://evil.example', 'null', 'https://reqq.cc.evil.example'])(
+    'refuses a form sent from %s',
+    async (origin) => {
+      expect(await press({ token_hash: 'abc', type: 'email' }, origin)).toBe(
+        'https://reqq.cc/?auth=failed',
+      );
+      expect(verifyOtp).not.toHaveBeenCalled();
+    },
+  );
+
   it.each([
-    ['no token', '?type=email'],
-    ['no type', '?token_hash=abc'],
-    ['an unknown type', '?token_hash=abc&type=sms'],
-    ['a type from the prototype', '?token_hash=abc&type=constructor'],
-  ])('turns a link with %s away without asking Supabase', async (_, query) => {
-    expect(await confirm(query)).toBe('https://reqq.cc/?auth=expired');
+    ['no token', { type: 'email' }],
+    ['no type', { token_hash: 'abc' }],
+    ['an unknown type', { token_hash: 'abc', type: 'sms' }],
+    ['a type from the prototype', { token_hash: 'abc', type: 'constructor' }],
+  ])('turns a form with %s away without asking Supabase', async (_, fields) => {
+    expect(await press(fields)).toBe('https://reqq.cc/?auth=expired');
     expect(verifyOtp).not.toHaveBeenCalled();
   });
 
@@ -78,7 +105,7 @@ describe('/auth/confirm', () => {
       data: {},
       error: { status: 403, code: 'otp_expired', message: 'expired' },
     });
-    expect(await confirm('?token_hash=used&type=recovery')).toBe(
+    expect(await press({ token_hash: 'used', type: 'recovery' })).toBe(
       'https://reqq.cc/?auth=expired',
     );
   });
@@ -90,7 +117,7 @@ describe('/auth/confirm', () => {
         data: {},
         error: { status, message: 'down' },
       });
-      expect(await confirm('?token_hash=abc&type=email')).toBe(
+      expect(await press({ token_hash: 'abc', type: 'email' })).toBe(
         'https://reqq.cc/?auth=failed',
       );
     },

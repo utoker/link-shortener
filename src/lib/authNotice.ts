@@ -1,5 +1,5 @@
 // What the homepage tells people after an email link or a sign-in, passed as
-// /?auth=<key> by /auth/confirm and /auth/callback (which can't show anything
+// /?auth=<key> by /auth/confirm/verify and /auth/callback (which can't show anything
 // themselves). No imports, so the homepage only pays for these few strings.
 
 export const AUTH_NOTICE_PARAM = 'auth';
