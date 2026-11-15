@@ -34,7 +34,7 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
     if (state.success && state.needsConfirmation) {
       // not signed in until the link in the email is opened
       toast.success(
-        'Almost done! Open the link we emailed you to finish signing up.',
+        'Almost done! Open the link we emailed you to finish signing up. If it isn’t in your inbox, check your spam folder.',
         { duration: 15000 },
       );
       onSuccess();
