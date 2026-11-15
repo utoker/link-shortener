@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+/* Tailwind builds one stylesheet for every page from words it finds in the
+   repo. The email templates and their notes aren't site pages: words in them
+   (e.g. "rounded") would add unused rules to the CSS every visitor loads. */
+@source not "../../supabase";
+
 /* Tailwind v4 theme variables */
 @theme {
   /* Colors */
