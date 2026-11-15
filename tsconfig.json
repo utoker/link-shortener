@@ -2,15 +2,21 @@
 {
   "compilerOptions": {
     "baseUrl": ".", // <-- project root
-
     "paths": {
-      "@/*": ["src/*"],
-      "@icons/*": ["src/icons/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@icons/*": [
+        "src/icons/*"
+      ]
     },
-
     /* everything else you already have */
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -18,19 +24,26 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [{ "name": "next" }]
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
     "next-env.d.ts",
     ".next/types/**/*.ts",
-    "src/middleware.ts"
+    "src/middleware.ts",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

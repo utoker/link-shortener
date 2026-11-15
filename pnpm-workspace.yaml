@@ -5,8 +5,9 @@ onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - sharp
 
-# Next.js pins postcss 8.4.31, which has known advisories (build-time only,
-# sourceMappingURL file reads); use a fixed 8.5 release everywhere.
+# One postcss for everything. Next.js 15 pinned 8.4.31, which had known
+# advisories (build-time only, sourceMappingURL file reads); Next.js 16's
+# 8.5.23 has none, but a single fixed release keeps the CSS build predictable.
 overrides:
   postcss: 8.5.31
   # A build-time tool with known advisories whose parent still allows an older
