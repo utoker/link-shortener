@@ -45,7 +45,7 @@ export default function Footer() {
             Privacy
           </Link>
           {/* <Link href="/report" className="hover:underline">Report abuse</Link> */}
-          <a href="mailto:utoker1@gmail.com" className="hover:underline">
+          <a href="mailto:support@reqq.cc" className="hover:underline">
             Contact
           </a>
           {/* <Link href="/status" className="hover:underline">Status</Link> */}

@@ -11,7 +11,7 @@ export default function AboutPage() {
       <header className="space-y-2">
         <h1 className="text-3xl font-bold">About reqq.cc</h1>
         <p className="text-sm text-white/70">
-          Last updated: {new Date().toLocaleDateString()}
+          Last updated: 2026-11-15
         </p>
       </header>
 
@@ -82,8 +82,8 @@ export default function AboutPage() {
         <h2 className="text-xl font-semibold">Report abuse</h2>
         <p>
           If a reqq.cc link points to something illegal or harmful, email{' '}
-          <a className="underline" href="mailto:utoker1@gmail.com">
-            utoker1@gmail.com
+          <a className="underline" href="mailto:abuse@reqq.cc">
+            abuse@reqq.cc
           </a>{' '}
           with the full short URL and a brief description. I review reports
           promptly and take action when warranted.
@@ -96,8 +96,8 @@ export default function AboutPage() {
           Donations help cover ongoing costs and are generally{' '}
           <strong>non‑refundable</strong>. If you made a duplicate, accidental
           or unauthorized donation, contact{' '}
-          <a className="underline" href="mailto:utoker1@gmail.com">
-            utoker1@gmail.com
+          <a className="underline" href="mailto:support@reqq.cc">
+            support@reqq.cc
           </a>{' '}
           within 7 days and I’ll do my best to help.
         </p>
@@ -120,8 +120,8 @@ export default function AboutPage() {
         <ul className="space-y-1">
           <li>
             Email:{' '}
-            <a className="underline" href="mailto:utoker1@gmail.com">
-              utoker1@gmail.com
+            <a className="underline" href="mailto:support@reqq.cc">
+              support@reqq.cc
             </a>
           </li>
         </ul>
