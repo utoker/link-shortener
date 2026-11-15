@@ -6,6 +6,10 @@ settings:
 
 overrides:
   postcss: 8.5.31
+  tar: 7.5.22
+  js-yaml: ^4.3.2
+  svgo: ^3.3.5
+  '@babel/plugin-transform-modules-systemjs': ^7.29.4
 
 importers:
 
@@ -259,6 +263,10 @@ packages:
 
   '@babel/helper-plugin-utils@7.27.1':
     resolution: {integrity: sha512-1gn1Up5YXka3YYAHGKpbideQ5Yjf1tDa9qYcgysz+cNCXukyLl6DjPXhD3VRwSb8c0J9tA4b2+rHEZtc6R0tlw==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/helper-plugin-utils@7.29.7':
+    resolution: {integrity: sha512-G7sHYigPY17oO5SYWnfD/0MTBwVR781S/JI643e/JhUYgVgWE/61SoW3NH9KWUKyKq5LVh3npif99Wkt6j86Jw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/helper-remap-async-to-generator@7.27.1':
@@ -535,8 +543,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0
 
-  '@babel/plugin-transform-modules-systemjs@7.27.1':
-    resolution: {integrity: sha512-w5N1XzsRbc0PQStASMksmUeqECuzKuTJer7kFagK8AXgpCMkeDMO5S+aaFb7A51ZYDF7XI34qsTX+fkHiIm5yA==}
+  '@babel/plugin-transform-modules-systemjs@7.29.8':
+    resolution: {integrity: sha512-6iSnEK0zlkLKU4heofK/AdmRD4e2SHVpJMtrwnTCzhnaM98ria4rTrOXBBi45BTTYnJtO8txnPsX4fChYXkmeA==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -1641,10 +1649,6 @@ packages:
     peerDependencies:
       '@testing-library/dom': '>=7.21.4'
 
-  '@trysound/sax@0.2.0':
-    resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
-    engines: {node: '>=10.13.0'}
-
   '@tybys/wasm-util@0.10.4':
     resolution: {integrity: sha512-W3c4gRigFS0T/Ma4qIYF3GDAc5AQdHb1yL5znJT1Zv1YaD9Kitx656wBjvr19qbiosmZT8lWDM5BEMynUqX65A==}
 
@@ -2089,8 +2093,8 @@ packages:
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
-  js-yaml@4.1.0:
-    resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
+  js-yaml@4.3.2:
+    resolution: {integrity: sha512-SFNOvSJ+Dgf/9An904Yx+CgSlIPCkIpao4qo51lpee25TIRejdH3rhR4EZMGoNx3/TP3O+wzWuiTFl4sqbltzA==}
     hasBin: true
 
   jsdom@31.0.0:
@@ -2307,14 +2311,9 @@ packages:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  minizlib@3.0.2:
-    resolution: {integrity: sha512-oG62iEk+CYt5Xj2YqI5Xi9xWUeZhDI8jjQmC5oThVH5JGCTgIjr7ciJDzC7MBzYd//WvR1OTmP5Q38Q8ShQtVA==}
+  minizlib@3.1.0:
+    resolution: {integrity: sha512-KZxYo1BUkWD2TVFLr0MQoM8vUUigWD3LlD83a/75BqC+4qE0Hb1Vo5v1FgcfaNXvfXzr+5EhQ6ing/CaBijTlw==}
     engines: {node: '>= 18'}
-
-  mkdirp@3.0.1:
-    resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
-    engines: {node: '>=10'}
-    hasBin: true
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -2599,6 +2598,10 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
+  sax@1.6.1:
+    resolution: {integrity: sha512-42tBVwLWnaQvW5zc4HbZrTuWccECCZfBi92FDuwtqxasH+JbPB3/FOKb1m222K42R4WxuxzzMsTswfzgtSu64Q==}
+    engines: {node: '>=11.0.0'}
+
   saxes@6.0.0:
     resolution: {integrity: sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA==}
     engines: {node: '>=v12.22.7'}
@@ -2686,8 +2689,8 @@ packages:
   svg-parser@2.0.4:
     resolution: {integrity: sha512-e4hG1hRwoOdRb37cIMSgzNsxyzKfayW6VOflrwvR+/bzrkyxY/31WkbgnQpgtrNp1SdpJvpUAGTa/ZoiPNDuRQ==}
 
-  svgo@3.3.2:
-    resolution: {integrity: sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw==}
+  svgo@3.3.5:
+    resolution: {integrity: sha512-8SQMzdrvWaD8deUmrnYB+ASyxBVgWUOilg+A75nE/76WdLpj6LopCwiAVvkzkcqy/9b7t2Mg7faFLjg0ZRcZ3w==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -2706,8 +2709,8 @@ packages:
     resolution: {integrity: sha512-Re10+NauLTMCudc7T5WLFLAwDhQ0JWdrMK+9B2M8zR5hRExKmsRDCBA7/aV/pNJFltmBFO5BAMlQFi/vq3nKOg==}
     engines: {node: '>=6'}
 
-  tar@7.4.3:
-    resolution: {integrity: sha512-5S7Va8hKfV7W5U6g3aYxXmlPoZVAwUMy9AOKyF2fVuZa2UD3qZjg578OrLRt8PcNN1PleVaL/5/yYATNL0ICUw==}
+  tar@7.5.22:
+    resolution: {integrity: sha512-MFO/QzvtAOmJbkhOaCTvbGcFN9L9b+JunIsDwaKljSOdcLMea3NJ1k9Usz/rjdfSXTq4dfzfeS7W4p4YOAAHeA==}
     engines: {node: '>=18'}
 
   tinybench@6.2.3:
@@ -3127,6 +3130,8 @@ snapshots:
 
   '@babel/helper-plugin-utils@7.27.1': {}
 
+  '@babel/helper-plugin-utils@7.29.7': {}
+
   '@babel/helper-remap-async-to-generator@7.27.1(@babel/core@7.29.7)':
     dependencies:
       '@babel/core': 7.29.7
@@ -3418,13 +3423,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/plugin-transform-modules-systemjs@7.27.1(@babel/core@7.29.7)':
+  '@babel/plugin-transform-modules-systemjs@7.29.8(@babel/core@7.29.7)':
     dependencies:
       '@babel/core': 7.29.7
-      '@babel/helper-module-transforms': 7.27.3(@babel/core@7.29.7)
-      '@babel/helper-plugin-utils': 7.27.1
-      '@babel/helper-validator-identifier': 7.27.1
-      '@babel/traverse': 7.28.0
+      '@babel/helper-module-transforms': 7.29.7(@babel/core@7.29.7)
+      '@babel/helper-plugin-utils': 7.29.7
+      '@babel/helper-validator-identifier': 7.29.7
+      '@babel/traverse': 7.29.10
     transitivePeerDependencies:
       - supports-color
 
@@ -3669,7 +3674,7 @@ snapshots:
       '@babel/plugin-transform-member-expression-literals': 7.27.1(@babel/core@7.29.7)
       '@babel/plugin-transform-modules-amd': 7.27.1(@babel/core@7.29.7)
       '@babel/plugin-transform-modules-commonjs': 7.27.1(@babel/core@7.29.7)
-      '@babel/plugin-transform-modules-systemjs': 7.27.1(@babel/core@7.29.7)
+      '@babel/plugin-transform-modules-systemjs': 7.29.8(@babel/core@7.29.7)
       '@babel/plugin-transform-modules-umd': 7.27.1(@babel/core@7.29.7)
       '@babel/plugin-transform-named-capturing-groups-regex': 7.27.1(@babel/core@7.29.7)
       '@babel/plugin-transform-new-target': 7.27.1(@babel/core@7.29.7)
@@ -4385,7 +4390,7 @@ snapshots:
       '@svgr/core': 8.1.0(typescript@5.8.3)
       cosmiconfig: 8.3.6(typescript@5.8.3)
       deepmerge: 4.3.1
-      svgo: 3.3.2
+      svgo: 3.3.5
     transitivePeerDependencies:
       - typescript
 
@@ -4461,7 +4466,7 @@ snapshots:
   '@tailwindcss/oxide@4.1.11':
     dependencies:
       detect-libc: 2.1.2
-      tar: 7.4.3
+      tar: 7.5.22
     optionalDependencies:
       '@tailwindcss/oxide-android-arm64': 4.1.11
       '@tailwindcss/oxide-darwin-arm64': 4.1.11
@@ -4520,8 +4525,6 @@ snapshots:
   '@testing-library/user-event@14.6.8(@testing-library/dom@10.4.1)':
     dependencies:
       '@testing-library/dom': 10.4.1
-
-  '@trysound/sax@0.2.0': {}
 
   '@tybys/wasm-util@0.10.4':
     dependencies:
@@ -4724,7 +4727,7 @@ snapshots:
   cosmiconfig@8.3.6(typescript@5.8.3):
     dependencies:
       import-fresh: 3.3.1
-      js-yaml: 4.1.0
+      js-yaml: 4.3.2
       parse-json: 5.2.0
       path-type: 4.0.0
     optionalDependencies:
@@ -4913,7 +4916,7 @@ snapshots:
 
   js-tokens@4.0.0: {}
 
-  js-yaml@4.1.0:
+  js-yaml@4.3.2:
     dependencies:
       argparse: 2.0.1
 
@@ -5084,11 +5087,9 @@ snapshots:
 
   minipass@7.1.2: {}
 
-  minizlib@3.0.2:
+  minizlib@3.1.0:
     dependencies:
       minipass: 7.1.2
-
-  mkdirp@3.0.1: {}
 
   mrmime@2.0.1: {}
 
@@ -5313,6 +5314,8 @@ snapshots:
       '@rolldown/binding-win32-arm64-msvc': 1.2.19
       '@rolldown/binding-win32-x64-msvc': 1.2.19
 
+  sax@1.6.1: {}
+
   saxes@6.0.0:
     dependencies:
       xmlchars: 2.2.0
@@ -5409,15 +5412,15 @@ snapshots:
 
   svg-parser@2.0.4: {}
 
-  svgo@3.3.2:
+  svgo@3.3.5:
     dependencies:
-      '@trysound/sax': 0.2.0
       commander: 7.2.0
       css-select: 5.2.2
       css-tree: 2.3.1
       css-what: 6.2.2
       csso: 5.0.5
       picocolors: 1.1.1
+      sax: 1.6.1
 
   tailwind-merge@3.7.0: {}
 
@@ -5429,13 +5432,12 @@ snapshots:
 
   tapable@2.2.2: {}
 
-  tar@7.4.3:
+  tar@7.5.22:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0
       minipass: 7.1.2
-      minizlib: 3.0.2
-      mkdirp: 3.0.1
+      minizlib: 3.1.0
       yallist: 5.0.0
 
   tinybench@6.2.3: {}
