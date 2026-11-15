@@ -1,6 +1,9 @@
-// /utils/supabase/server.ts
-// Supabase server-side client for Next.js
-'use server';
+// Supabase client for server code (server actions, route handlers and server
+// components) that acts as the signed-in visitor through their cookies.
+// 'server-only' makes any import from browser code fail the build. (It used
+// to say 'use server', which doesn't mean that: it turned this helper into a
+// server action, an endpoint browsers could call.)
+import 'server-only';
 
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
