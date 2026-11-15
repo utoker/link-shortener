@@ -1,6 +1,7 @@
 // /app/page.tsx
 // Home page component
 
+import AuthNotice from '../components/AuthNotice';
 import ConfettiEffect from '../components/ConfettiEffect';
 import FeaturesSection from '../components/FeaturesSection';
 import Hero from '../components/Hero';
@@ -15,6 +16,7 @@ export const metadata = { alternates: { canonical: '/' } };
 export default function Home() {
   return (
     <div className="bg-background text-foreground mx-auto flex min-h-screen flex-col items-center">
+      <AuthNotice />
       <ConfettiEffect />
       <Hero />
       <LinksList />
