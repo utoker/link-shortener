@@ -91,6 +91,21 @@ describe('CreateLinkFormSchema url', () => {
     }
   });
 
+  it('should refuse hosts without a dot or with empty parts', () => {
+    // a word typed on its own becomes https://<word>, which leads nowhere
+    for (const input of [
+      'https://hello',
+      'https://Cbnd/x',
+      'https://localhost:3000/',
+      'https://example..com',
+      'https://.example.com',
+    ]) {
+      expect(url.safeParse(input).error?.issues[0].message).toBe(
+        'Please enter a valid URL (e.g., https://example.com)',
+      );
+    }
+  });
+
   it('should accept international, IPv6 and underscore hosts', () => {
     for (const input of [
       'https://münchen.de/',
