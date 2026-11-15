@@ -26,7 +26,7 @@ const BalooThambi = localFont({
 
 const TITLE = 'reqq.cc – Free URL Shortener';
 const DESCRIPTION =
-  'Free, fast and private URL shortener. Paste a long link and get a short reqq.cc link, with an optional custom name.';
+  'Free, fast and private URL shortener with custom links, QR codes and click stats. No ads and no sign-up needed to shorten a link.';
 
 // Optional: Add metadata for <head>
 export const metadata: Metadata = {
