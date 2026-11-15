@@ -10,7 +10,7 @@ These files are the source; paste them there after changing them.
 | `reset-password.html` | Reset password     | `Reset your reqq.cc password`    |
 
 - The button leads to `/auth/confirm?token_hash={{ .TokenHash }}&type=…`
-  (signup / recovery), the page that asks for a button press before the
+  (`email` for sign-up, `recovery` for reset), the page that asks for a button press before the
   one-time link is spent. Only the types in `src/lib/emailLinks.ts` work.
 - The logo (`public/email/logo.png`) and heading font (`public/fonts`) load from
   https://reqq.cc, so deploy before pasting a template that uses a new file.
