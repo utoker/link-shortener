@@ -11,9 +11,14 @@ import { type UpdatePasswordFormValues } from '@/lib/schemas/updatePasswordSchem
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
+import { useUserContext } from '@/app/context/UserContext';
+import { AUTH_NOTICES } from '@/lib/authNotice';
 
 export default function UpdatePasswordForm() {
   const router = useRouter();
+  // The email link signs people in; without that, saving can only fail.
+  const { user, loading } = useUserContext();
+  const signedOut = !loading && !user;
 
   /* ------------------------------------------------------------- *
    * useActionState  –  native React 19 form handling
@@ -46,63 +51,69 @@ export default function UpdatePasswordForm() {
     <div className="mx-auto pt-8 sm:pt-16">
       <Card className="bg-yellow font-baloo-thambi max-w-xs rounded-[72px] shadow-xl sm:max-w-md">
         <CardContent>
-          <form action={formAction} className="space-y-6 py-6 sm:py-12">
-            {/* Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="ml-6 block text-xl text-black sm:text-3xl"
-              >
-                New Password
-              </label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Enter your new password"
-                disabled={pending}
-                className="h-14 w-full rounded-3xl border-2 border-black bg-gray-200 px-6 py-3 text-black placeholder:text-2xl"
-                aria-invalid={!!err('password')}
-              />
-              {err('password') && (
-                <p className="mt-1 ml-6 text-sm text-red-600">
-                  {err('password')}
-                </p>
-              )}
-            </div>
+          {signedOut ? (
+            <p className="py-6 text-center text-2xl text-black sm:py-12">
+              {AUTH_NOTICES.expired.text}
+            </p>
+          ) : (
+            <form action={formAction} className="space-y-6 py-6 sm:py-12">
+              {/* Password */}
+              <div>
+                <label
+                  htmlFor="password"
+                  className="ml-6 block text-xl text-black sm:text-3xl"
+                >
+                  New Password
+                </label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Enter your new password"
+                  disabled={pending}
+                  className="h-14 w-full rounded-3xl border-2 border-black bg-gray-200 px-6 py-3 text-black placeholder:text-2xl"
+                  aria-invalid={!!err('password')}
+                />
+                {err('password') && (
+                  <p className="mt-1 ml-6 text-sm text-red-600">
+                    {err('password')}
+                  </p>
+                )}
+              </div>
 
-            {/* Confirm Password */}
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="ml-6 block text-xl text-black sm:text-3xl"
-              >
-                Confirm Password
-              </label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Re-enter your new password"
-                disabled={pending}
-                className="h-14 w-full rounded-3xl border-2 border-black bg-gray-200 px-6 py-3 text-black placeholder:text-2xl"
-                aria-invalid={!!err('confirmPassword')}
-              />
-              {err('confirmPassword') && (
-                <p className="mt-1 ml-6 text-sm text-red-600">
-                  {err('confirmPassword')}
-                </p>
-              )}
-            </div>
+              {/* Confirm Password */}
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="ml-6 block text-xl text-black sm:text-3xl"
+                >
+                  Confirm Password
+                </label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Re-enter your new password"
+                  disabled={pending}
+                  className="h-14 w-full rounded-3xl border-2 border-black bg-gray-200 px-6 py-3 text-black placeholder:text-2xl"
+                  aria-invalid={!!err('confirmPassword')}
+                />
+                {err('confirmPassword') && (
+                  <p className="mt-1 ml-6 text-sm text-red-600">
+                    {err('confirmPassword')}
+                  </p>
+                )}
+              </div>
 
-            <Button
-              type="submit"
-              disabled={pending}
-              className="bg-blue hover:hover:bg-darkblue mx-auto flex justify-center rounded-full border-2 border-black px-4 py-6 text-2xl text-white sm:w-80 sm:text-4xl"
-            >
-              {pending ? 'Updating…' : 'Update Password'}
-            </Button>
-          </form>
+              <Button
+                type="submit"
+                disabled={pending}
+                className="bg-blue hover:hover:bg-darkblue mx-auto flex justify-center rounded-full border-2 border-black px-4 py-6 text-2xl text-white sm:w-80 sm:text-4xl"
+              >
+                {pending ? 'Updating…' : 'Update Password'}
+              </Button>
+            </form>
+          )}
 
           <div className="mt-4 text-center text-2xl">
             <Link
