@@ -23,6 +23,12 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
         ],
       },
+      // The sign-up and password reset emails (supabase/templates) load the
+      // heading font from here; mail apps that show web fonts load it cross-site.
+      {
+        source: '/fonts/:file*',
+        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+      },
     ];
   },
 
