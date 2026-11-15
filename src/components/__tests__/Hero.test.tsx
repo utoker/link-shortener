@@ -1,7 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { CreateLinkResult } from '@/app/actions/data/createLink';
+import {
+  createLink,
+  type CreateLinkResult,
+} from '@/app/actions/data/createLink';
 import { useUserContext } from '@/app/context/UserContext';
 import Hero from '../Hero';
 
@@ -71,5 +74,29 @@ describe('Hero URL messages', () => {
     await user.type(input, 'hello');
 
     expect(await screen.findByText(INVALID_URL)).toBeInTheDocument();
+  });
+
+  it("should show the server's verdict only until the URL is changed", async () => {
+    const UNSAFE = 'Google Safe Browsing reports this link as unsafe.';
+    vi.mocked(createLink).mockResolvedValue({
+      success: false,
+      fieldErrors: { url: [UNSAFE] },
+    });
+    const user = userEvent.setup();
+    const input = renderHero();
+
+    await user.type(input, 'bad.example/login');
+    await user.click(screen.getByRole('button', { name: 'Create Short Link' }));
+    expect(await screen.findByText(UNSAFE)).toBeInTheDocument();
+
+    // a different, valid URL: the verdict was about the old one
+    await user.clear(input);
+    await user.type(input, 'example.com/other');
+    expect(screen.queryByText(UNSAFE)).not.toBeInTheDocument();
+
+    // back to the URL that was refused: the verdict applies again
+    await user.clear(input);
+    await user.type(input, 'bad.example/login');
+    expect(screen.getByText(UNSAFE)).toBeInTheDocument();
   });
 });

@@ -40,6 +40,8 @@ export default function EditLinkDialog({
 }: EditLinkDialogProps) {
   const [url, setUrl] = useState(link.url);
   const [urlError, setUrlError] = useState('');
+  // what the field held when Save was pressed, for the server's verdict
+  const [submittedUrl, setSubmittedUrl] = useState<string | null>(null);
   const debouncedUrl = useDebounce(url, 300);
 
   // Same live check as the homepage
@@ -57,6 +59,7 @@ export default function EditLinkDialog({
 
   const [state, formAction, pending] = useActionState(
     async (prev: UpdateLinkResult, fd: FormData) => {
+      setSubmittedUrl(fd.get('url')?.toString() ?? '');
       const res = await updateLink(prev, fd);
       if (res.success) {
         toast.success('Link updated');
@@ -71,7 +74,9 @@ export default function EditLinkDialog({
   );
 
   // live check while typing, else the server's verdict (e.g. Safe Browsing)
-  const shownError = urlError || state.fieldErrors?.url?.[0];
+  // on the URL that was sent, until it is changed
+  const shownError =
+    urlError || (url === submittedUrl ? state.fieldErrors?.url?.[0] : '');
   const unchanged = url.trim() === link.url;
 
   return (

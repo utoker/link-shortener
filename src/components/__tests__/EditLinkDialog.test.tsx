@@ -105,5 +105,13 @@ describe('EditLinkDialog', () => {
       ),
     ).toBeInTheDocument();
     expect(onSaved).not.toHaveBeenCalled();
+
+    // the verdict was about that URL, not the one typed after it
+    await user.clear(input);
+    await user.type(input, 'example.com/other');
+    expect(
+      screen.queryByText('Google Safe Browsing reports this link as unsafe.'),
+    ).not.toBeInTheDocument();
+    expect(input).toHaveAttribute('aria-invalid', 'false');
   });
 });

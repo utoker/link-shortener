@@ -34,6 +34,9 @@ export default function Hero() {
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
   const [urlInput, setUrlInput] = useState('');
   const [urlError, setUrlError] = useState('');
+  // what the URL field held when the form was last sent; the server's
+  // verdict on it is shown only while the field still holds it
+  const [submittedUrl, setSubmittedUrl] = useState('');
   const [qrOpen, setQrOpen] = useState(false);
 
   const debouncedSlug = useDebounce(slugInput, 300);
@@ -46,6 +49,7 @@ export default function Hero() {
       _prev: CreateLinkResult,
       fd: FormData,
     ): Promise<CreateLinkResult> => {
+      setSubmittedUrl(fd.get('url')?.toString() ?? '');
       const res = await createLink({ success: false }, fd);
 
       if (res.success) {
@@ -194,14 +198,16 @@ export default function Hero() {
               {helper}
             </p>
 
-            {/* live check while typing, else the server's error after submit;
-                smaller on phones so even the longest message stays two lines */}
+            {/* live check while typing, else the server's error after submit
+                (until the URL is changed); smaller on phones so even the
+                longest message stays two lines */}
             <p
               id="url-error"
               aria-live="polite"
               className="text-sm text-red-500 sm:text-2xl"
             >
-              {urlError || state.fieldErrors?.url?.[0]}
+              {urlError ||
+                (urlInput === submittedUrl && state.fieldErrors?.url?.[0])}
             </p>
 
             {state.success && state.slug && (
