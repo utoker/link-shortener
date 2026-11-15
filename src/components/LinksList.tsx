@@ -161,9 +161,16 @@ export default function LinksList() {
 
           <div className="flex justify-center pl-1 sm:pl-4">
             <button
-              onClick={() => {
-                navigator.clipboard.writeText(`https://reqq.cc/${link.slug}`);
-                toast.success('Copied shortlink to clipboard!');
+              onClick={async () => {
+                // The browser can refuse (no permission, page not focused),
+                // so only say "copied" when it worked.
+                const short = `https://reqq.cc/${link.slug}`;
+                try {
+                  await navigator.clipboard.writeText(short);
+                  toast.success('Copied shortlink to clipboard!');
+                } catch {
+                  toast.error(`Couldn’t copy. Here it is: ${short}`);
+                }
               }}
               className="bg-yellow rounded-full border-1 border-black px-1 text-sm text-black shadow-md transition-transform hover:scale-110 hover:cursor-pointer active:scale-90 sm:px-4 sm:py-1.5"
               aria-label="Copy shortlink"

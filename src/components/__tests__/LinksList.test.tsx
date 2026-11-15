@@ -2,9 +2,12 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { User } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 import { useUserContext } from '@/app/context/UserContext';
 import { deleteLink } from '@/app/actions/data';
 import LinksList from '../LinksList';
+
+vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
 vi.mock('@/app/context/UserContext', () => ({
   useUserContext: vi.fn(),
@@ -114,6 +117,32 @@ describe('LinksList', () => {
     await waitFor(() => expect(deleteLink).toHaveBeenCalledTimes(1));
     const formData = vi.mocked(deleteLink).mock.calls[0][1];
     expect(formData.get('linkId')).toBe('2');
+  });
+
+  it('should say "copied" only when the browser copied the link', async () => {
+    signedInWithTwoLinks();
+    const user = userEvent.setup(); // installs a clipboard stub
+    const write = vi
+      .spyOn(navigator.clipboard, 'writeText')
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new DOMException('denied', 'NotAllowedError'));
+
+    render(<LinksList />);
+    const copyButtons = screen.getAllByRole('button', { name: 'Copy shortlink' });
+
+    await user.click(copyButtons[1]);
+    expect(write).toHaveBeenLastCalledWith('https://reqq.cc/second');
+    await waitFor(() =>
+      expect(toast.success).toHaveBeenCalledWith('Copied shortlink to clipboard!'),
+    );
+
+    await user.click(copyButtons[0]);
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        'Couldn’t copy. Here it is: https://reqq.cc/first',
+      ),
+    );
+    expect(toast.success).toHaveBeenCalledTimes(1);
   });
 
   it('should open the edit dialog for the link whose pencil was pressed', async () => {
