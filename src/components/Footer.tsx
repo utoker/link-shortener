@@ -1,5 +1,7 @@
 import Link from 'next/link';
-import DonateIcon from '@/icons/donate-icon.png';
+// 128 px WebP (3.8 KB): plenty for the 24 px icon on sharp screens, served
+// as is. The 1563 px PNG went through the image optimizer as a 1920 px image.
+import DonateIcon from '@/icons/donate-icon.webp';
 import Image from 'next/image';
 
 export default function Footer() {
@@ -27,7 +29,12 @@ export default function Footer() {
               className="inline-flex items-center gap-2 rounded-full border border-white/30 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/10"
               aria-label="Donate to help keep reqq.cc free"
             >
-              <Image src={DonateIcon} alt="Donate Icon" className="w-6 h-6" />
+              <Image
+                src={DonateIcon}
+                alt=""
+                unoptimized
+                className="w-6 h-6"
+              />
                Donate
             </Link>
           </div>
