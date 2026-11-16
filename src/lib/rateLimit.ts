@@ -38,7 +38,8 @@ export const redirectRateLimit = failOpen(
   new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(100, '1 m'),
-    analytics: true,
+    // off here only: analytics costs extra Redis commands on every redirect
+    analytics: false,
     prefix: 'ratelimit:redirect',
     timeout: 1000, // a visitor is waiting for their redirect
   }),
@@ -61,6 +62,29 @@ export const linkEditRateLimit = failOpen(
     limiter: Ratelimit.slidingWindow(10, '1 m'),
     analytics: true,
     prefix: 'ratelimit:link-edit',
+  }),
+);
+
+// Higher than edits: clearing out a list of links takes many quick deletes.
+export const linkDeleteRateLimit = failOpen(
+  'link-delete',
+  new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(30, '1 m'),
+    analytics: true,
+    prefix: 'ratelimit:link-delete',
+  }),
+);
+
+// The "is this name free?" check while typing a custom name (one per pause
+// in typing), which anyone can call.
+export const slugCheckRateLimit = failOpen(
+  'slug-check',
+  new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(60, '1 m'),
+    analytics: true,
+    prefix: 'ratelimit:slug-check',
   }),
 );
 

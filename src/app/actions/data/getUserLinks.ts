@@ -1,6 +1,5 @@
 'use server';
 
-// src/actions/links/getUserLinks.ts
 // -----------------------------------------------------------------------------
 // Fetch all links belonging to the currently authenticated user
 // -----------------------------------------------------------------------------

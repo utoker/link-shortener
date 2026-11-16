@@ -1,12 +1,14 @@
 'use server';
 
-// src/actions/links/deleteLink.ts
 // -----------------------------------------------------------------------------
 // Server-action: delete a link by its ID for the currently logged-in user
 // -----------------------------------------------------------------------------
 
+import { headers } from 'next/headers';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { ActionResult } from '@/lib/types/actions';
+import { linkDeleteRateLimit } from '@/lib/rateLimit';
+import { getClientIP } from '@/lib/clientIp';
 
 // -----------------------------------------------------------------------------
 // Result type — no per-field errors for this simple action
@@ -20,6 +22,16 @@ export async function deleteLink(
   _prev: DeleteLinkResult,
   formData: FormData,
 ): Promise<DeleteLinkResult> {
+  const { success } = await linkDeleteRateLimit.limit(
+    getClientIP(await headers()),
+  );
+  if (!success) {
+    return {
+      success: false,
+      formError: 'Too many deletions. Please wait a minute before trying again.',
+    };
+  }
+
   const linkId = formData.get('linkId')?.toString() ?? '';
 
   if (!linkId) {

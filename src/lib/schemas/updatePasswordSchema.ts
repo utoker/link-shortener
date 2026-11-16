@@ -4,7 +4,7 @@ export const updatePasswordSchema = z
   .object({
     password: z
       .string()
-      .min(6, { error: 'Password must be at least 6 characters' }),
+      .min(8, { error: 'Password must be at least 8 characters' }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {

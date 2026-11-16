@@ -85,6 +85,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   /* --------------------------- initial load ------------------------------ */
   useEffect(() => {
+    // Supabase keeps the login in a cookie the page can read
+    // ("sb-<project>-auth-token"). Without one nobody is signed in, so
+    // anonymous visitors skip the round trip to the server.
+    if (!document.cookie.includes('-auth-token')) {
+      setLoading(false);
+      return;
+    }
     startTransition(async () => {
       await fetchUser();
     });

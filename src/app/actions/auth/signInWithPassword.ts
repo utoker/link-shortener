@@ -1,10 +1,9 @@
-// src/actions/auth/signInWithPassword.ts
 // -----------------------------------------------------------------------------
 // Server-action: email + password sign-in via Supabase
 // -----------------------------------------------------------------------------
 'use server';
 import { z } from 'zod';
-import { signInSchema } from '@/lib/schemas/singInSchema';
+import { signInSchema } from '@/lib/schemas/signInSchema';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { ActionResult } from '@/lib/types/actions';
 import { authRateLimit } from '@/lib/rateLimit';

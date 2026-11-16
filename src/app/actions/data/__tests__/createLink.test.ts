@@ -203,6 +203,21 @@ describe('createLink Action', () => {
     );
   });
 
+  it('should reject a URL with a user name in front of the host', async () => {
+    const { insert } = await setUp({ data: false, error: null });
+
+    const formData = new FormData();
+    formData.append('url', 'https://google.com@evil.example/login');
+
+    const result = await createLink({ success: false }, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.fieldErrors?.url).toEqual([
+      'Links with a user name or password in them are not allowed.',
+    ]);
+    expect(insert).not.toHaveBeenCalled();
+  });
+
   it('should not create a link when the slug lookup fails', async () => {
     const { insert } = await setUp({ data: null, error: { message: 'down' } });
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});

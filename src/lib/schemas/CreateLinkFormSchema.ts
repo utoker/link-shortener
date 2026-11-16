@@ -2,6 +2,15 @@ import { z } from 'zod';
 import { isReservedSlug } from '@/lib/reservedSlugs';
 import { isOwnUrl, isShortenerUrl } from '@/lib/blockedUrls';
 
+function hasCredentials(url: string): boolean {
+  try {
+    const { username, password } = new URL(url);
+    return username !== '' || password !== '';
+  } catch {
+    return false; // not a URL: the check above has reported it
+  }
+}
+
 export const CreateLinkFormSchema = z.object({
   url: z
     .url({
@@ -17,6 +26,11 @@ export const CreateLinkFormSchema = z.object({
     // Google Safe Browsing refuses much longer URLs, and a link it can't
     // check would be created unchecked (see createLink).
     .max(2048, 'Links can be up to 2,048 characters long.')
+    // "https://google.com@evil.example" reads like google.com but leads to
+    // evil.example: the part before the @ is only a user name.
+    .refine((url) => !hasCredentials(url), {
+      error: 'Links with a user name or password in them are not allowed.',
+    })
     .refine((url) => !isOwnUrl(url), {
       error: 'That is already a reqq.cc link.',
     })

@@ -57,6 +57,8 @@ describe('Rate Limiter Utilities', () => {
         'ratelimit:redirect',
         'ratelimit:link-create',
         'ratelimit:link-edit',
+        'ratelimit:link-delete',
+        'ratelimit:slug-check',
         'ratelimit:auth',
       ]);
     });
@@ -70,7 +72,7 @@ describe('Rate Limiter Utilities', () => {
         .mocked(Ratelimit)
         .mock.calls.map(([config]) => config.timeout);
       expect(redirect).toBe(1000);
-      expect(others).toEqual([undefined, undefined, undefined]); // 5 s
+      expect(others).toEqual(Array(5).fill(undefined)); // 5 s
     });
 
     it('should let requests through when Upstash fails', async () => {

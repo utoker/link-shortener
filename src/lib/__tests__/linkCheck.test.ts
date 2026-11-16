@@ -64,14 +64,16 @@ function database(
 
   const db = {
     from: () => ({
-      select: () => ({
-        order: () => ({
+      select: () => {
+        const read = {
+          order: () => read,
           range: async (from: number, to: number) =>
             options.readError
               ? { data: null, error: options.readError }
               : { data: rows.slice(from, to + 1), error: null },
-        }),
-      }),
+        };
+        return read;
+      },
       update: (values: Record<string, unknown>) => {
         const update = { values, filters: {} as Record<string, unknown> };
         updates.push(update);
@@ -257,6 +259,22 @@ describe('runLinkCheck', () => {
       },
     ]);
     expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it('should stop at 10,000 links and leave the rest for the next run', async () => {
+    database(
+      Array.from({ length: 10500 }, (_, i) =>
+        row(String(i), `https://example.com/${i}`),
+      ),
+    );
+    google();
+
+    const summary = await runLinkCheck();
+
+    expect(summary).toMatchObject({ links: 10000, checked: 10000, problems: [] });
+    expect(console.warn).toHaveBeenCalledWith(
+      'link check: stopped at 10000 links; the rest wait for the next run',
+    );
   });
 
   it('should stamp a never-checked clean link only if its URL is unchanged', async () => {

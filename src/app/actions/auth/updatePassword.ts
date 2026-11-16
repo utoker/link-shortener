@@ -4,7 +4,10 @@
 'use server';
 
 import { z } from 'zod';
+import { headers } from 'next/headers';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { authRateLimit } from '@/lib/rateLimit';
+import { getClientIP } from '@/lib/clientIp';
 import {
   updatePasswordSchema,
   type UpdatePasswordFormValues, // ← this *is* exported by your schema
@@ -30,6 +33,14 @@ export async function updatePasswordAction(
   _prev: UpdatePwResult,
   formData: FormData,
 ): Promise<UpdatePwResult> {
+  const { success } = await authRateLimit.limit(getClientIP(await headers()));
+  if (!success) {
+    return {
+      success: false,
+      formError: 'Too many attempts. Please wait a minute before trying again.',
+    };
+  }
+
   /* 1️⃣  gather inputs ------------------------------------------------- */
   const values: Partial<UpdatePasswordFormValues> = {
     password: formData.get('password') as string | undefined,

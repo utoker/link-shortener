@@ -28,6 +28,17 @@ const renderUserContext = async () => {
 describe('UserContext refetchLinks', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // a login cookie, so the provider asks the server who is signed in
+    document.cookie = 'sb-test-auth-token=x; path=/';
+  });
+
+  it('should not ask the server anything without a login cookie', async () => {
+    document.cookie = 'sb-test-auth-token=; path=/; max-age=0';
+
+    const { result } = await renderUserContext();
+
+    expect(getUserAction).not.toHaveBeenCalled();
+    expect(result.current.user).toBeNull();
   });
 
   it('should skip fetching links when signed out', async () => {

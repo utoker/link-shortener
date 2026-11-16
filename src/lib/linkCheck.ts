@@ -1,4 +1,5 @@
-// Weekly re-check of every link with Google Safe Browsing, run by
+// Weekly re-check of every link (up to 10,000 a run, longest-unchecked
+// first) with Google Safe Browsing, run by
 // /api/cron/link-check. A link Google flags is blocked: the middleware shows a
 // warning page instead of redirecting, and the owner gets one email. The block
 // is lifted once Google reports the URL clean again, or when the owner changes
@@ -12,6 +13,9 @@ import { sendEmail } from '@/lib/email';
 import { describeThreats } from '@/lib/threatNames';
 
 const PAGE_SIZE = 1000; // the most rows the API returns at once
+// What one run takes on, to stay inside the cron route's 60 s: about 200
+// calls to Google at once and 100 updates one after another.
+const MAX_LINKS_PER_RUN = 10000;
 const IDS_PER_UPDATE = 100;
 const REVIEW_URL = 'https://safebrowsing.google.com/safebrowsing/report_error/';
 
@@ -128,18 +132,26 @@ async function checkAllLinks(db: Db, summary: LinkCheckSummary) {
   }
 }
 
+// Up to MAX_LINKS_PER_RUN links, never-checked ones first and then those
+// checked longest ago, so when there are more than one run can take, each
+// run carries on where the last one stopped.
 async function readAllLinks(db: Db): Promise<CheckedLink[]> {
   const links: CheckedLink[] = [];
-  for (let from = 0; ; from += PAGE_SIZE) {
+  for (let from = 0; from < MAX_LINKS_PER_RUN; from += PAGE_SIZE) {
     const { data, error } = await db
       .from('links')
       .select('id, slug, url, user_id, safety_threats, safety_checked_at')
+      .order('safety_checked_at', { ascending: true, nullsFirst: true })
       .order('id')
-      .range(from, from + PAGE_SIZE - 1);
+      .range(from, Math.min(from + PAGE_SIZE, MAX_LINKS_PER_RUN) - 1);
     if (error) throw error;
     links.push(...data);
     if (data.length < PAGE_SIZE) return links;
   }
+  console.warn(
+    `link check: stopped at ${MAX_LINKS_PER_RUN} links; the rest wait for the next run`,
+  );
+  return links;
 }
 
 async function block(

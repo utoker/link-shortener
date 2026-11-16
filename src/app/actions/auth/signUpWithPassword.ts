@@ -2,7 +2,6 @@
 
 import { z } from 'zod';
 import { signUpSchema } from '@/lib/schemas/signUpSchema';
-// src/actions/auth/signUpWithPassword.ts
 // -----------------------------------------------------------------------------
 // Server-action: create a new user with email + password via Supabase
 // -----------------------------------------------------------------------------

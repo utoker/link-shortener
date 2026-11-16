@@ -117,7 +117,9 @@ export default function Hero() {
     (async () => {
       setSlugStatus('checking');
       const ok = await checkSlug(trimmed); // ↔ Supabase
-      if (active) setSlugStatus(ok ? 'available' : 'taken');
+      if (!active) return;
+      // null: couldn't be checked, so say nothing; createLink checks again
+      setSlugStatus(ok === null ? 'idle' : ok ? 'available' : 'taken');
     })();
 
     return () => {

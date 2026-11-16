@@ -127,10 +127,6 @@ export default function LinksList() {
         </div>
       </div>
 
-      {/* {isPending && (
-        <div className="text-yellow mt-4 text-center">Loading links...</div>
-      )} */}
-
       {links.map((link: Link) => (
         <div
           key={link.id}
