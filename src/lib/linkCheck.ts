@@ -23,6 +23,7 @@ type CheckedLink = {
   url: string;
   user_id: string | null;
   safety_threats: string[] | null;
+  safety_checked_at: string | null;
 };
 
 export type LinkCheckSummary = {
@@ -63,12 +64,16 @@ export async function runLinkCheck(): Promise<LinkCheckSummary> {
 }
 
 async function checkAllLinks(db: Db, summary: LinkCheckSummary) {
+  const started = new Date().toISOString();
   const links = await readAllLinks(db);
   summary.links = links.length;
 
   const verdicts = await checkUrlsSafety(links.map((link) => link.url));
   const now = new Date().toISOString();
+  // clean links checked before, and ones never checked (few: Google
+  // couldn't be reached when they were made)
   const stillClean: string[] = [];
+  const firstCheck: CheckedLink[] = [];
   let skipReason = '';
 
   for (const link of links) {
@@ -87,16 +92,31 @@ async function checkAllLinks(db: Db, summary: LinkCheckSummary) {
       await block(db, link, result.threats, now, summary);
     } else if (link.safety_threats) {
       await unblock(db, link, now, summary);
-    } else {
+    } else if (link.safety_checked_at) {
       stillClean.push(link.id);
+    } else {
+      firstCheck.push(link);
     }
   }
 
+  // Google's answer was for the URL that was read. An owner who changed it
+  // since (updateLink) set safety_checked_at to a later time, or to null if
+  // Google couldn't be asked; neither is older than this run's start, so
+  // those links are left alone.
   for (let i = 0; i < stillClean.length; i += IDS_PER_UPDATE) {
     const { error } = await db
       .from('links')
       .update({ safety_checked_at: now })
-      .in('id', stillClean.slice(i, i + IDS_PER_UPDATE));
+      .in('id', stillClean.slice(i, i + IDS_PER_UPDATE))
+      .lt('safety_checked_at', started);
+    if (error) throw error;
+  }
+  for (const link of firstCheck) {
+    const { error } = await db
+      .from('links')
+      .update({ safety_checked_at: now })
+      .eq('id', link.id)
+      .eq('url', link.url);
     if (error) throw error;
   }
 
@@ -113,7 +133,7 @@ async function readAllLinks(db: Db): Promise<CheckedLink[]> {
   for (let from = 0; ; from += PAGE_SIZE) {
     const { data, error } = await db
       .from('links')
-      .select('id, slug, url, user_id, safety_threats')
+      .select('id, slug, url, user_id, safety_threats, safety_checked_at')
       .order('id')
       .range(from, from + PAGE_SIZE - 1);
     if (error) throw error;
@@ -168,7 +188,7 @@ async function unblock(
   now: string,
   summary: LinkCheckSummary,
 ) {
-  const { error } = await db
+  const { data, error } = await db
     .from('links')
     .update({
       safety_threats: null,
@@ -176,8 +196,11 @@ async function unblock(
       safety_checked_at: now,
     })
     .eq('id', link.id)
-    .eq('url', link.url);
+    .eq('url', link.url)
+    .select('id');
   if (error) throw error;
+  // the owner changed the URL since it was read, which lifted the block
+  if (data.length === 0) return;
 
   summary.unblocked.push(link.slug);
   console.info('link check: unblocked', link.slug, link.url);

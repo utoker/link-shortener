@@ -156,6 +156,84 @@ describe('createLink Action', () => {
     expect(createSupabaseAdminClient).not.toHaveBeenCalled();
   });
 
+  // shared setup for the tests below: a visitor under the rate limit, a slug
+  // lookup answering `rpcResult`, and an insert answering `insertResult`
+  async function setUp(rpcResult: unknown, insertResult: unknown = { error: null }) {
+    const { linkCreationRateLimit } = await import('@/lib/rateLimit');
+    const { createSupabaseServerClient } = await import('@/lib/supabase/server');
+    const { createSupabaseAdminClient } = await import('@/lib/supabase/admin');
+    const { headers } = await import('next/headers');
+
+    vi.mocked(headers).mockResolvedValue({
+      get: vi.fn().mockReturnValue('192.168.1.1'),
+    } as any);
+    vi.mocked(linkCreationRateLimit.limit).mockResolvedValue({
+      success: true,
+      limit: 10,
+      remaining: 9,
+      reset: Date.now() + 60000,
+      pending: Promise.resolve(),
+    });
+
+    const rpc = vi.fn().mockResolvedValue(rpcResult);
+    vi.mocked(createSupabaseServerClient).mockResolvedValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: null } }) },
+      rpc,
+    } as any);
+    const insert = vi.fn().mockResolvedValue(insertResult);
+    vi.mocked(createSupabaseAdminClient).mockReturnValue({
+      from: vi.fn().mockReturnValue({ insert }),
+    } as any);
+    return { rpc, insert };
+  }
+
+  it('should trim spaces around a custom slug', async () => {
+    const { rpc, insert } = await setUp({ data: false, error: null });
+
+    const formData = new FormData();
+    formData.append('url', 'https://example.com');
+    formData.append('slug', ' my-link ');
+
+    const result = await createLink({ success: false }, formData);
+
+    expect(result).toEqual({ success: true, slug: 'my-link' });
+    expect(rpc).toHaveBeenCalledWith('slug_exists', { p_slug: 'my-link' });
+    expect(insert).toHaveBeenCalledWith(
+      expect.objectContaining({ slug: 'my-link' }),
+    );
+  });
+
+  it('should not create a link when the slug lookup fails', async () => {
+    const { insert } = await setUp({ data: null, error: { message: 'down' } });
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const formData = new FormData();
+    formData.append('url', 'https://example.com');
+    formData.append('slug', 'my-link');
+
+    const result = await createLink({ success: false }, formData);
+
+    expect(result).toEqual({ success: false, formError: 'Failed to create link.' });
+    expect(insert).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
+  it('should say the slug is taken when someone else got it first', async () => {
+    await setUp(
+      { data: false, error: null },
+      { error: { code: '23505', message: 'duplicate key' } },
+    );
+
+    const formData = new FormData();
+    formData.append('url', 'https://example.com');
+    formData.append('slug', 'my-link');
+
+    const result = await createLink({ success: false }, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.fieldErrors?.slug).toEqual(['This slug is already taken.']);
+  });
+
   it('should reject a reserved custom slug before touching the database', async () => {
     const { linkCreationRateLimit } = await import('@/lib/rateLimit');
     const { createSupabaseServerClient } = await import('@/lib/supabase/server');

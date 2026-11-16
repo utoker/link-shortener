@@ -64,7 +64,13 @@ export default function Hero() {
         /* ─ failure flow ─────────────────────────────── */
         if (res.fieldErrors?.slug) {
           const submitted = fd.get('slug')?.toString().trim() ?? '';
-          setSlugStatus(isReservedSlug(submitted) ? 'reserved' : 'taken');
+          setSlugStatus(
+            isReservedSlug(submitted)
+              ? 'reserved'
+              : CreateLinkFormSchema.shape.slug.safeParse(submitted).success
+                ? 'taken'
+                : 'invalid',
+          );
           toast.error(res.fieldErrors.slug[0]); // slug-specific error
         }
 

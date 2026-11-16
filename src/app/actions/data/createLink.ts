@@ -52,7 +52,8 @@ export async function createLink(
 
   // ---------- basic sanitising ----------------------------------------------
   const rawUrl = ensureProtocol(formData.get('url')?.toString().trim() ?? '');
-  const rawSlug = formData.get('slug')?.toString() || undefined;
+  // trimmed like the live check in Hero, so both judge the same text
+  const rawSlug = formData.get('slug')?.toString().trim() || undefined;
 
   const parse = CreateLinkFormSchema.safeParse({ url: rawUrl, slug: rawSlug });
 
@@ -75,7 +76,14 @@ export async function createLink(
       data: { user },
     } = await supabase.auth.getUser();
 
-    let slug = maybeSlug?.trim() ?? '';
+    let slug = maybeSlug ?? '';
+
+    // A lookup that fails says nothing about the slug, so stop instead of
+    // treating it as free.
+    const lookupFailed = (error: unknown): CreateLinkResult => {
+      console.error('createLink slug lookup error:', error);
+      return { success: false, formError: 'Failed to create link.' };
+    };
 
     // ---------- slug handling -----------------------------------------------
     if (!slug) {
@@ -83,9 +91,11 @@ export async function createLink(
       let attempts = 0;
       while (attempts < 5) {
         const candidate = generateCleanSlug();
-        const { data: taken } = await supabase.rpc('slug_exists', {
-          p_slug: candidate,
-        });
+        const { data: taken, error: lookupErr } = await supabase.rpc(
+          'slug_exists',
+          { p_slug: candidate },
+        );
+        if (lookupErr) return lookupFailed(lookupErr);
         if (!taken) {
           slug = candidate;
           break;
@@ -100,9 +110,11 @@ export async function createLink(
       }
     } else {
       /* user-provided slug must be unique */
-      const { data: taken } = await supabase.rpc('slug_exists', {
-        p_slug: slug,
-      });
+      const { data: taken, error: lookupErr } = await supabase.rpc(
+        'slug_exists',
+        { p_slug: slug },
+      );
+      if (lookupErr) return lookupFailed(lookupErr);
 
       if (taken) {
         return {
@@ -144,6 +156,19 @@ export async function createLink(
           result.verdict === 'safe' ? new Date().toISOString() : null,
       });
 
+    // 23505 = unique violation: someone took the slug between the check
+    // above and this insert.
+    if (error?.code === '23505') {
+      return maybeSlug
+        ? {
+            success: false,
+            fieldErrors: { slug: ['This slug is already taken.'] },
+          }
+        : {
+            success: false,
+            formError: 'Could not generate a unique slug. Try again.',
+          };
+    }
     if (error) {
       console.error('createLink insert error:', error);
       return { success: false, formError: 'Failed to create link.' };

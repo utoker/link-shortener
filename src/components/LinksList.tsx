@@ -35,11 +35,25 @@ export default function LinksList() {
   } | null>(null);
   // the link whose delete button was pressed, until the user confirms
   const [del, setDel] = useState<{ link: Link; open: boolean } | null>(null);
-  const { user, links, refetchLinks } = useUserContext();
+  const { user, links, loading, refetchLinks } = useUserContext();
 
   /* ------------------------------------------------------------------ */
   /* Guards                                                             */
   /* ------------------------------------------------------------------ */
+  // Signed in, but the list couldn't be fetched: say so instead of "Log in".
+  if (user && !links && !loading) {
+    return (
+      <div className="text-yellow font-fredoka-one container mx-auto mt-12 px-4 pt-8 text-center text-2xl">
+        <p>Couldn’t load your links.</p>
+        <button
+          onClick={() => refetchLinks()}
+          className="mt-2 underline underline-offset-2 hover:cursor-pointer"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
   if (!user || !links) {
     return (
       <div className="text-yellow font-fredoka-one container mx-auto mt-12 pt-8 text-center text-2xl">
@@ -153,9 +167,9 @@ export default function LinksList() {
             <a
               href={`/links/${link.slug}/stats`}
               className="underline underline-offset-2"
-              aria-label={`Stats for reqq.cc/${link.slug}: ${link.click_count} clicks`}
+              aria-label={`Stats for reqq.cc/${link.slug}: ${link.click_count ?? 0} clicks`}
             >
-              {link.click_count}
+              {link.click_count ?? 0}
             </a>
           </div>
 

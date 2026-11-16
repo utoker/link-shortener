@@ -69,7 +69,9 @@ export default async function LinkStatsPage({
 
   const stats = data as unknown as LinkStats;
   const inRange = stats.buckets.reduce((sum, b) => sum + b.clicks, 0);
-  const earlier = stats.click_count - stats.detailed_clicks;
+  // null on links made before the count started at 0
+  const total = stats.click_count ?? 0;
+  const earlier = total - stats.detailed_clicks;
   const period = periodText(stats);
   const base = `/links/${encodeURIComponent(stats.slug)}/stats`;
 
@@ -114,7 +116,7 @@ export default async function LinkStatsPage({
         <div className={`${s.card} rounded-3xl border-2 border-black p-4`}>
           <p className="text-sm text-white/70">Total clicks</p>
           <p className="font-fredoka-one text-5xl">
-            {stats.click_count.toLocaleString('en')}
+            {total.toLocaleString('en')}
           </p>
         </div>
         <div className={`${s.card} rounded-3xl border-2 border-black p-4`}>

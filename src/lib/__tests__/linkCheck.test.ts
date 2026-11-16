@@ -16,14 +16,17 @@ type Row = {
   url: string;
   user_id: string | null;
   safety_threats: string[] | null;
+  safety_checked_at: string | null;
 };
 
+// checked by an earlier run unless a test says otherwise
 const row = (id: string, url: string, more: Partial<Row> = {}): Row => ({
   id,
   slug: `slug-${id}`,
   url,
   user_id: null,
   safety_threats: null,
+  safety_checked_at: '2026-11-09T06:00:00.000Z',
   ...more,
 });
 
@@ -49,6 +52,8 @@ function database(
     readError?: { message: string };
     /** ids whose block another run already started */
     alreadyBlocked?: string[];
+    /** ids whose URL the owner changed after the links were read */
+    urlChanged?: string[];
     emails?: Record<string, string>;
   } = {},
 ) {
@@ -83,8 +88,15 @@ function database(
             update.filters[`${column} in`] = value;
             return query;
           },
+          lt: (column: string, value: unknown) => {
+            update.filters[`${column} lt`] = value;
+            return query;
+          },
           select: async () => ({
-            data: options.alreadyBlocked?.includes(update.filters.id as string)
+            data: [
+              ...(options.alreadyBlocked ?? []),
+              ...(options.urlChanged ?? []),
+            ].includes(update.filters.id as string)
               ? []
               : [{ id: update.filters.id }],
             error: null,
@@ -160,10 +172,11 @@ describe('runLinkCheck', () => {
         'safety_threats is': null,
       },
     });
-    // clean links only get the time of the check
+    // clean links only get the time of the check, unless their URL was
+    // changed (and so checked or cleared) after this run started
     expect(updates).toContainEqual({
       values: { safety_checked_at: expect.any(String) },
-      filters: { 'id in': ['2'] },
+      filters: { 'id in': ['2'], 'safety_checked_at lt': expect.any(String) },
     });
     expect(sentTo()).toEqual(['owner@example.com']);
     const email = vi.mocked(sendEmail).mock.calls[0][0];
@@ -240,10 +253,38 @@ describe('runLinkCheck', () => {
     expect(updates).toEqual([
       {
         values: { safety_checked_at: expect.any(String) },
-        filters: { 'id in': ['2'] },
+        filters: { 'id in': ['2'], 'safety_checked_at lt': expect.any(String) },
       },
     ]);
     expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it('should stamp a never-checked clean link only if its URL is unchanged', async () => {
+    const updates = database([
+      row('1', 'https://new.example/', { safety_checked_at: null }),
+    ]);
+    google();
+
+    await runLinkCheck();
+
+    expect(updates).toEqual([
+      {
+        values: { safety_checked_at: expect.any(String) },
+        filters: { id: '1', url: 'https://new.example/' },
+      },
+    ]);
+  });
+
+  it('should not report an unblock when the owner changed the URL meanwhile', async () => {
+    database(
+      [row('1', 'https://cleaned.example/', { safety_threats: ['MALWARE'] })],
+      { urlChanged: ['1'] },
+    );
+    google();
+
+    const summary = await runLinkCheck();
+
+    expect(summary.unblocked).toEqual([]);
   });
 
   it('should alert when Google answers for no link at all', async () => {

@@ -22,7 +22,7 @@ export interface BucketCount {
 export interface LinkStats {
   slug: string;
   url: string;
-  click_count: number;
+  click_count: number | null;
   time_zone: string;
   range: Range;
   bucket: Bucket;
