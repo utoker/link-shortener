@@ -20,6 +20,9 @@ describe('sitemap.xml', () => {
     expect(sitemap().map((entry) => entry.url)).toEqual([
       'https://reqq.cc/',
       'https://reqq.cc/qr-code-generator',
+      'https://reqq.cc/link-click-counter',
+      'https://reqq.cc/url-shortener-without-sign-up',
+      'https://reqq.cc/bitly-alternative',
       'https://reqq.cc/about',
       'https://reqq.cc/terms',
       'https://reqq.cc/privacy',

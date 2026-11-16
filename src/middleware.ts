@@ -24,6 +24,9 @@ const APP_PAGES = new Set([
   'terms',
   'privacy',
   'qr-code-generator',
+  'bitly-alternative',
+  'url-shortener-without-sign-up',
+  'link-click-counter',
   'protected',
   'auth',
 ]);

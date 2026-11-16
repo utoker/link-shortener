@@ -1,0 +1,33 @@
+/* Styles only the landing pages use (see LandingPage.tsx). They live here
+   rather than as new Tailwind classes because Tailwind builds one stylesheet
+   for the whole site, and the static homepage can't paint until it has
+   downloaded that stylesheet. */
+
+/* A wide table scrolls inside its own box on phones instead of widening the
+   page. */
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.table th,
+.table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgb(244 241 240 / 0.2);
+  vertical-align: top;
+}
+.table thead th {
+  color: #fbc114;
+}
+.table tbody th {
+  font-weight: 400;
+  color: rgb(244 241 240 / 0.8);
+}
+
+.cta:hover {
+  filter: brightness(1.1);
+}

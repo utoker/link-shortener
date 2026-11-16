@@ -1,42 +1,18 @@
 // /qr-code-generator – a QR code for any link or text, made in the browser.
 // A static page: only the tool itself (QrGenerator) runs on the client.
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import QrGenerator from '@/components/QrGenerator';
+import { pageMetadata } from '@/lib/pageMetadata';
 
 const TITLE = 'Free QR Code Generator – No Sign-Up, No Expiry | reqq.cc';
 const DESCRIPTION =
   'Make a QR code for any link or text. Free, with no sign-up, no ads and no watermark. Codes never expire. Download as PNG or SVG.';
 
-// The site's share image (app/opengraph-image.png). A page that sets its own
-// openGraph loses the inherited one, so it's named here.
-const SHARE_IMAGE = {
-  url: '/opengraph-image.png',
-  width: 1200,
-  height: 630,
-  alt: 'reqq.cc: Shorten your links with ease. Free, fast and private.',
-};
-
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: '/qr-code-generator' },
-  // Set in full: a page's openGraph replaces the layout's, it isn't merged.
-  openGraph: {
-    title: TITLE,
-    description: DESCRIPTION,
-    url: '/qr-code-generator',
-    siteName: 'reqq.cc',
-    type: 'website',
-    images: [SHARE_IMAGE],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: TITLE,
-    description: DESCRIPTION,
-    images: [SHARE_IMAGE],
-  },
-};
+  path: '/qr-code-generator',
+});
 
 // https://developers.google.com/search/docs/appearance/structured-data
 const structuredData = {
