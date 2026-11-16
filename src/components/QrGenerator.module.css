@@ -1,0 +1,20 @@
+/* Styles only the QR code generator uses. They live here rather than as new
+   Tailwind classes because Tailwind builds one stylesheet for the whole site,
+   and the static homepage can't paint until it has downloaded that stylesheet. */
+
+.input {
+  height: 3rem;
+  border-radius: 1rem;
+  font-size: 1.125rem;
+}
+
+/* What the code holds, under the code: long links wrap instead of widening
+   the card. */
+.content {
+  min-height: 1.5rem;
+  overflow-wrap: anywhere;
+}
+
+.placeholder {
+  padding: 1rem;
+}

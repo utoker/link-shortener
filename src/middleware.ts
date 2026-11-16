@@ -19,7 +19,14 @@ export const config = {
   matcher: '/:slug([^/.]+)',
 };
 
-const APP_PAGES = new Set(['about', 'terms', 'privacy', 'protected', 'auth']);
+const APP_PAGES = new Set([
+  'about',
+  'terms',
+  'privacy',
+  'qr-code-generator',
+  'protected',
+  'auth',
+]);
 
 export async function middleware(req: NextRequest, event: NextFetchEvent) {
   const slug = req.nextUrl.pathname.slice(1); // "/yxzh5x" → "yxzh5x"

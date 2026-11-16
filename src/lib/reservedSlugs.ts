@@ -12,6 +12,7 @@ const RESERVED_SLUGS = new Set([
   'blocked',
   'callback',
   'protected',
+  'qr-code-generator',
   'reset-password',
   'favicon',
   'icon',

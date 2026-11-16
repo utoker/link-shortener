@@ -28,7 +28,17 @@ const FAQ: { q: string; a: React.ReactNode }[] = [
   },
   {
     q: 'How do I make a QR code for a link?',
-    a: 'Shorten the link, then press “QR code” next to it. You can download it as a PNG or an SVG for print.',
+    a: (
+      <>
+        Shorten the link, then press “QR code” next to it. You can download it
+        as a PNG or an SVG for print. For a code that holds any link or text
+        without shortening it, use the{' '}
+        <a href="/qr-code-generator" className="underline underline-offset-2">
+          free QR code generator
+        </a>
+        .
+      </>
+    ),
   },
   {
     q: 'Are reqq.cc links safe to open?',

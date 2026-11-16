@@ -19,6 +19,7 @@ describe('sitemap.xml', () => {
   it("should list reqq.cc's own pages and no short links", () => {
     expect(sitemap().map((entry) => entry.url)).toEqual([
       'https://reqq.cc/',
+      'https://reqq.cc/qr-code-generator',
       'https://reqq.cc/about',
       'https://reqq.cc/terms',
       'https://reqq.cc/privacy',

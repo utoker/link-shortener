@@ -254,7 +254,7 @@ describe('Middleware Rate Limiting', () => {
     expect(response.status).toBe(200);
   });
 
-  it.each(['/about', '/terms', '/privacy'])(
+  it.each(['/about', '/terms', '/privacy', '/qr-code-generator'])(
     'should let the %s page through without a slug lookup',
     async (path) => {
       const { redirectRateLimit } = await import('../lib/rateLimit');

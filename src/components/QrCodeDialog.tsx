@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { download, svgDataUrl } from '@/lib/download';
 import { qrPng, qrSvg } from '@/lib/qr';
 import { toast } from 'sonner';
 
@@ -17,19 +18,6 @@ interface QrCodeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-/** Saves a data: URL under `filename`. */
-function download(href: string, filename: string) {
-  const a = document.createElement('a');
-  a.href = href;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-}
-
-const svgDataUrl = (svg: string) =>
-  `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 
 export default function QrCodeDialog({
   slug,

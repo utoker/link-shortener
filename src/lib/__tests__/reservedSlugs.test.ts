@@ -15,6 +15,7 @@ describe('isReservedSlug', () => {
       'about',
       'terms',
       'privacy',
+      'qr-code-generator',
       'robots',
       'sitemap',
       'favicon',

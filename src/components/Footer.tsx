@@ -42,6 +42,9 @@ export default function Footer() {
 
         {/* Link rows */}
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm text-white/80 sm:grid-cols-3 md:grid-cols-6">
+          <Link href="/qr-code-generator" className="hover:underline">
+            QR code generator
+          </Link>
           <Link href="/about" className="hover:underline">
             About
           </Link>
