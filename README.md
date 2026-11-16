@@ -1,4 +1,4 @@
-# Reqq .cc — Next 15 + Supabase link‑shortener
+# Reqq .cc — Next 16 + Supabase link‑shortener
 
 [![LinkedIn][linkedin-shield]](https://www.linkedin.com/in/utoker/)
 
@@ -6,7 +6,7 @@
 
 ## ✨ About
 
-> **Reqq .cc** is a privacy‑minded, open‑source URL shortener built with the ~~latest~~ bleeding‑edge Next JS 15 **Server Actions**, **Edge Middleware**, and **Supabase Postgres**.
+> **Reqq .cc** is a privacy‑minded, open‑source URL shortener built with the ~~latest~~ bleeding‑edge Next JS 16 **Server Actions**, **Edge Middleware**, and **Supabase Postgres**.
 >
 > I rebuilt the original Prisma + PlanetScale version from scratch to learn the new App Router paradigm (React 19 & `useActionState`) and to dog‑food Supabase’s all‑in‑one stack in production.
 
@@ -14,7 +14,7 @@
 
 | v1 (2023)                        | **v2 / current** (2025)              |
 | -------------------------------- | ------------------------------------ |
-| Next 13 Pages Router             | **Next 15 App Router** + React 19    |
+| Next 13 Pages Router             | **Next 16 App Router** + React 19    |
 | Prisma ORM + PlanetScale (MySQL) | **Supabase Postgres** + RLS          |
 | API routes                       | **Server Actions** + Edge Middleware |
 | Tailwind v3                      | **Tailwind v4** (CSS‑at‑config)      |
@@ -37,7 +37,7 @@
 
 | Layer      | Library / service                            |
 | ---------- | -------------------------------------------- |
-| Front‑end  | **React 19**, **Next JS 15**, **TypeScript** |
+| Front‑end  | **React 19**, **Next JS 16**, **TypeScript** |
 | Styling    | **Tailwind CSS v4**                          |
 | Components | **Radix UI** primitives                      |
 | Data       | **Supabase Postgres** (`links` table)        |
