@@ -3,8 +3,7 @@
 import { Button } from './ui/button';
 import SignUpIcon from './icons/SignUpIcon';
 
-interface SignupButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+type SignupButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export default function SignUpButton({ ...props }: SignupButtonProps) {
   return (

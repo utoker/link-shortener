@@ -19,8 +19,6 @@ const features = [
   },
 ] as const;
 
-type Feature = (typeof features)[number];
-
 /*
   Desktop (≥1280px): 5 icons top row, 4 bottom row staggered between → 9‑column grid.
   Below xl: fall back to ordinary wrapping grid, but shrink icons so they fit neatly.

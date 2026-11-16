@@ -8,8 +8,7 @@ import { useUserContext } from '@/app/context/UserContext';
 import { Button } from './ui/button';
 import SignOutIcon from './icons/SignOutIcon';
 
-interface SignOutButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+type SignOutButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export default function SignOutButton({ ...props }: SignOutButtonProps) {
   const initial: SignOutResult = { success: false };

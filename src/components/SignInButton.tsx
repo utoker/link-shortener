@@ -2,8 +2,7 @@
 
 import { Button } from './ui/button';
 import SignInIcon from './icons/SignInIcon';
-interface SigninButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+type SigninButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export default function SignInButton({ ...props }: SigninButtonProps) {
   return (
