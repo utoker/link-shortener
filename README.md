@@ -29,7 +29,7 @@
 - 🌍 **Ultra‑low latency redirects** – Edge middleware resolves slugs in \~20–40 ms.
 - 🛂 **Row‑level security** – every request goes through Supabase RLS policies; the client only gets its own data.
 - ⚡ **Live revalidate** – new links appear instantly without client‑side cache busting.
-- 🧩 **Composable architecture** – backend actions live in `src/lib/actions/**`, UI components in `src/components/**`.
+- 🧩 **Composable architecture** – backend actions live in `src/app/actions/**`, UI components in `src/components/**`.
 
 ---
 
@@ -44,6 +44,10 @@
 | Auth       | **Supabase Auth** (JWT)                      |
 | Validation | **Zod** schemas                              |
 | State mgmt | **useActionState** (no client stores)        |
+| Rate limit | **Upstash Redis**                            |
+| Link check | **Google Safe Browsing**                     |
+| Email      | **Resend**                                   |
+| Hosting    | **Vercel** (+ Vercel Cron)                   |
 
 ---
 
@@ -62,15 +66,32 @@ pnpm dev
 
 ### Environment variables
 
-| Variable                        | Example                   | Description                              |
-| ------------------------------- | ------------------------- | ---------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`      | `https://xyz.supabase.co` | Your Supabase URL                        |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOi...`           | Public anon key                          |
-| `SUPABASE_SECRET_KEY`           | _(server only)_           | Secret key; the server inserts links     |
-| `GOOGLE_SAFE_BROWSING_API_KEY`  | _(server only)_           | Safe Browsing check on new links         |
-| `UPSTASH_REDIS_REST_URL`        | `https://xyz.upstash.io`  | Upstash Redis for rate limiting          |
-| `UPSTASH_REDIS_REST_TOKEN`      | _(server only)_           | Upstash Redis token                      |
-| `NEXT_PUBLIC_SITE_URL`          | `https://reqq.cc`         | Fallback origin for password-reset links |
+`.env.example` lists them all with comments.
+
+**Needed to run**
+
+| Variable                        | Example                   | Description                                       |
+| ------------------------------- | ------------------------- | ------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | `https://xyz.supabase.co` | Your Supabase URL                                 |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOi...`           | Public anon key                                   |
+| `SUPABASE_SECRET_KEY`           | _(server only)_           | Secret key; the server saves links, counts clicks |
+| `UPSTASH_REDIS_REST_URL`        | `https://xyz.upstash.io`  | Upstash Redis for rate limiting                   |
+| `UPSTASH_REDIS_REST_TOKEN`      | _(server only)_           | Upstash Redis token                               |
+
+**Optional**
+
+| Variable                       | Example                      | Description                                                   |
+| ------------------------------ | ---------------------------- | ------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`         | `https://reqq.cc`            | Fallback origin for sign-up and password-reset email links    |
+| `GOOGLE_SAFE_BROWSING_API_KEY` | _(server only)_              | Safe Browsing check on new and edited links; skipped if unset |
+| `CRON_SECRET`                  | _(server only)_              | Bearer token Vercel Cron sends to the weekly link check       |
+| `RESEND_API_KEY`               | _(server only)_              | Sends owner and alert emails for the weekly link check        |
+| `ALERT_EMAIL`                  | `you@example.com`            | Where a link-check run with problems is reported              |
+| `HEALTHCHECK_URL`              | `https://hc-ping.com/<uuid>` | healthchecks.io ping URL for the weekly link check            |
+
+### Weekly link check
+
+`vercel.json` schedules `GET /api/cron/link-check` every Monday at 06:00 UTC. It re-checks every link with Google Safe Browsing, blocks links that turned unsafe, lifts blocks Google has cleared, and emails the owners of newly blocked links.
 
 ---
 
@@ -78,11 +99,19 @@ pnpm dev
 
 ```text
 src/
-  app/
-    (routes & server actions)
+  app/                # routes and pages
+    actions/
+      auth/           # sign-in, sign-up, password reset …
+      data/           # createLink.ts, updateLink.ts, deleteLink.ts …
+    api/cron/         # weekly link check endpoint
+    auth/             # email-link callback and confirm routes
   lib/
-    actions/          # server‑action files (createLink.ts, deleteLink.ts …)
-    supabase/         # tiny wrappers for client / server helpers
+    supabase/         # tiny wrappers for client / server / admin helpers
+    schemas/          # Zod form schemas
+    linkCheck.ts      # weekly Safe Browsing re-check
+    safeBrowsing.ts   # Google Safe Browsing lookups
+    rateLimit.ts      # Upstash rate limiters
+    email.ts          # Resend emails
   components/         # Radix‑based UI
   styles/
     globals.css
