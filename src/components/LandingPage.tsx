@@ -106,7 +106,7 @@ export default function LandingPage({
   intro: React.ReactNode;
   /** Text of the button to the shortener, shown under the intro and at the end. */
   button: string;
-  /** A tool to show under the intro in place of the button (/utm-builder). */
+  /** A tool to show under the intro in place of the button (/utm-builder, /link-checker). */
   tool?: React.ReactNode;
   faq: FaqItem[];
   children: React.ReactNode;

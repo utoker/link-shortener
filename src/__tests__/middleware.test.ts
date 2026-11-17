@@ -263,6 +263,7 @@ describe('Middleware Rate Limiting', () => {
     '/url-shortener-without-sign-up',
     '/link-click-counter',
     '/utm-builder',
+    '/link-checker',
   ])(
     'should let the %s page through without a slug lookup',
     async (path) => {

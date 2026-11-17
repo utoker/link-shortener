@@ -20,6 +20,7 @@ describe('isReservedSlug', () => {
       'url-shortener-without-sign-up',
       'link-click-counter',
       'utm-builder',
+      'link-checker',
       'robots',
       'sitemap',
       'favicon',

@@ -1,0 +1,50 @@
+/* Styles only the link checker uses. They live here rather than as new
+   Tailwind classes because Tailwind builds one stylesheet for the whole site,
+   and the static homepage can't paint until it has downloaded that stylesheet. */
+
+.input {
+  height: 3rem;
+  border-radius: 1rem;
+  font-size: 1.125rem;
+}
+
+.result {
+  min-height: 5rem;
+  padding: 0.75rem 1rem;
+}
+.result > * + * {
+  margin-top: 0.75rem;
+}
+
+.hint {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* The addresses the link passes through, numbered. */
+.steps {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.steps > li + li {
+  margin-top: 0.25rem;
+}
+
+/* Long addresses wrap instead of widening the card. */
+.url {
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.status {
+  white-space: nowrap;
+  opacity: 0.7;
+}
+
+.warning {
+  color: #b91c1c;
+  font-weight: 600;
+}

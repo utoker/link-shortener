@@ -88,6 +88,18 @@ export const slugCheckRateLimit = failOpen(
   }),
 );
 
+// The /link-checker page, which anyone can use: each check has the server
+// open up to 11 addresses on other sites.
+export const linkCheckerRateLimit = failOpen(
+  'link-checker',
+  new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, '1 m'),
+    analytics: true,
+    prefix: 'ratelimit:link-checker',
+  }),
+);
+
 export const authRateLimit = failOpen(
   'auth',
   new Ratelimit({

@@ -28,6 +28,7 @@ const APP_PAGES = new Set([
   'url-shortener-without-sign-up',
   'link-click-counter',
   'utm-builder',
+  'link-checker',
   'protected',
   'auth',
 ]);

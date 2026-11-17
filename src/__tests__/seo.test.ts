@@ -21,6 +21,7 @@ describe('sitemap.xml', () => {
       'https://reqq.cc/',
       'https://reqq.cc/qr-code-generator',
       'https://reqq.cc/utm-builder',
+      'https://reqq.cc/link-checker',
       'https://reqq.cc/link-click-counter',
       'https://reqq.cc/url-shortener-without-sign-up',
       'https://reqq.cc/bitly-alternative',

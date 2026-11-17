@@ -89,6 +89,12 @@ export default function PrivacyPage() {
           week; if Google reports one as unsafe later, it shows a warning page
           instead of redirecting and we email its owner.
         </p>
+        <p>
+          When you use the link checker, our server requests the link you
+          enter and each address it redirects to, and the final address is
+          sent to Google Safe Browsing. We do not store or log the links you
+          check.
+        </p>
       </section>
 
       <section className="space-y-3">
