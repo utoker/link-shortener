@@ -25,7 +25,10 @@
 ## 🚀 Features
 
 - 🔗 **Anonymous or authenticated short‑links** – logged‑in users own their links; anonymous links still work.
-- 📈 **Atomic click counter** via Postgres `increment_click` function (no race conditions).
+- 📈 **Atomic click counter** via the Postgres `record_click` function (no race conditions), with a stats page per link.
+- 🛡️ **Safe Browsing checks** – new and edited links are checked with Google Safe Browsing, and every link is re-checked weekly.
+- 🚦 **Rate limits** on redirects, link creation, editing and deletion, slug checks and auth, per IP via Upstash Redis.
+- 🧰 **Free tools** – a QR code generator (`/qr-code-generator`) and a UTM link builder (`/utm-builder`), both running in the browser.
 - 🌍 **Ultra‑low latency redirects** – Edge middleware resolves slugs in \~20–40 ms.
 - 🛂 **Row‑level security** – every request goes through Supabase RLS policies; the client only gets its own data.
 - ⚡ **Live revalidate** – new links appear instantly without client‑side cache busting.
@@ -45,6 +48,7 @@
 | Validation | **Zod** schemas                              |
 | State mgmt | **useActionState** (no client stores)        |
 | Rate limit | **Upstash Redis**                            |
+| Checks     | **ESLint**, **Vitest**, **GitHub Actions**   |
 | Link check | **Google Safe Browsing**                     |
 | Email      | **Resend**                                   |
 | Hosting    | **Vercel** (+ Vercel Cron)                   |
@@ -63,6 +67,21 @@ cp .env.example .env.local
 # 3. run dev server
 pnpm dev
 ```
+
+### Checks
+
+| Command          | What it does                          |
+| ---------------- | ------------------------------------- |
+| `pnpm lint`      | ESLint with the Next.js rules         |
+| `pnpm typecheck` | TypeScript, without writing any files |
+| `pnpm test`      | Vitest in watch mode                  |
+| `pnpm test:run`  | Vitest once                           |
+
+GitHub Actions (`.github/workflows/ci.yml`) runs lint, the type check and the tests on every push to `main` and on every pull request.
+
+### Database
+
+`supabase/migrations/` holds the changes made to the schema over time. The `links` table itself and its policies are not in there yet, so the migrations alone don't set up a fresh database.
 
 ### Environment variables
 
@@ -116,6 +135,9 @@ src/
   styles/
     globals.css
   middleware.ts       # Edge runtime slug resolver
+supabase/migrations/  # schema changes
+eslint.config.mjs     # lint rules
+.github/workflows/    # CI
 ```
 
 ---
@@ -124,9 +146,10 @@ src/
 
 1. Fork the repo
 2. Create your feature branch: `git checkout -b feat/amazing-thing`
-3. Commit your changes: `git commit -m "feat: amazing thing"`
-4. Push to the branch: `git push origin feat/amazing-thing`
-5. Open a pull request 🚀
+3. Make sure `pnpm lint`, `pnpm typecheck` and `pnpm test:run` pass
+4. Commit your changes: `git commit -m "feat: amazing thing"`
+5. Push to the branch: `git push origin feat/amazing-thing`
+6. Open a pull request 🚀
 
 ---
 
