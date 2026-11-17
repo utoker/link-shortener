@@ -4,12 +4,9 @@ import React, { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import { useUserContext } from '../app/context/UserContext';
 
-interface ConfettiEffectProps {
-  duration?: number; // Duration for the confetti effect in milliseconds
-}
-
-const ConfettiEffect: React.FC<ConfettiEffectProps> = ({ duration = 3000 }) => {
-  const [show, setShow] = useState(false);
+// Shown while the user context says so; triggerConfetti there switches it
+// off again after three seconds.
+const ConfettiEffect: React.FC = () => {
   const { isConfettiActive } = useUserContext();
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
@@ -30,15 +27,7 @@ const ConfettiEffect: React.FC<ConfettiEffectProps> = ({ duration = 3000 }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (isConfettiActive) {
-      setShow(true);
-      const timer = setTimeout(() => setShow(false), duration);
-      return () => clearTimeout(timer);
-    }
-  }, [isConfettiActive, duration]);
-
-  if (!show) return null;
+  if (!isConfettiActive) return null;
 
   return (
     <Confetti

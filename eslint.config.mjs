@@ -20,9 +20,6 @@ export default defineConfig([
       // the only images are the SVG logo and generated QR codes, which
       // next/image can't improve
       '@next/next/no-img-element': 'off',
-      // Existing effects reset state when their input changes. They work;
-      // rewriting them is a separate job, so this is a warning for now.
-      'react-hooks/set-state-in-effect': 'warn',
     },
   },
   {

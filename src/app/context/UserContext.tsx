@@ -3,6 +3,7 @@
 
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -48,7 +49,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     setTimeout(() => setConfettiActive(false), 3000);
   };
 
-  const fetchLinks = async () => {
+  const fetchLinks = useCallback(async () => {
     try {
       const res = await getUserLinks({ success: false }, new FormData());
       if (res.success) {
@@ -61,9 +62,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Error fetching links:', err);
       setLinks(null);
     }
-  };
+  }, []);
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     setLoading(true);
     try {
       const res = await getUserAction({ success: false }, new FormData());
@@ -81,21 +82,21 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchLinks]);
 
   /* --------------------------- initial load ------------------------------ */
   useEffect(() => {
-    // Supabase keeps the login in a cookie the page can read
-    // ("sb-<project>-auth-token"). Without one nobody is signed in, so
-    // anonymous visitors skip the round trip to the server.
-    if (!document.cookie.includes('-auth-token')) {
-      setLoading(false);
-      return;
-    }
     startTransition(async () => {
+      // Supabase keeps the login in a cookie the page can read
+      // ("sb-<project>-auth-token"). Without one nobody is signed in, so
+      // anonymous visitors skip the round trip to the server.
+      if (!document.cookie.includes('-auth-token')) {
+        setLoading(false);
+        return;
+      }
       await fetchUser();
     });
-  }, []);
+  }, [fetchUser]);
 
   /* ----------------------------- value ----------------------------------- */
   const value: UserContextType = {

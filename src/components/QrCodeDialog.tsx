@@ -24,15 +24,17 @@ export default function QrCodeDialog({
   open,
   onOpenChange,
 }: QrCodeDialogProps) {
-  const [svg, setSvg] = useState<string | null>(null);
+  // the drawn code and the slug it is for
+  const [code, setCode] = useState<{ slug: string; svg: string } | null>(null);
+  // a code drawn for another slug is not shown
+  const svg = code?.slug === slug ? code.svg : null;
 
   // Draw the code when the dialog opens (this also loads the QR library)
   useEffect(() => {
     if (!open) return;
     let active = true;
-    setSvg(null);
     qrSvg(slug)
-      .then((code) => active && setSvg(code))
+      .then((drawn) => active && setCode({ slug, svg: drawn }))
       .catch(() => active && toast.error('Could not create the QR code.'));
     return () => {
       active = false;

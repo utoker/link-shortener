@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -31,10 +31,14 @@ export default function ForgotPasswordModal({
 }: ForgotPasswordModalProps) {
   const [sent, setSent] = useState(false);
 
-  // Reset to form view whenever the modal is closed from the outside
-  useEffect(() => {
+  // Back to the form view whenever the modal closes, however it was closed.
+  // Done while rendering (React's way to reset state when a prop changes)
+  // rather than in an effect, which would draw the old view once more.
+  const [wasOpen, setWasOpen] = useState(isOpen);
+  if (wasOpen !== isOpen) {
+    setWasOpen(isOpen);
     if (!isOpen) setSent(false);
-  }, [isOpen]);
+  }
 
   return (
     <Dialog

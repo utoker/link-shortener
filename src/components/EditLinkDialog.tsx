@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useEffect, useState } from 'react';
+import { useActionState, useState } from 'react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -12,9 +12,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { updateLink } from '@/app/actions/data/updateLink';
 import type { UpdateLinkResult } from '@/app/actions/data/updateLink';
-import { CreateLinkFormSchema } from '@/lib/schemas/CreateLinkFormSchema';
+import { urlInputError } from '@/lib/schemas/CreateLinkFormSchema';
 import { useDebounce } from '@/lib/hooks/useDebounce';
-import { ensureProtocol } from '@/lib/utils';
 import { describeThreats } from '@/lib/threatNames';
 
 interface EditLinkDialogProps {
@@ -39,23 +38,10 @@ export default function EditLinkDialog({
   onSaved,
 }: EditLinkDialogProps) {
   const [url, setUrl] = useState(link.url);
-  const [urlError, setUrlError] = useState('');
   // what the field held when Save was pressed, for the server's verdict
   const [submittedUrl, setSubmittedUrl] = useState<string | null>(null);
-  const debouncedUrl = useDebounce(url, 300);
-
-  // Same live check as the homepage
-  useEffect(() => {
-    const trimmed = debouncedUrl.trim();
-    if (!trimmed) {
-      setUrlError('');
-      return;
-    }
-    const parsed = CreateLinkFormSchema.shape.url.safeParse(
-      ensureProtocol(trimmed),
-    );
-    setUrlError(parsed.success ? '' : parsed.error.issues[0].message);
-  }, [debouncedUrl]);
+  // Same live check as the homepage, a moment after typing stops
+  const urlError = urlInputError(useDebounce(url, 300));
 
   const [state, formAction, pending] = useActionState(
     async (prev: UpdateLinkResult, fd: FormData) => {

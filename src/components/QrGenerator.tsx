@@ -16,30 +16,29 @@ const MAX_LENGTH = 2000;
 
 export default function QrGenerator() {
   const [input, setInput] = useState('');
-  // the code on screen and the text it holds
-  const [code, setCode] = useState<{ content: string; svg: string } | null>(
-    null,
-  );
-  const [failed, setFailed] = useState(false);
+  // the last drawing: the text it was for, and the code (null if the text
+  // didn't fit in one)
+  const [drawn, setDrawn] = useState<{
+    content: string;
+    svg: string | null;
+  } | null>(null);
 
   const content = qrContent(useDebounce(input, 200));
 
+  // The code on screen and the text it holds. While a new text is being
+  // drawn the last code stays; an empty box shows none.
+  const code =
+    content && drawn?.svg ? { content: drawn.content, svg: drawn.svg } : null;
+  const failed = !!drawn && drawn.content === content && drawn.svg === null;
+
   // Draw the code a moment after typing stops (this also loads the QR library)
   useEffect(() => {
-    setFailed(false);
-    if (!content) {
-      setCode(null);
-      return;
-    }
+    if (!content) return;
 
     let active = true;
     textQrSvg(content)
-      .then((svg) => active && setCode({ content, svg }))
-      .catch(() => {
-        if (!active) return;
-        setCode(null);
-        setFailed(true);
-      });
+      .then((svg) => active && setDrawn({ content, svg }))
+      .catch(() => active && setDrawn({ content, svg: null }));
     return () => {
       active = false;
     }; // drop the result if the text changed meanwhile

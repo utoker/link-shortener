@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { isReservedSlug } from '@/lib/reservedSlugs';
 import { isOwnUrl, isShortenerUrl } from '@/lib/blockedUrls';
+import { ensureProtocol } from '@/lib/utils';
 
 function hasCredentials(url: string): boolean {
   try {
@@ -9,6 +10,19 @@ function hasCredentials(url: string): boolean {
   } catch {
     return false; // not a URL: the check above has reported it
   }
+}
+
+/**
+ * What to show under a URL box while it is being typed in: the first problem
+ * with the text (the protocol may be left out), or '' when it is fine or empty.
+ */
+export function urlInputError(input: string): string {
+  const trimmed = input.trim();
+  if (!trimmed) return '';
+  const parsed = CreateLinkFormSchema.shape.url.safeParse(
+    ensureProtocol(trimmed),
+  );
+  return parsed.success ? '' : parsed.error.issues[0].message;
 }
 
 export const CreateLinkFormSchema = z.object({

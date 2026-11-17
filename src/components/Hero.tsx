@@ -8,9 +8,11 @@ import UrlInput from './UrlInput';
 import CustomLinkInput from './CustomLinkInput';
 import centerIcon from '@icons/center-icon.webp';
 import { useUserContext } from '@/app/context/UserContext';
-import { CreateLinkFormSchema } from '@/lib/schemas/CreateLinkFormSchema';
+import {
+  CreateLinkFormSchema,
+  urlInputError,
+} from '@/lib/schemas/CreateLinkFormSchema';
 import { useDebounce } from '@/lib/hooks/useDebounce';
-import { ensureProtocol } from '@/lib/utils';
 import { isReservedSlug } from '@/lib/reservedSlugs';
 import { takePrefillUrl } from '@/lib/prefill';
 import { createLink } from '@/app/actions/data/createLink';
@@ -32,21 +34,42 @@ type SlugStatus =
 export default function Hero() {
   /* ──────────────────────────── local state ─────────────────────────── */
   const [slugInput, setSlugInput] = useState('');
-  const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
+  // the last answer about a slug that needed asking the server: from the
+  // live check, or from createLink when it refused the slug
+  const [slugVerdict, setSlugVerdict] = useState<{
+    slug: string;
+    status: SlugStatus;
+  } | null>(null);
   const [urlInput, setUrlInput] = useState('');
-  const [urlError, setUrlError] = useState('');
   // what the URL field held when the form was last sent; the server's
   // verdict on it is shown only while the field still holds it
   const [submittedUrl, setSubmittedUrl] = useState('');
   const [qrOpen, setQrOpen] = useState(false);
 
-  const debouncedSlug = useDebounce(slugInput, 300);
-  const debouncedUrl = useDebounce(urlInput, 300);
+  const slug = useDebounce(slugInput, 300).trim();
+  // live check, a moment after typing stops
+  const urlError = urlInputError(useDebounce(urlInput, 300));
   const { refetchLinks } = useUserContext();
 
-  // a link handed over by a tool page (/utm-builder) starts in the URL box
+  // What can be said about the slug without asking the server; null when
+  // the server has to say whether it is free.
+  const localStatus: SlugStatus | null = !slug
+    ? 'idle'
+    : CreateLinkFormSchema.shape.slug.safeParse(slug).success
+      ? null
+      : isReservedSlug(slug)
+        ? 'reserved'
+        : 'invalid';
+  const slugStatus: SlugStatus =
+    localStatus ?? (slugVerdict?.slug === slug ? slugVerdict.status : 'checking');
+
+  // A link handed over by a tool page (/utm-builder) starts in the URL box.
+  // It is in sessionStorage, which the server doesn't have, so it can't be
+  // the field's first value (the page and the server's HTML would differ):
+  // it is read once after the first draw instead.
   useEffect(() => {
     const prefill = takePrefillUrl();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of browser storage, see above
     if (prefill) setUrlInput(prefill);
   }, []);
 
@@ -63,21 +86,15 @@ export default function Hero() {
         /* ─ success flow ─────────────────────────────── */
         await refetchLinks();
         setSlugInput('');
-        setSlugStatus('idle');
+        setSlugVerdict(null);
         setUrlInput('');
-        setUrlError('');
         toast.success('Link created 🎉'); // ← show only on success
       } else {
         /* ─ failure flow ─────────────────────────────── */
         if (res.fieldErrors?.slug) {
           const submitted = fd.get('slug')?.toString().trim() ?? '';
-          setSlugStatus(
-            isReservedSlug(submitted)
-              ? 'reserved'
-              : CreateLinkFormSchema.shape.slug.safeParse(submitted).success
-                ? 'taken'
-                : 'invalid',
-          );
+          // "reserved" and "invalid" show by themselves (see localStatus)
+          setSlugVerdict({ slug: submitted, status: 'taken' });
           toast.error(res.fieldErrors.slug[0]); // slug-specific error
         }
 
@@ -107,46 +124,25 @@ export default function Hero() {
   >(createLinkWithRefresh, { success: false });
 
   /* ─────────────────────── slug validation ──────────────────────────── */
+  const askServer = localStatus === null;
   useEffect(() => {
-    const trimmed = debouncedSlug.trim();
-    if (!trimmed) {
-      setSlugStatus('idle');
-      return;
-    }
-
-    const parsed = CreateLinkFormSchema.shape.slug.safeParse(trimmed);
-    if (!parsed.success) {
-      setSlugStatus(isReservedSlug(trimmed) ? 'reserved' : 'invalid');
-      return;
-    }
+    if (!askServer) return;
 
     let active = true;
     (async () => {
-      setSlugStatus('checking');
-      const ok = await checkSlug(trimmed); // ↔ Supabase
+      const ok = await checkSlug(slug); // ↔ Supabase
       if (!active) return;
       // null: couldn't be checked, so say nothing; createLink checks again
-      setSlugStatus(ok === null ? 'idle' : ok ? 'available' : 'taken');
+      setSlugVerdict({
+        slug,
+        status: ok === null ? 'idle' : ok ? 'available' : 'taken',
+      });
     })();
 
     return () => {
       active = false;
     }; // abort on fast re-type
-  }, [debouncedSlug]);
-
-  /* ─────────────────────── url validation ───────────────────────────── */
-  useEffect(() => {
-    const trimmed = debouncedUrl.trim();
-    if (!trimmed) {
-      setUrlError('');
-      return;
-    }
-
-    const parsed = CreateLinkFormSchema.shape.url.safeParse(
-      ensureProtocol(trimmed),
-    );
-    setUrlError(parsed.success ? '' : parsed.error.issues[0].message);
-  }, [debouncedUrl]);
+  }, [slug, askServer]);
 
   /* ───────────────────────────── UI ─────────────────────────────────── */
   const helper = (() => {
