@@ -141,6 +141,14 @@ export default function BitlyAlternativePage() {
         </ul>
       </Section>
 
+      <Section title="Other comparisons">
+        <p>
+          See also how reqq.cc compares with{' '}
+          <TextLink href="/tinyurl-alternative">TinyURL</TextLink> and with{' '}
+          <TextLink href="/rebrandly-alternative">Rebrandly</TextLink>.
+        </p>
+      </Section>
+
       <p className="text-sm text-white/70">
         Bitly is a trademark of Bitly, Inc. reqq.cc is not affiliated with or
         endorsed by Bitly.

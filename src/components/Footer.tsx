@@ -60,6 +60,12 @@ export default function Footer() {
           <Link href="/bitly-alternative" className="hover:underline">
             Bitly alternative
           </Link>
+          <Link href="/tinyurl-alternative" className="hover:underline">
+            TinyURL alternative
+          </Link>
+          <Link href="/rebrandly-alternative" className="hover:underline">
+            Rebrandly alternative
+          </Link>
           <Link href="/about" className="hover:underline">
             About
           </Link>

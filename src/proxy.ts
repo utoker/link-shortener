@@ -25,6 +25,8 @@ const APP_PAGES = new Set([
   'privacy',
   'qr-code-generator',
   'bitly-alternative',
+  'tinyurl-alternative',
+  'rebrandly-alternative',
   'url-shortener-without-sign-up',
   'link-click-counter',
   'utm-builder',
@@ -98,8 +100,5 @@ export async function proxy(req: NextRequest, event: NextFetchEvent) {
   }
 
   // 3️⃣  Lean 302 redirect (0-byte body)
-  const res = NextResponse.redirect(link.url, { status: 302 });
-  res.headers.set('x-middleware', 'hit');
-
-  return res;
+  return NextResponse.redirect(link.url, { status: 302 });
 }

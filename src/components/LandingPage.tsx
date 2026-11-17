@@ -1,4 +1,4 @@
-// The frame the landing pages share (/bitly-alternative,
+// The frame the landing pages share (the …-alternative pages,
 // /url-shortener-without-sign-up, /link-click-counter, /utm-builder): a
 // heading, an intro, a button to the shortener (or the page's tool), then the
 // page's own sections and a FAQ.

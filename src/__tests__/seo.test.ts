@@ -25,6 +25,8 @@ describe('sitemap.xml', () => {
       'https://reqq.cc/link-click-counter',
       'https://reqq.cc/url-shortener-without-sign-up',
       'https://reqq.cc/bitly-alternative',
+      'https://reqq.cc/tinyurl-alternative',
+      'https://reqq.cc/rebrandly-alternative',
       'https://reqq.cc/about',
       'https://reqq.cc/terms',
       'https://reqq.cc/privacy',

@@ -11,6 +11,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/link-click-counter',
     '/url-shortener-without-sign-up',
     '/bitly-alternative',
+    '/tinyurl-alternative',
+    '/rebrandly-alternative',
     '/about',
     '/terms',
     '/privacy',

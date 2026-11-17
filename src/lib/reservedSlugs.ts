@@ -14,6 +14,8 @@ const RESERVED_SLUGS = new Set([
   'protected',
   'qr-code-generator',
   'bitly-alternative',
+  'tinyurl-alternative',
+  'rebrandly-alternative',
   'url-shortener-without-sign-up',
   'link-click-counter',
   'utm-builder',
