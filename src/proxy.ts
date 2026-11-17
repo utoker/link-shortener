@@ -1,6 +1,6 @@
-// ────────────────────────────────────────────────────────────────
-// src/middleware.ts   –   Next 15  +  Supabase  Edge Middleware
-// ────────────────────────────────────────────────────────────────
+// Resolves reqq.cc/<slug> and redirects, before any page is involved.
+// (Next 16 calls this file "proxy"; it was "middleware" before, and it now
+// runs on the Node.js runtime instead of the Edge runtime.)
 import {
   NextResponse,
   type NextFetchEvent,
@@ -33,7 +33,7 @@ const APP_PAGES = new Set([
   'auth',
 ]);
 
-export async function middleware(req: NextRequest, event: NextFetchEvent) {
+export async function proxy(req: NextRequest, event: NextFetchEvent) {
   const slug = req.nextUrl.pathname.slice(1); // "/yxzh5x" → "yxzh5x"
 
   // If no slug is present, we assume it's the home page

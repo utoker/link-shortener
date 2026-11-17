@@ -1,6 +1,6 @@
 // Weekly re-check of every link (up to 10,000 a run, longest-unchecked
 // first) with Google Safe Browsing, run by
-// /api/cron/link-check. A link Google flags is blocked: the middleware shows a
+// /api/cron/link-check. A link Google flags is blocked: the proxy shows a
 // warning page instead of redirecting, and the owner gets one email. The block
 // is lifted once Google reports the URL clean again, or when the owner changes
 // the URL (updateLink). Links Google couldn't answer for stay as they are until

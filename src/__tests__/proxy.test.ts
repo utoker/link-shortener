@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest, type NextFetchEvent } from 'next/server';
 import { unstable_doesMiddlewareMatch } from 'next/experimental/testing/server';
-import { config, middleware } from '../middleware';
+import { config, proxy } from '../proxy';
 import { createSupabaseAdminClient } from '../lib/supabase/admin';
 
 vi.mock('../lib/rateLimit', () => ({
@@ -68,7 +68,7 @@ async function mockRedirect(
   return { rpc, adminRpc };
 }
 
-describe('Middleware Rate Limiting', () => {
+describe('Proxy Rate Limiting', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -81,7 +81,7 @@ describe('Middleware Rate Limiting', () => {
       'x-vercel-ip-country': 'TR',
     });
     const event = fakeEvent();
-    const response = await middleware(request, event);
+    const response = await proxy(request, event);
 
     expect(rpc).toHaveBeenCalledWith('resolve_link', { p_slug: 'test-slug' });
     expect(response.status).toBe(302);
@@ -102,7 +102,7 @@ describe('Middleware Rate Limiting', () => {
     const { adminRpc } = await mockRedirect();
 
     const event = fakeEvent();
-    const response = await middleware(
+    const response = await proxy(
       new NextRequest(`${TEST_URL}?qr`, { headers: { 'user-agent': IPHONE } }),
       event,
     );
@@ -121,7 +121,7 @@ describe('Middleware Rate Limiting', () => {
     const { adminRpc } = await mockRedirect();
 
     const event = fakeEvent();
-    await middleware(click(), event);
+    await proxy(click(), event);
     await vi.mocked(event.waitUntil).mock.calls[0][0];
 
     expect(adminRpc).toHaveBeenCalledWith('record_click', {
@@ -140,7 +140,7 @@ describe('Middleware Rate Limiting', () => {
     await mockRedirect();
 
     const event = fakeEvent();
-    const response = await middleware(request, event);
+    const response = await proxy(request, event);
 
     expect(response.status).toBe(302);
     expect(response.headers.get('location')).toBe('https://example.com/');
@@ -153,7 +153,7 @@ describe('Middleware Rate Limiting', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const event = fakeEvent();
-    const response = await middleware(click(), event);
+    const response = await proxy(click(), event);
     await vi.mocked(event.waitUntil).mock.calls[0][0];
 
     expect(response.status).toBe(302);
@@ -167,7 +167,7 @@ describe('Middleware Rate Limiting', () => {
     await mockRedirect(null, true);
 
     const event = fakeEvent();
-    const response = await middleware(click(), event);
+    const response = await proxy(click(), event);
 
     expect(response.status).not.toBe(302);
     expect(response.headers.get('location')).toBeNull();
@@ -199,7 +199,7 @@ describe('Middleware Rate Limiting', () => {
       headers: { 'user-agent': IPHONE },
     });
     const event = fakeEvent();
-    const response = await middleware(request, event);
+    const response = await proxy(request, event);
 
     expect(response.headers.get('x-middleware-rewrite')).toBe('http://localhost:3000/404');
     expect(event.waitUntil).not.toHaveBeenCalled();
@@ -212,7 +212,7 @@ describe('Middleware Rate Limiting', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     const event = fakeEvent();
 
-    const response = await middleware(click(), event);
+    const response = await proxy(click(), event);
 
     expect(response.status).toBe(503);
     expect(response.headers.get('Retry-After')).toBe('30');
@@ -233,7 +233,7 @@ describe('Middleware Rate Limiting', () => {
     });
 
     const request = new NextRequest('http://localhost:3000/test-slug');
-    const response = await middleware(request, fakeEvent());
+    const response = await proxy(request, fakeEvent());
 
     expect(response.status).toBe(429);
     expect(response.headers.get('Retry-After')).toBeDefined();
@@ -242,14 +242,14 @@ describe('Middleware Rate Limiting', () => {
 
   it('should skip rate limiting for protected routes', async () => {
     const request = new NextRequest('http://localhost:3000/protected/about');
-    const response = await middleware(request, fakeEvent());
+    const response = await proxy(request, fakeEvent());
 
     expect(response.status).toBe(200);
   });
 
   it('should skip rate limiting for auth routes', async () => {
     const request = new NextRequest('http://localhost:3000/auth/callback');
-    const response = await middleware(request, fakeEvent());
+    const response = await proxy(request, fakeEvent());
 
     expect(response.status).toBe(200);
   });
@@ -270,7 +270,7 @@ describe('Middleware Rate Limiting', () => {
       const { redirectRateLimit } = await import('../lib/rateLimit');
       const { createSupabasePublicClient } = await import('../lib/supabase/public');
 
-      const response = await middleware(
+      const response = await proxy(
         new NextRequest(`http://localhost:3000${path}`),
         fakeEvent(),
       );
@@ -284,12 +284,12 @@ describe('Middleware Rate Limiting', () => {
 
   it('should skip rate limiting for home page', async () => {
     const request = new NextRequest('http://localhost:3000/');
-    const response = await middleware(request, fakeEvent());
+    const response = await proxy(request, fakeEvent());
 
     expect(response.status).toBe(200);
   });
 });
-describe('Middleware matcher', () => {
+describe('Proxy matcher', () => {
   it.each(['/abc123', '/My-link_1'])('should run for slug path %s', (url) => {
     expect(unstable_doesMiddlewareMatch({ config, url })).toBe(true);
   });

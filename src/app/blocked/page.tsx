@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-// Shown at reqq.cc/<slug> in place of the redirect (a middleware rewrite) when
+// Shown at reqq.cc/<slug> in place of the redirect (a proxy rewrite) when
 // Google Safe Browsing reports the link's destination as unsafe.
 export default function BlockedLink() {
   return (

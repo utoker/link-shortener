@@ -6,7 +6,7 @@
 
 ## ✨ About
 
-> **Reqq .cc** is a privacy‑minded, open‑source URL shortener built with the ~~latest~~ bleeding‑edge Next JS 16 **Server Actions**, **Edge Middleware**, and **Supabase Postgres**.
+> **Reqq .cc** is a privacy‑minded, open‑source URL shortener built with the ~~latest~~ bleeding‑edge Next JS 16 **Server Actions**, **Proxy** (formerly Middleware), and **Supabase Postgres**.
 >
 > I rebuilt the original Prisma + PlanetScale version from scratch to learn the new App Router paradigm (React 19 & `useActionState`) and to dog‑food Supabase’s all‑in‑one stack in production.
 
@@ -16,7 +16,7 @@
 | -------------------------------- | ------------------------------------ |
 | Next 13 Pages Router             | **Next 16 App Router** + React 19    |
 | Prisma ORM + PlanetScale (MySQL) | **Supabase Postgres** + RLS          |
-| API routes                       | **Server Actions** + Edge Middleware |
+| API routes                       | **Server Actions** + Proxy           |
 | Tailwind v3                      | **Tailwind v4** (CSS‑at‑config)      |
 | No auth                          | **Supabase Auth**                    |
 
@@ -29,7 +29,7 @@
 - 🛡️ **Safe Browsing checks** – new and edited links are checked with Google Safe Browsing, and every link is re-checked weekly.
 - 🚦 **Rate limits** on redirects, link creation, editing and deletion, slug checks, the link checker and auth, per IP via Upstash Redis.
 - 🧰 **Free tools** – a QR code generator (`/qr-code-generator`) and a UTM link builder (`/utm-builder`), both running in the browser, and a link checker (`/link-checker`) that follows a link's redirects and asks Google Safe Browsing about it.
-- 🌍 **Ultra‑low latency redirects** – Edge middleware resolves slugs in \~20–40 ms.
+- 🌍 **Fast redirects** – `src/proxy.ts` resolves slugs and redirects before any page renders.
 - 🛂 **Row‑level security** – every request goes through Supabase RLS policies; the client only gets its own data.
 - ⚡ **Live revalidate** – new links appear instantly without client‑side cache busting.
 - 🧩 **Composable architecture** – backend actions live in `src/app/actions/**`, UI components in `src/components/**`.
@@ -134,7 +134,7 @@ src/
   components/         # Radix‑based UI
   styles/
     globals.css
-  middleware.ts       # Edge runtime slug resolver
+  proxy.ts            # slug resolver (Next 16 proxy, Node.js runtime)
 supabase/migrations/  # schema changes
 eslint.config.mjs     # lint rules
 .github/workflows/    # CI
