@@ -27,8 +27,8 @@
 - 🔗 **Anonymous or authenticated short‑links** – logged‑in users own their links; anonymous links still work.
 - 📈 **Atomic click counter** via the Postgres `record_click` function (no race conditions), with a stats page per link.
 - 🛡️ **Safe Browsing checks** – new and edited links are checked with Google Safe Browsing, and every link is re-checked weekly.
-- 🚦 **Rate limits** on redirects, link creation, editing and deletion, slug checks and auth, per IP via Upstash Redis.
-- 🧰 **Free tools** – a QR code generator (`/qr-code-generator`) and a UTM link builder (`/utm-builder`), both running in the browser.
+- 🚦 **Rate limits** on redirects, link creation, editing and deletion, slug checks, the link checker and auth, per IP via Upstash Redis.
+- 🧰 **Free tools** – a QR code generator (`/qr-code-generator`) and a UTM link builder (`/utm-builder`), both running in the browser, and a link checker (`/link-checker`) that follows a link's redirects and asks Google Safe Browsing about it.
 - 🌍 **Ultra‑low latency redirects** – Edge middleware resolves slugs in \~20–40 ms.
 - 🛂 **Row‑level security** – every request goes through Supabase RLS policies; the client only gets its own data.
 - ⚡ **Live revalidate** – new links appear instantly without client‑side cache busting.
