@@ -262,6 +262,7 @@ describe('Middleware Rate Limiting', () => {
     '/bitly-alternative',
     '/url-shortener-without-sign-up',
     '/link-click-counter',
+    '/utm-builder',
   ])(
     'should let the %s page through without a slug lookup',
     async (path) => {

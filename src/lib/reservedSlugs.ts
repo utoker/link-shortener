@@ -16,6 +16,7 @@ const RESERVED_SLUGS = new Set([
   'bitly-alternative',
   'url-shortener-without-sign-up',
   'link-click-counter',
+  'utm-builder',
   'reset-password',
   'favicon',
   'icon',

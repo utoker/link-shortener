@@ -1,6 +1,7 @@
 // The frame the landing pages share (/bitly-alternative,
-// /url-shortener-without-sign-up, /link-click-counter): a heading, an intro,
-// a button to the shortener, then the page's own sections and a FAQ.
+// /url-shortener-without-sign-up, /link-click-counter, /utm-builder): a
+// heading, an intro, a button to the shortener (or the page's tool), then the
+// page's own sections and a FAQ.
 // Server-rendered text only, in classes the site already has.
 import Link from 'next/link';
 import s from './LandingPage.module.css';
@@ -97,6 +98,7 @@ export default function LandingPage({
   title,
   intro,
   button,
+  tool,
   faq,
   children,
 }: {
@@ -104,6 +106,8 @@ export default function LandingPage({
   intro: React.ReactNode;
   /** Text of the button to the shortener, shown under the intro and at the end. */
   button: string;
+  /** A tool to show under the intro in place of the button (/utm-builder). */
+  tool?: React.ReactNode;
   faq: FaqItem[];
   children: React.ReactNode;
 }) {
@@ -116,7 +120,7 @@ export default function LandingPage({
         <p className="font-baloo-thambi text-lg text-white/80">{intro}</p>
       </header>
 
-      <ShortenButton>{button}</ShortenButton>
+      {tool ?? <ShortenButton>{button}</ShortenButton>}
 
       {children}
 

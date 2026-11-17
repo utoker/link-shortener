@@ -1,0 +1,25 @@
+/* Styles only the UTM builder uses. They live here rather than as new
+   Tailwind classes because Tailwind builds one stylesheet for the whole site,
+   and the static homepage can't paint until it has downloaded that stylesheet. */
+
+.input {
+  height: 3rem;
+  border-radius: 1rem;
+  font-size: 1.125rem;
+}
+
+/* The tagged link: long, so it wraps instead of widening the card. */
+.result {
+  min-height: 5rem;
+  padding: 0.75rem 1rem;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  user-select: none;
+}

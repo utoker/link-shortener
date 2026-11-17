@@ -27,6 +27,7 @@ const APP_PAGES = new Set([
   'bitly-alternative',
   'url-shortener-without-sign-up',
   'link-click-counter',
+  'utm-builder',
   'protected',
   'auth',
 ]);

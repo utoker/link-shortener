@@ -12,6 +12,7 @@ import { CreateLinkFormSchema } from '@/lib/schemas/CreateLinkFormSchema';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { ensureProtocol } from '@/lib/utils';
 import { isReservedSlug } from '@/lib/reservedSlugs';
+import { takePrefillUrl } from '@/lib/prefill';
 import { createLink } from '@/app/actions/data/createLink';
 import { checkSlug } from '@/app/actions/data';
 import type { CreateLinkResult } from '@/app/actions/data/createLink';
@@ -42,6 +43,12 @@ export default function Hero() {
   const debouncedSlug = useDebounce(slugInput, 300);
   const debouncedUrl = useDebounce(urlInput, 300);
   const { refetchLinks } = useUserContext();
+
+  // a link handed over by a tool page (/utm-builder) starts in the URL box
+  useEffect(() => {
+    const prefill = takePrefillUrl();
+    if (prefill) setUrlInput(prefill);
+  }, []);
 
   /* ────────────────── server action with automatic refetch ──────────── */
   const createLinkWithRefresh = useCallback(

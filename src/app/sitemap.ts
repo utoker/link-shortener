@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     '/',
     '/qr-code-generator',
+    '/utm-builder',
     '/link-click-counter',
     '/url-shortener-without-sign-up',
     '/bitly-alternative',

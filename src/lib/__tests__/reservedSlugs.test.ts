@@ -19,6 +19,7 @@ describe('isReservedSlug', () => {
       'bitly-alternative',
       'url-shortener-without-sign-up',
       'link-click-counter',
+      'utm-builder',
       'robots',
       'sitemap',
       'favicon',

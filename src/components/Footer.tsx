@@ -45,6 +45,9 @@ export default function Footer() {
           <Link href="/qr-code-generator" className="hover:underline">
             QR code generator
           </Link>
+          <Link href="/utm-builder" className="hover:underline">
+            UTM link builder
+          </Link>
           <Link href="/link-click-counter" className="hover:underline">
             Link click counter
           </Link>

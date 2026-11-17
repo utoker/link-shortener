@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { setPrefillUrl } from '@/lib/prefill';
 import {
   createLink,
   type CreateLinkResult,
@@ -63,6 +64,19 @@ describe('Hero Component Error Handling', () => {
 
     expect(mockResult.success).toBe(true);
     expect(mockResult.slug).toBe('abc123');
+  });
+});
+
+describe('Hero prefilled link', () => {
+  it('should start with the link a tool page handed over, once', () => {
+    setPrefillUrl('https://example.com/?utm_source=newsletter');
+
+    expect(renderHero()).toHaveValue(
+      'https://example.com/?utm_source=newsletter',
+    );
+
+    cleanup();
+    expect(renderHero()).toHaveValue('');
   });
 });
 
