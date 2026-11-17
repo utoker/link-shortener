@@ -148,6 +148,20 @@ describe('LinkChecker', () => {
     expect(await screen.findByText(message)).toBeTruthy();
   });
 
+  it('should say when a reqq.cc link does not exist, and leave Google out', async () => {
+    await check({
+      ok: true,
+      steps: [{ url: 'https://reqq.cc/nothere', status: 404 }],
+      end: 'no-such-link',
+      safety: 'unknown',
+    });
+
+    expect(
+      await screen.findByText(/There’s no reqq\.cc link by that name\./),
+    ).toBeTruthy();
+    expect(screen.queryByText(/Google Safe Browsing/)).toBeNull();
+  });
+
   it('should leave Google out when the last address was never opened', async () => {
     await check({
       ok: true,

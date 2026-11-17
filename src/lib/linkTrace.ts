@@ -34,7 +34,8 @@ export type TraceEnd =
   | 'not-allowed' // the last step isn't an address on the public web
   | 'unreachable' // the last step didn't answer
   | 'timeout' // the last step, or the whole chain, took too long
-  | 'blocked'; // the last step is a reqq.cc link blocked as unsafe
+  | 'blocked' // the last step is a reqq.cc link blocked as unsafe
+  | 'no-such-link'; // the last step is a reqq.cc link that doesn't exist
 
 export type Trace = { steps: TraceStep[]; end: TraceEnd };
 
@@ -245,7 +246,7 @@ export async function traceLink(
       }
       if (!link) {
         step.status = 404;
-        return { steps, end: 'arrived' };
+        return { steps, end: 'no-such-link' };
       }
       if (link.blocked) return { steps, end: 'blocked' };
       step.status = 302;

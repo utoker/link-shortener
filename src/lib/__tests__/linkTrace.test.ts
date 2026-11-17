@@ -277,7 +277,7 @@ describe('traceLink', () => {
         }),
       ).toEqual({
         steps: [{ url: 'https://reqq.cc/nothere', status: 404 }],
-        end: 'arrived',
+        end: 'no-such-link',
       });
       expect(visit).not.toHaveBeenCalled();
     });

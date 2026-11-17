@@ -128,7 +128,7 @@ describe('checkLink action', () => {
     });
   });
 
-  it.each(['not-allowed', 'blocked'] as const)(
+  it.each(['not-allowed', 'blocked', 'no-such-link'] as const)(
     'should not ask Google when the check ended with %s',
     async (end) => {
       vi.mocked(traceLink).mockResolvedValue({

@@ -57,11 +57,11 @@ export async function checkLink(input: string): Promise<CheckLinkResult> {
   try {
     const { steps, end } = await traceLink(start, { ownLink });
 
-    // An address that was never opened, or one of ours already blocked, has
-    // nothing for Google to add.
+    // An address that was never opened, or one of ours that is blocked
+    // already or doesn't exist, has nothing for Google to add.
     const last = steps[steps.length - 1];
     const result =
-      end === 'not-allowed' || end === 'blocked'
+      end === 'not-allowed' || end === 'blocked' || end === 'no-such-link'
         ? null
         : await checkUrlSafety(last.url);
 

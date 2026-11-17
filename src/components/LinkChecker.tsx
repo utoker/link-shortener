@@ -36,8 +36,13 @@ function ending({ steps, end }: Checked): string {
       return 'The last address took too long to answer, so the check stopped there.';
     case 'blocked':
       return 'reqq.cc has blocked this short link: Google Safe Browsing reports the site it leads to as unsafe.';
+    case 'no-such-link':
+      return 'There’s no reqq.cc link by that name. It may have been deleted, or the name may be mistyped.';
   }
 }
+
+/** Endings where Google wasn't asked, so there's nothing to say about it. */
+const NOT_ASKED: Checked['end'][] = ['not-allowed', 'blocked', 'no-such-link'];
 
 export default function LinkChecker() {
   const [input, setInput] = useState('');
@@ -138,8 +143,7 @@ export default function LinkChecker() {
               </p>
             )}
             {result.safety === 'unknown' &&
-              result.end !== 'not-allowed' &&
-              result.end !== 'blocked' && (
+              !NOT_ASKED.includes(result.end) && (
                 <p>Google Safe Browsing couldn’t be asked just now.</p>
               )}
           </>
